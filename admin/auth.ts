@@ -4,7 +4,6 @@ import Credentials from "next-auth/providers/credentials"
 
 const authConfig: NextAuthConfig = {
   secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || "siraatul-admin-auth-secret-super-key-98745",
-  trustHost: true,
   providers: [
     Credentials({
       id: "credentials",
