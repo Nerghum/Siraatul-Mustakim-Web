@@ -19,11 +19,11 @@ out/
 !.env.example
 
 # Excluded per user instruction (admin, backend, frontend, database only)
-app/
-frontend-update/
-Start Dev.app/
-siratul-mustakim.apk
-test-lexical.js
+/app/
+/frontend-update/
+/Start Dev.app/
+/siratul-mustakim.apk
+/test-lexical.js
 
 # Large Media & Audio downloads
 backend/data/quran/audio/

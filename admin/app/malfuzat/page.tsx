@@ -1,0 +1,70 @@
+"use client";
+
+import { useLatestAudioMalfuzat } from "@/hooks/use-malfuzat";
+import type { Malfuzat } from "@/types/malfuzat";
+import ReactAudioPlayer from "react-h5-audio-player";
+import "react-h5-audio-player/lib/styles.css";
+import { Headphones, Loader2 } from "lucide-react";
+
+export default function MalfuzatPublicPage() {
+  const { data, isLoading, isError } = useLatestAudioMalfuzat(20);
+  const items = (data as unknown as Malfuzat[]) || [];
+
+  return (
+    <main className="min-h-screen bg-background">
+      <div className="max-w-3xl mx-auto px-4 py-10 space-y-8">
+        <div className="text-center space-y-2">
+          <Headphones className="size-10 mx-auto text-primary" />
+          <h1 className="text-3xl font-bold">মালফুজাত</h1>
+          <p className="text-muted-foreground">সর্বশেষ অডিও মালফুজাত</p>
+        </div>
+
+        {isLoading && (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="size-6 animate-spin text-muted-foreground" />
+          </div>
+        )}
+
+        {isError && (
+          <p className="text-center text-muted-foreground py-12">
+            Failed to load malfuzat
+          </p>
+        )}
+
+        {!isLoading && !isError && items.length === 0 && (
+          <p className="text-center text-muted-foreground py-12">
+            কোনো মালফুজাত পাওয়া যায়নি
+          </p>
+        )}
+
+        <div className="space-y-6">
+          {items.map((item) => (
+            <div key={item._id} className="border rounded-lg p-4 space-y-2">
+              <div className="flex items-start justify-between gap-2">
+                <div className="space-y-1">
+                  <h2 className="font-semibold text-lg">{item.title}</h2>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span>{item.category}</span>
+                    {item.author && (
+                      <>
+                        <span>·</span>
+                        <span>{item.author}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+              {item.audioUrl && (
+                <ReactAudioPlayer
+                  src={item.audioUrl}
+                  header={item.title}
+                  className="w-full"
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </main>
+  );
+}

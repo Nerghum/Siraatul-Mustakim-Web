@@ -1,0 +1,386 @@
+@import "tailwindcss";
+
+/* Tailwind utilities (bg-primary, text-secondary, …) read the same raw --brand-*
+   values that the plain-CSS tokens in :root below do — one source per colour. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--brand-primary);
+  --color-primary-hover: var(--brand-primary-hover);
+  --color-primary-soft: var(--brand-primary-soft);
+  --color-primary-foreground: var(--brand-primary-contrast);
+  --color-secondary: var(--brand-text-primary);
+  --color-muted: var(--brand-text-muted);
+  --color-accent: var(--brand-skeleton);
+  --color-accent-pink: var(--brand-accent);
+  --font-sans: var(--font-poppins), var(--font-bornomala), sans-serif;
+  --font-mono: var(--font-poppins), monospace;
+  --font-heading: var(--font-sans);
+}
+
+/* Font Faces */
+@font-face {
+  font-family: Bornomala;
+  src: url("../lib/fonts/Bornomala-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Bornomala;
+  src: url("../lib/fonts/Bornomala-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --background: #fafafa;
+  --foreground: #111111;
+
+  /* Raw brand values — the single source for both Tailwind and plain CSS */
+  --brand-primary: #008e48;
+  --brand-primary-hover: #0a644a;
+  --brand-primary-contrast: #ffffff;
+  --brand-primary-soft: #e6f4ed;
+  --brand-text-primary: #111111;
+  --brand-text-secondary: #333333;
+  --brand-text-muted: #637381;
+  --brand-border: #e5e7eb;
+  /* Loading placeholder fill — `bg-accent` on <Skeleton /> */
+  --brand-skeleton: rgba(145 158 171 / 0.16);
+  /* Secondary accent — only the donate form's "সাধারণ" pill uses it */
+  --brand-accent: #e5326f;
+  --brand-accent-contrast: #ffffff;
+
+  /* Aliases used by the plain-CSS components (header, sidebar, decoration) */
+  --color-primary: var(--brand-primary);
+  --color-primary-active: var(--brand-primary);
+  --color-primary-hover: var(--brand-primary-hover);
+  --color-primary-contrast: var(--brand-primary-contrast);
+  --color-primary-soft: var(--brand-primary-soft);
+  --color-text-primary: var(--brand-text-primary);
+  --color-text-secondary: var(--brand-text-secondary);
+  --color-text-muted: var(--brand-text-muted);
+  --color-border: var(--brand-border);
+  --color-accent: var(--brand-accent);
+  --color-accent-contrast: var(--brand-accent-contrast);
+
+  /* Design system — section titles (see AGENTS.md › Design conventions) */
+  --title-color: #4a3320;
+  --subtitle-color: rgba(74, 51, 32, 0.65);
+  --title-size: 1.5rem; /* 24px on mobile (<768px) */
+
+  /* Ripple — themed press feedback for buttons. Override per-button with
+     --ripple-color (e.g. a white tint on a primary-filled button). */
+  --ripple-color: rgba(0, 142, 72, 0.25);
+
+  /* Layout */
+  --layout-header-mobile-height: 64px;
+  --layout-header-desktop-height: 64px;
+  --layout-top-bar-height: 0px;
+  --layout-max-width: 1170px;
+  --layout-nav-mobile-width: 320px;
+
+  /* MUI-flavoured tokens the ported header/sidebar CSS reads */
+  --spacing: 8px;
+  --shape-borderRadius: 7px;
+  --zIndex-drawer: 1200;
+  /* Above the fixed header (99999999999) and all overlays — modals must cover the whole screen. */
+  --zIndex-modal: 999999999999;
+  --palette-primary-main: var(--color-primary);
+  --palette-primary-mainChannel: 0 142 72;
+  --palette-primary-lighter: #e6f4ed;
+  --palette-primary-light: #b3d9c5;
+  --palette-primary-contrastText: var(--color-primary-contrast);
+  --palette-primary-lighterChannel: 230 244 237;
+  --palette-primary-lightChannel: 179 217 197;
+  --palette-text-primary: var(--color-text-primary);
+  --palette-text-secondary: var(--color-text-secondary);
+  --palette-text-disabled: var(--color-text-muted);
+  --palette-action-active: #637381;
+  --palette-action-disabled: rgba(145 158 171 / 0.8);
+  --palette-divider: rgba(145 158 171 / 0.2);
+  --palette-warning-light: #f8de9e;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --title-size: 1.75rem; /* 28px on desktop (>=768px) */
+  }
+}
+
+/* These resets must sit in @layer base — unlayered rules outrank Tailwind's
+   layered utilities, which would make `text-4xl` on an <h2> a no-op. */
+@layer base {
+  html {
+    box-sizing: border-box;
+    overflow-x: clip;
+  }
+
+  body {
+    overflow-x: clip;
+    background: var(--background);
+    color: var(--foreground);
+    /* anchors the absolutely positioned <CornerDecoration /> */
+    position: relative;
+  }
+
+  *,
+  *::before,
+  *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+    font-family: var(--font-poppins), var(--font-bornomala), sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: inherit;
+    font-weight: inherit;
+    margin: 0;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  *:focus {
+    outline: none;
+  }
+}
+
+/* ============================================
+   Section titles — shared across every page.
+   Left-aligned everywhere EXCEPT the homepage first section (centered).
+   ============================================ */
+.section-title {
+  font-size: var(--title-size);
+  color: var(--title-color);
+  text-align: left;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+/* ============================================
+   Ripple — press feedback for buttons site-wide.
+   Wire a button with the useRipple() hook (hooks/use-ripple.ts); the button
+   needs `position: relative; overflow: hidden`. Color from --ripple-color.
+   ============================================ */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--ripple-color);
+  transform: scale(0);
+  animation: ripple-effect 0.5s linear;
+  pointer-events: none;
+}
+
+@keyframes ripple-effect {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ripple {
+    display: none !important;
+  }
+}
+
+/* ============================================
+   Top app download bar — dynamic offset via CSS variable.
+   body.has-top-bar sets --layout-top-bar-height to 40px;
+   each section's CSS module reads it in its padding-top calc.
+   ============================================ */
+body.has-top-bar {
+  --layout-top-bar-height: 40px;
+}
+
+/* Main content wrapper height */
+.main-content {
+  min-height: 0;
+}
+
+@media (min-width: 1024px) {
+  .main-content {
+    min-height: 0;
+  }
+}
+
+/* ============================================
+   Sonner Toast Global Styling
+   ============================================ */
+[data-sonner-toaster],
+[data-sonner-toaster] * {
+  z-index: 2147483647 !important;
+  --z-index: 2147483647 !important;
+  --normal-bg: var(--color-primary-soft, #e6f4ed) !important;
+  --normal-text: var(--color-primary, #008e48) !important;
+  --normal-border: rgba(0, 142, 72, 0.25) !important;
+  --success-bg: var(--color-primary-soft, #e6f4ed) !important;
+  --success-text: var(--color-primary, #008e48) !important;
+  --success-border: rgba(0, 142, 72, 0.25) !important;
+  --bg-color: var(--color-primary-soft, #e6f4ed) !important;
+  --color: var(--color-primary, #008e48) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast],
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"],
+[data-sonner-toaster] [data-sonner-toast][data-mounted="true"] {
+  background: var(--color-primary-soft, #e6f4ed) !important;
+  background-color: var(--color-primary-soft, #e6f4ed) !important;
+  color: var(--color-primary, #008e48) !important;
+  border: 1px solid rgba(0, 142, 72, 0.25) !important;
+  border-color: rgba(0, 142, 72, 0.25) !important;
+  font-weight: 600 !important;
+  font-size: 0.9375rem !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-front="false"],
+[data-sonner-toaster] [data-sonner-toast][data-mounted="true"][data-front="false"] {
+  background: var(--color-primary-soft, #e6f4ed) !important;
+  background-color: var(--color-primary-soft, #e6f4ed) !important;
+  border-color: rgba(0, 142, 72, 0.25) !important;
+  opacity: 0.85 !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-title],
+[data-sonner-toaster] [data-sonner-toast] [data-description],
+[data-sonner-toaster] [data-sonner-toast] * {
+  color: var(--color-primary, #008e48) !important;
+}
+
+/* Lexical Rich Text Editor */
+.rte-content:focus-within {
+  outline: none;
+}
+
+.rte-paragraph {
+  margin: 0.25rem 0;
+}
+
+.rte-h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.rte-h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.rte-h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.rte-list-ul {
+  list-style-type: disc;
+  margin-left: 1.5rem;
+  padding-left: 0;
+}
+
+.rte-list-ol {
+  list-style-type: decimal;
+  margin-left: 1.5rem;
+  padding-left: 0;
+}
+
+.rte-listitem {
+  margin: 0.125rem 0;
+}
+
+.rte-nested-listitem {
+  list-style-type: none;
+}
+
+.rte-link {
+  color: var(--color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.rte-bold {
+  font-weight: 700;
+}
+
+.rte-italic {
+  font-style: italic;
+}
+
+.rte-underline {
+  text-decoration: underline;
+}
+
+.rte-strikethrough {
+  text-decoration: line-through;
+}
+
+/* ── Table ────────────────────────────────────────────────────── */
+
+.rte-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.5rem 0;
+  overflow: auto;
+}
+
+.rte-table-row {
+  border: 1px solid var(--color-border);
+}
+
+.rte-table-cell {
+  border: 1px solid var(--color-border);
+  padding: 0.25rem 0.5rem;
+  vertical-align: top;
+  min-width: 6rem;
+}
+
+.rte-table-cell-header {
+  border: 1px solid var(--color-border);
+  padding: 0.25rem 0.5rem;
+  vertical-align: top;
+  min-width: 6rem;
+  font-weight: 600;
+  background: var(--color-muted);
+}
+
+/* ── Image ────────────────────────────────────────────────────── */
+
+.rte-image-wrapper {
+  line-height: 0;
+}
+
+.rte-image {
+  display: inline;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.375rem;
+}
+
+/* ── Video ────────────────────────────────────────────────────── */
+
+.rte-video-wrapper iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+}
+
+.rte-video-wrapper video {
+  max-width: 100%;
+}
+
