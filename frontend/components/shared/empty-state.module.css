@@ -1,0 +1,55 @@
+@reference "tailwindcss";
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2.5rem 1.25rem 3rem;
+}
+
+.illustration {
+  width: 8.75rem;
+  height: 8.75rem;
+}
+
+.title {
+  margin: 1.75rem 0 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.75rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 999px;
+  background-color: var(--color-primary-soft, #e6f4ed);
+  color: var(--color-primary, #008e48);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: filter 150ms ease;
+}
+
+.cta:hover {
+  filter: brightness(0.97);
+}
+
+/* Desktop: wrap in a white rounded card like the design. */
+@media (min-width: 640px) {
+  .card {
+    background-color: #ffffff;
+    border-radius: 1.25rem;
+    border: 1px solid #f0eee9;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    padding: 4rem 2rem 5rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+}

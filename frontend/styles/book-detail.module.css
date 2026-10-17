@@ -1,0 +1,393 @@
+.section {
+  padding-top: calc(
+    var(--layout-top-bar-height, 0px) +
+    var(--layout-header-desktop-height, 72px) +
+    50px
+  );
+  padding-bottom: 3rem;
+  background-color: var(--background);
+}
+
+/* On mobile the global header is hidden for this route (it owns a sticky bar),
+   so drop the top padding and let the bar sit flush to the top. */
+@media (max-width: 1023px) {
+  .section {
+    padding-top: 0;
+    padding-bottom: 2.75rem;
+    background-color: #ffffff;
+  }
+
+  .mobileBar {
+    margin-bottom: 0 !important;
+  }
+
+  .wrapper {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
+/* Mobile app promo top bar (in-flow, sticky) */
+.noticeMobileTopBar {
+  background-color: #1a5c2e;
+  color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+@media (min-width: 1024px) {
+  .noticeMobileTopBar {
+    display: none;
+  }
+}
+
+.noticeMobileTopBar .header-top-bar-inner {
+  max-width: var(--layout-max-width, 1170px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 1.25rem;
+  position: relative;
+  min-height: 2rem;
+}
+
+.noticeMobileTopBar .header-top-bar-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.noticeMobileTopBar .header-top-bar-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.noticeMobileTopBar .header-top-bar-text {
+  white-space: nowrap;
+}
+
+.noticeMobileTopBar .header-top-bar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background-color: #ffffff;
+  color: #1a5c2e;
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  transition: background-color 200ms ease;
+}
+
+.noticeMobileTopBar .header-top-bar-btn:hover {
+  background-color: #e8f5e9;
+}
+
+.noticeMobileTopBar .header-top-bar-play-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.noticeMobileTopBar .header-top-bar-close {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 200ms ease;
+}
+
+.noticeMobileTopBar .header-top-bar-close:hover {
+  opacity: 1;
+}
+
+/* ── Desktop top nav: back link only (TOC button lives on the title row) ───── */
+.desktopTopNav {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .desktopTopNav {
+    display: block;
+    margin-bottom: 2rem;
+  }
+  .desktopTopNav > button {
+    margin-bottom: 0;
+  }
+}
+
+/* ── Title + author + (desktop) TOC button. Hidden on mobile — the title is in
+   the sticky bar there. ───────────────────────────────────────────────────── */
+.headerArea {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .headerArea {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+}
+
+.headerText {
+  min-width: 0;
+}
+
+.bookTitle {
+  font-size: var(--title-size, 2.25rem);
+  color: #3f3f3f;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.bookAuthor {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1;
+}
+
+.desktopTocBtn {
+  flex-shrink: 0;
+}
+
+.headerTocBtn {
+  color: #ffffff;
+}
+
+.headerTocBtn svg {
+  color: #ffffff;
+}
+
+/* ── Two-column reader ────────────────────────────────────────────────────── */
+.readerGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 1023px) {
+  .readerGrid {
+    gap: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .readerGrid {
+    grid-template-columns: 320px minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+/* Left column (cover) is desktop-only; on mobile the cover lives in
+   the drawer and the reader takes the full width. */
+.leftColumn {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .leftColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+}
+
+.coverWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.coverImage {
+  object-fit: cover;
+}
+
+/* ── Right column: reader paper ───────────────────────────────────────────── */
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.readerPaper {
+  background-color: #ffffff;
+  border-radius: 1.25rem;
+  border: 1px solid #f0eee9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 1023px) {
+  .readerPaper {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+  }
+}
+
+.pageContent {
+  padding: 1.5rem;
+}
+
+@media (max-width: 1023px) {
+  .pageContent {
+    padding: 1.25rem 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .pageContent {
+    padding: 2.5rem;
+  }
+}
+
+.pageTitle {
+  font-size: 1.5rem;
+  color: var(--color-primary, #008e48);
+  margin: 0 0 1.5rem;
+  font-weight: 700;
+}
+
+.pageBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  font-size: 1rem;
+  line-height: normal;
+  color: #374151;
+  text-align: justify;
+}
+
+.pageBody p {
+  margin: 0;
+}
+
+.readerPagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 1px solid #f3f4f6;
+  background-color: #fdfdfd;
+  border-bottom-left-radius: 1.25rem;
+  border-bottom-right-radius: 1.25rem;
+}
+
+@media (max-width: 1023px) {
+  .readerPagination {
+    padding: 1.25rem 1rem;
+    border-top: 1px solid #f3f4f6;
+    border-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: #ffffff;
+  }
+}
+
+@media (min-width: 1024px) {
+  .readerPagination {
+    padding: 1.5rem 2.5rem;
+  }
+}
+
+.pageBtn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: transparent;
+  color: #6b7280;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.pageBtn:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  color: var(--color-primary, #008e48);
+}
+
+.pageBtn:disabled {
+  color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+/* Center page indicator — green outlined pill, matching the reference. */
+.pageIndicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 1rem;
+  border: 1px solid var(--color-primary, #008e48);
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-primary, #008e48);
+  white-space: nowrap;
+}
+
+/* ── Drawer extras (rendered by BookTocSheet on top of books.module chrome) ── */
+.sheetSubHeading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem 1.25rem 0.75rem;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #3f3f3f;
+}
+
+.sheetSubHeadingIcon {
+  width: 1.375rem;
+  height: 1.375rem;
+  flex-shrink: 0;
+  color: var(--color-primary, #008e48);
+}
+
+/* Book cover after the index list — spans the drawer width (with side padding),
+   matching the reference. */
+.sheetCoverWrap {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  margin: 1.5rem 1.25rem 2rem;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.sheetCoverImage {
+  object-fit: cover;
+}

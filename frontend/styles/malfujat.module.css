@@ -1,0 +1,586 @@
+/* Malfujat specific styles */
+
+/* Page top offset: clears the fixed header on desktop; on mobile the header is
+   hidden for this page (it owns a top bar + drawer), so no offset. */
+
+@media (max-width: 1023px) {
+}
+
+/* On mobile the global header is hidden for this page, so drop the top offset
+   and let the sticky mobile bar act as the header (flush to the top). */
+@media (max-width: 1023px) {
+  .malfujatSection {
+    padding-top: 0 !important;
+  }
+
+  .malfujatSection > div:not([class*="mobileBar"]):not([class*="MobileTopBar"]) {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+.mobileBar {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .mobileBar {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #ffffff;
+    height: var(--layout-header-mobile-height, 64px);
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    padding: 0 !important;
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 1023px) {
+  .controlsHeader {
+    display: flex !important;
+    margin-bottom: 1.5rem;
+  }
+
+  .controlsHeader :global(.hide-on-mobile) {
+    display: none !important;
+  }
+}
+
+.mobileBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.mobileBarRight {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 100%;
+  align-self: stretch;
+}
+
+.mobileBar :global(.header-back-btn) {
+  width: 45px;
+  min-width: 45px;
+  height: var(--layout-header-mobile-height, 64px);
+  margin: 0;
+  border-radius: 0;
+  align-self: stretch;
+  flex: 0 0 45px;
+  padding: 0 !important;
+}
+
+.mobileBar :global(.header-menu-btn) {
+  width: 45px;
+  min-width: 45px;
+  height: var(--layout-header-mobile-height, 64px);
+  margin: 0;
+  border-radius: 0;
+  align-self: stretch;
+  flex: 0 0 45px;
+  flex-shrink: 0;
+  padding: 0 !important;
+}
+
+.mobileTitle {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobileCategoryBtn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  background-color: var(--color-primary, #008e48);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0 0.875rem;
+  border: none;
+  border-radius: 0.625rem;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: center;
+  transition: background-color 150ms ease;
+  --ripple-color: rgba(255, 255, 255, 0.3);
+}
+
+@media (hover: hover) {
+  .mobileCategoryBtn:hover {
+    background-color: var(--color-primary-hover, #0a644a);
+    color: #ffffff;
+  }
+}
+
+.mobileCategoryBtn:active {
+  background-color: var(--color-primary-hover, #0a644a);
+}
+
+/* Tabs */
+.tabsContainer {
+  display: flex;
+  background-color: #ffffff;
+  border: 1px solid var(--palette-divider, #eaeaea);
+  border-radius: 8px;
+  padding: 4px;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  width: 480px;
+  max-width: 100%;
+}
+
+@media (max-width: 1023px) {
+  .tabsContainer {
+    width: 100%;
+  }
+}
+
+.tabBtn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--palette-text-secondary, #666);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 1023px) {
+  .tabBtn {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+.tabBtn.tabActive {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+/* Text Card */
+.textCard {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.75rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+}
+
+.textTitle {
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--palette-text-primary, #333);
+  margin-bottom: 1.5rem;
+}
+
+.quoteWrapper {
+  display: flex;
+  flex-direction: column;
+  background: #f4f6f8;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+}
+
+.quoteIconWrapper {
+  margin-bottom: 1.25rem;
+}
+
+.quoteIconImg {
+  height: 2rem;
+  width: auto;
+}
+
+.quoteText {
+  font-size: 0.9375rem;
+  line-height: normal;
+  color: #374151;
+  text-align: justify;
+}
+
+@media (max-width: 767px) {
+  .textCard {
+    padding: 1.2rem;
+  }
+
+  .textTitle {
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .quoteWrapper {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .quoteIconWrapper {
+    margin-bottom: 0.5rem;
+  }
+
+  .quoteIconImg {
+    height: 1.5rem;
+  }
+
+  .quoteText {
+    font-size: 1rem;
+    line-height: normal;
+    text-align: justify;
+  }
+}
+
+/* Audio Card */
+.audioCard {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.audioCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.audioPlayBtn {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: none;
+  cursor: pointer;
+}
+
+.audioInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.audioTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--palette-text-primary, #333);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.audioMeta {
+  font-size: 0.875rem;
+  color: var(--palette-text-secondary, #666);
+}
+
+.audioRight {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 200px;
+}
+
+@media (max-width: 1023px) {
+  .audioRight {
+    display: none;
+  }
+}
+
+.desktopWaveform {
+  width: 100%;
+  height: 24px;
+  opacity: 0.8;
+}
+
+.playerControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.playerBtn {
+  background: transparent;
+  border: none;
+  color: var(--palette-text-secondary, #666);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.playerPlayBtn {
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Mobile Player (Footer Docked) */
+.mobilePlayer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  z-index: 10000;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
+  padding-top: 12px;
+  padding-bottom: env(safe-area-inset-bottom, 8px);
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #e5e7eb;
+}
+
+@media (min-width: 1024px) {
+  .mobilePlayer {
+    display: none;
+  }
+}
+
+.mobilePlayerMeta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0 1.25rem 0.625rem;
+  gap: 0.75rem;
+}
+
+.mobilePlayerTextGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.mobilePlayerTitle {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobilePlayerSpeaker {
+  font-size: 0.8125rem;
+  color: #4b5563;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobilePlayerDateLocation {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobilePlayerCloseBtn {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease;
+}
+
+.mobilePlayerCloseBtn:hover {
+  color: #111827;
+  background-color: #f3f4f6;
+}
+
+.mobileProgress {
+  width: 100%;
+  height: 4px;
+  background: #e5e7eb;
+  position: relative;
+  cursor: pointer;
+}
+
+.mobileProgressFill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: #111827;
+}
+
+.mobileProgressThumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background: #111827;
+  border-radius: 50%;
+}
+
+.mobilePlayerControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.625rem 2rem 0.25rem;
+}
+
+.mobilePlayerMainBtn {
+  background: #111827;
+  color: #ffffff;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition:
+    transform 150ms ease,
+    background-color 150ms ease;
+}
+
+.mobilePlayerMainBtn:active {
+  transform: scale(0.94);
+}
+
+/* Audio Card Layout (Task 8 & 10) */
+.inlineAudioCard {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid #f0eee9;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+  outline: none;
+}
+
+.inlineAudioCardNormal {
+  background-color: #ffffff;
+}
+
+.inlineAudioCardNormal:hover {
+  background-color: #f9fafb;
+}
+
+.inlineAudioCardActive {
+  background-color: var(--color-primary-soft, #e6f4ed) !important;
+  border-color: color-mix(in srgb, var(--color-primary) 25%, transparent) !important;
+}
+
+.inlineAudioLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.playerPopup {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 100;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  border-radius: 1rem;
+  overflow: hidden;
+  background: white;
+}
+
+@media (max-width: 767px) {
+  .playerPopup {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    max-width: 100%;
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.closePlayerBtn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: rgba(0,0,0,0.05);
+  border-radius: 9999px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.closePlayerBtn:hover {
+  background: rgba(0,0,0,0.1);
+  color: #111827;
+}

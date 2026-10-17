@@ -1,0 +1,905 @@
+@reference "tailwindcss";
+
+/* Local shades of the brand green — derived from --color-primary so the page
+   never hardcodes the hex. */
+.page {
+  --calendar-border: color-mix(in srgb, var(--color-primary) 35%, #ffffff);
+  --calendar-today: color-mix(in srgb, var(--color-primary) 20%, #ffffff);
+  --calendar-zebra: #f2f3f5;
+  --calendar-ink: #1c1c1c;
+
+  padding-top: calc(
+    var(--layout-top-bar-height, 0px) +
+    var(--layout-header-desktop-height, 72px) +
+    50px
+  );
+  padding-bottom: 3rem;
+}
+
+@media (max-width: 767px) {
+  .page {
+    padding-top: calc(
+      var(--layout-top-bar-height, 0px) +
+      var(--layout-header-mobile-height, 64px) +
+      20px
+    );
+    padding-bottom: 2.75rem;
+  }
+}
+
+.calendarInner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: 2rem;
+  color: var(--color-primary, #008e48);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.backLink:hover {
+  color: var(--color-primary-hover, #0a644a);
+}
+
+.backIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+@media (max-width: 1023px) {
+  .backLink {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------- *
+ * Toolbar — title, location + settings, month navigation
+ * ---------------------------------------------------------------- */
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.title {
+  margin: 0;
+  font-weight: 700;
+  font-size: var(--title-size);
+  line-height: 1.2;
+  color: #3f3f3f;
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .title {
+    font-size: var(--title-size);
+  }
+}
+
+@media (max-width: 1023px) {
+  .title {
+    display: none;
+  }
+}
+
+/* Control band under the title: left group (location + month nav) vs settings. */
+.controlRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.3rem 1rem;
+}
+
+.leftControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
+@media (max-width: 767px) {
+  .leftControls {
+    display: contents;
+  }
+}
+
+.location {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.location:hover {
+  opacity: 0.8;
+}
+
+.locationIcon,
+.chevronIcon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+  .location {
+    width: 100%;
+  }
+}
+
+/* Shared shell for the settings button and the three month-nav buttons. */
+.ghostButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #ffffff;
+  color: var(--color-primary);
+  border: none;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.ghostButton:hover {
+  background-color: var(--color-primary-soft);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.settingsButton {
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+}
+
+.settingsIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+@media (max-width: 767px) {
+  .settingsLabel {
+    display: none;
+  }
+}
+
+.monthNav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+@media (max-width: 767px) {
+  .monthNav {
+    display: contents;
+  }
+  .settingsButton {
+    flex-shrink: 0;
+  }
+}
+
+.navButton {
+  padding: 0.5rem;
+}
+
+.navIcon {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+.monthButton {
+  min-width: 260px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .monthButton,
+  .navButton,
+  .settingsButton {
+    padding: 0.625rem;
+    height: 2.75rem;
+  }
+
+  .navButton,
+  .settingsButton {
+    width: 2.75rem;
+  }
+
+  .monthButton {
+    min-width: 0;
+    flex: 1 1 auto;
+    white-space: nowrap;
+    font-size: 1rem;
+  }
+}
+
+.monthIcon {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+/* ---------------------------------------------------------------- *
+ * Table — green header row, zebra body, highlighted today
+ * ---------------------------------------------------------------- */
+
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--calendar-ink);
+}
+
+@media (max-width: 1023px) {
+  .table {
+    min-width: 840px;
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .table {
+    min-width: 800px;
+    font-size: 1.2rem;
+  }
+}
+
+.headCell {
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-weight: 600;
+  font-size: 1.125rem;
+  padding: 0.625rem 0.5rem;
+  white-space: nowrap;
+}
+
+.bodyRow:nth-child(even) {
+  background-color: var(--calendar-zebra);
+}
+
+.bodyRowToday,
+.bodyRowToday:nth-child(even) {
+  background-color: var(--calendar-today);
+  font-weight: 600;
+}
+
+.cell {
+  padding: 0.5rem 0.5rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- *
+ * Notes block
+ * ---------------------------------------------------------------- */
+
+.notes {
+  margin-top: 1rem;
+  padding: 1.5rem;
+  background-color: var(--color-primary-soft);
+  text-align: justify;
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: var(--calendar-ink);
+}
+
+@media (max-width: 767px) {
+  .notes {
+    padding: 1.125rem;
+    font-size: 0.9375rem;
+  }
+}
+
+.notesParagraph + .notesParagraph {
+  margin-top: 0.5rem;
+}
+
+.bullet {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.term {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.city {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.25rem;
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  line-height: 1;
+}
+
+/* ---------------------------------------------------------------- *
+ * Month picker dialog
+ * ---------------------------------------------------------------- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  /* Above the fixed header and the sidebar overlay — see app/globals.css. */
+  z-index: var(--zIndex-modal, 10000000001);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background-color: rgba(17, 17, 17, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  /* Scrolling inside the panel must not chain to the page behind it. */
+  overscroll-behavior: contain;
+}
+
+.dialog {
+  width: 100%;
+  max-width: 480px;
+  max-height: calc(100vh - 2.5rem);
+  overflow-y: auto;
+  /* Panels are sized to fit; on a very short viewport they still scroll, but
+     without a visible bar. */
+  scrollbar-width: none;
+  background-color: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+  padding: 2rem;
+}
+
+@media (max-width: 767px) {
+  .dialog {
+    padding: 1.25rem;
+  }
+}
+
+.dialog::-webkit-scrollbar {
+  display: none;
+}
+
+/* Month picker — a wider panel for the 3x4 grid. */
+.dialogWide {
+  max-width: 720px;
+}
+
+/* Settings — its header bar runs edge to edge, so the panel has no padding. */
+.dialogFlush {
+  max-width: 640px;
+  padding: 0;
+}
+
+.dialogHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.dialogHeading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--calendar-ink);
+}
+
+@media (max-width: 767px) {
+  .dialogHeading {
+    font-size: 1.25rem;
+  }
+}
+
+.dialogClose {
+  position: absolute;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  color: var(--calendar-ink);
+  transition: opacity 0.2s ease;
+}
+
+.dialogClose:hover {
+  opacity: 0.6;
+}
+
+.dialogCloseIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.monthGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 419px) {
+  .monthGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.625rem;
+  }
+}
+
+.monthOption {
+  padding: 0.75rem 0.5rem;
+  border-radius: 0.625rem;
+  border: 1px solid transparent;
+  background-color: #f3f4f6;
+  color: var(--calendar-ink);
+  font-size: 1.0625rem;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.monthOption:hover {
+  background-color: var(--color-primary-soft);
+}
+
+/* The month the table is currently showing. */
+.monthOptionSelected,
+.monthOptionSelected:hover {
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-weight: 600;
+}
+
+/* The real calendar month, when it is not the selected one. */
+.monthOptionCurrent {
+  background-color: var(--color-primary-soft);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.dialogFooter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+
+.dialogGhost {
+  padding: 0.625rem 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background-color: #ffffff;
+  color: var(--calendar-ink);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dialogGhost:hover {
+  background-color: #f3f4f6;
+}
+
+.dialogPrimary {
+  padding: 0.625rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dialogPrimary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* ---------------------------------------------------------------- *
+ * Settings dialog
+ * ---------------------------------------------------------------- */
+
+.dialogBar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.75rem;
+  background-color: var(--color-primary-soft);
+  border-radius: 1rem 1rem 0 0;
+}
+
+@media (max-width: 767px) {
+  .dialogBar {
+    padding: 1rem 1.25rem;
+  }
+}
+
+.dialogBarHeading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+@media (max-width: 767px) {
+  .dialogBarHeading {
+    font-size: 1.125rem;
+  }
+}
+
+.dialogBarIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* The bar is flex, so its close button sits in flow rather than pinned. */
+.dialogBar .dialogClose {
+  position: static;
+}
+
+.dialogBody {
+  padding: 1.75rem;
+}
+
+@media (max-width: 767px) {
+  .dialogBody {
+    padding: 1.25rem;
+  }
+}
+
+.settingsSection + .settingsSection {
+  margin-top: 1.5rem;
+}
+
+.settingsHeading {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--calendar-ink);
+}
+
+.switchRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-left: 0.25rem;
+  cursor: pointer;
+}
+
+.switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 1.375rem;
+  border: none;
+  border-radius: 9999px;
+  background-color: #d5d7db;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.switchOn {
+  background-color: var(--color-primary);
+}
+
+.switchKnob {
+  position: absolute;
+  top: 0.1875rem;
+  left: 0.1875rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+}
+
+.switchOn .switchKnob {
+  transform: translateX(1.125rem);
+}
+
+.switchLabel {
+  font-size: 1rem;
+  color: var(--calendar-ink);
+}
+
+.underlineSelect {
+  width: 100%;
+  padding: 0.5rem 0.25rem;
+  font-size: 1.0625rem;
+  color: var(--calendar-ink);
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.underlineSelect:focus {
+  border-bottom-color: var(--color-primary);
+}
+
+.dialogActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.dialogActions > * {
+  flex: 1 1 0;
+}
+
+.dialogDanger {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  background-color: #fdeaee;
+  color: #d33a5c;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dialogDanger:hover {
+  background-color: #fbdae1;
+}
+
+.dialogNeutral {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  background-color: #f3f4f6;
+  color: var(--calendar-ink);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dialogNeutral:hover {
+  background-color: #e8eaed;
+}
+
+/* ---------------------------------------------------------------- *
+ * Location dialog
+ * ---------------------------------------------------------------- */
+
+.dialogHeadingLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  position: absolute;
+  left: 0;
+}
+
+.dialogHeadingIcon {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+.detectButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0 auto;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.detectButton:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.detectIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.detectStatus {
+  margin-top: 0.75rem;
+  text-align: center;
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+}
+
+.field {
+  margin-top: 1rem;
+}
+
+.fieldLabel {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: var(--calendar-ink);
+}
+
+.select {
+  width: 100%;
+  appearance: none;
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1.125rem center;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.875rem;
+  padding: 1rem 3rem 1rem 1.125rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #111827;
+  outline: none;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.select:disabled {
+  cursor: default;
+  color: #111827;
+  opacity: 0.8;
+  background-color: #f9fafb;
+}
+
+.select:focus {
+  border: 2px solid var(--color-primary, #008e48);
+  box-shadow: none;
+  outline: none;
+}
+
+.privacyCard {
+  margin-top: 1.25rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  background-color: var(--color-primary-soft);
+  text-align: center;
+}
+
+.privacyHeading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.privacyIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.privacyText {
+  margin-top: 0.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 25%, #ffffff);
+  font-size: 0.9375rem;
+  color: var(--calendar-ink);
+}
+
+.privacyNote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.9375rem;
+  color: var(--calendar-ink);
+}
+
+.privacyNoteIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ---------------------------------------------------------------- *
+ * Iqamah sub-line inside a table cell
+ * ---------------------------------------------------------------- */
+
+.iqamahLine {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 0.7em;
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+/* ---------------------------------------------------------------- *
+ * Radio button group (for Asr method)
+ * ---------------------------------------------------------------- */
+
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.25rem;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--calendar-ink);
+  transition: opacity 0.2s ease;
+}
+
+.radioLabel:hover {
+  opacity: 0.8;
+}
+
+.radioDot {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  border: 2px solid #d5d7db;
+  position: relative;
+  transition: border-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.radioActive .radioDot {
+  border-color: var(--color-primary);
+}
+
+.radioActive .radioDot::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+}

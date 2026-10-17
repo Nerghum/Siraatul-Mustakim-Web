@@ -1,0 +1,1099 @@
+@reference "tailwindcss";
+
+.section {
+  width: 100%;
+  padding-top: 4rem;
+  padding-bottom: 0;
+}
+
+@media (max-width: 767px) {
+  .section {
+    padding-top: 2.75rem;
+    padding-bottom: 0;
+  }
+}
+
+.container {
+  max-width: 1170px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* MMBC Reused Header Styles */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+  }
+}
+
+.headerTextGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.titleSection {
+  margin: 0;
+  font-weight: 700;
+  font-size: var(--title-size);
+  line-height: 1.2;
+  color: var(--title-color);
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .titleSection {
+    font-size: var(--title-size);
+  }
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--subtitle-color, rgba(74, 51, 32, 0.65));
+  line-height: 1.5;
+}
+
+.seeMoreBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-primary, #008e48);
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 200ms ease;
+  margin-left: auto;
+}
+
+.seeMoreBtn:hover {
+  color: var(--color-primary-hover, #0a644a);
+}
+
+/* Mobile: hide header see-more, show bottom CTA */
+@media (max-width: 1023px) {
+  .seeMoreBtn {
+    display: none;
+  }
+}
+
+.seeMoreBtnMobile {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .seeMoreBtnMobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: fit-content;
+    padding: 0.75rem 1.5rem;
+    margin-top: 2.3rem;
+    background-color: var(--color-primary, #008e48);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    border-radius: 0.625rem;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 200ms ease;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .seeMoreBtnMobile:hover {
+    background-color: var(--color-primary-hover, #0a644a);
+  }
+}
+
+/* Location filter trigger (top-right of the header) — opens the right-side picker. */
+.locationTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 15rem;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  color: #374151;
+  cursor: pointer;
+  margin-left: auto;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.locationTrigger:hover {
+  border-color: var(--color-primary, #008e48);
+}
+
+.locationTriggerIcon {
+  flex-shrink: 0;
+  color: var(--color-primary, #008e48);
+}
+
+.locationTriggerLabel {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.locationTriggerChevron {
+  flex-shrink: 0;
+  color: #9ca3af;
+}
+
+@media (max-width: 639px) {
+  .locationTrigger {
+    width: 100%;
+  }
+}
+
+/* Two-card layout: calendar (left) + grouped list (right). */
+.cardGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .cardGrid {
+    display: grid;
+    grid-template-columns: 650px minmax(0, 1fr);
+    gap: 1rem;
+    align-items: stretch;
+  }
+}
+
+.calendarCard,
+.listCard {
+  background-color: #ffffff;
+  border-radius: 1.25rem;
+  border: 1px solid #f0eee9;
+  box-shadow: none;
+  padding: 1.75rem 1.25rem;
+  height: 100%;
+}
+
+.calendarCard {
+  display: flex;
+  flex-direction: column;
+}
+
+.listCard {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+@media (min-width: 768px) {
+  .calendarCard,
+  .listCard {
+    padding: 2rem 1.75rem;
+  }
+}
+
+/* Calendar Styles */
+.calendarWrapper {
+  width: 100%;
+}
+
+.calendarNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding: 0.25rem 0.75rem;
+}
+
+.navBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0.125rem;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #333333;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.navBtn:hover {
+  background-color: #f3f4f6;
+}
+
+.monthLabel {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+@media (min-width: 768px) {
+  .monthLabel {
+    font-size: 1.375rem;
+  }
+}
+
+.weekdayGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.25rem;
+  text-align: center;
+  margin-bottom: 0.875rem;
+}
+
+.weekdayCell {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #4b5563;
+  padding: 0.375rem 0;
+}
+
+@media (min-width: 768px) {
+  .weekdayCell {
+    font-size: 1rem;
+  }
+}
+
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  row-gap: 0.625rem;
+  column-gap: 0.25rem;
+  justify-items: center;
+}
+
+.dayCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 2.375rem;
+  height: 2.375rem;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .dayCell {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
+.dayNumber {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1;
+  color: #374151;
+}
+
+@media (min-width: 768px) {
+  .dayNumber {
+    font-size: 1.125rem;
+  }
+}
+
+.dayCellMuted {
+  cursor: default;
+  opacity: 0.3;
+}
+
+.dayCellMuted .dayNumber {
+  color: #9ca3af;
+}
+
+.dayCellHover:hover:not(.dayCellMuted) {
+  background-color: #f3f4f6;
+}
+
+.dayCellToday {
+  font-weight: 700;
+}
+
+.dayCellToday .dayNumber {
+  font-weight: 700;
+  color: var(--color-primary, #008e48);
+}
+
+.dayCellSelected {
+  border: 2px solid #374151;
+  background-color: transparent !important;
+}
+
+.eventDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--color-primary, #008e48);
+  position: absolute;
+  bottom: 4px;
+}
+
+/* Event List Styles */
+.eventListWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-right: 0.25rem;
+}
+
+.dateHeading {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.scrollContainer {
+  flex: 1;
+  min-height: 0;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+
+.dateGroup {
+  scroll-margin-top: 0.5rem;
+}
+
+.groupCards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.scrollContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollContainer::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 9999px;
+}
+
+.scrollContainer::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-primary, #008e48);
+}
+
+/* Event Card Sizing & Variants */
+.eventCard {
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 0.875rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.eventCard:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.variantAmber {
+  background-color: #fdf6e3;
+  border-color: #e8c98a;
+}
+
+.variantGreen {
+  background-color: #f2f9f5;
+  border-color: #c6e3d2;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cardIconAmber {
+  width: 1.125rem;
+  height: 1.125rem;
+  color: #b45309;
+  flex-shrink: 0;
+}
+
+.cardIconGreen {
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--color-primary, #008e48);
+  flex-shrink: 0;
+}
+
+.cardTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.cardContent {
+  padding-left: 1.625rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cardMeta {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin: 0;
+}
+
+.cardLocation {
+  font-size: 0.875rem;
+  color: #374151;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  min-height: 240px;
+  background-color: #f9fafb;
+  border-radius: 0.875rem;
+  border: 1px dashed #e5e7eb;
+  width: 100%;
+}
+
+.emptyIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: #9ca3af;
+  margin-bottom: 0.75rem;
+}
+
+.emptyTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin: 0;
+}
+
+.emptySubtitle {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+}
+
+/* ── Event detail drawer (right slide-in sheet) ───────────────────────────── */
+.sheetOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000000002;
+}
+
+.sheetBackdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.sheetPanel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(420px, 80%);
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+  animation: bayanSheetIn 0.25s ease;
+}
+
+@keyframes bayanSheetIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Bottom-sheet variant of .sheetPanel — the actual overrides live in the <1024
+   block further down; desktop keeps the right-slide panel above. Scoped to its own
+   class so the location picker / book TOC sheets keep sliding in from the right. */
+
+@keyframes bayanSheetUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.sheetHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-inline: 1.25rem;
+  padding-block: 1rem;
+  background-color: var(--color-primary, #008e48);
+}
+
+.sheetTitle {
+  flex: 1;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.sheetClose,
+.sheetShare {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.sheetClose:hover,
+.sheetShare:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+/* Mobile bar action buttons — green on white, matching .calendarIconBtn. */
+.sheetMobileActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.sheetShareMobile,
+.sheetCloseMobile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  background-color: var(--color-primary-soft, #e6f4ed);
+  border: none;
+  border-radius: 0.625rem;
+  color: var(--color-primary, #008e48);
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.sheetShareMobile:hover,
+.sheetCloseMobile:hover {
+  background-color: #d6ecdf;
+}
+
+.sheetBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sheetRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+}
+
+.sheetRowIcon {
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+  color: var(--color-primary, #008e48);
+}
+
+.sheetRowIcon svg {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+.sheetRowText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.sheetRowLabel {
+  font-size: 0.95rem;
+  color: #9ca3af;
+}
+
+.sheetRowValue {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.sheetMapsBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+  padding: 0.8125rem 1.25rem;
+  border-radius: 0.625rem;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #dc2626;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease,
+    box-shadow 150ms ease;
+  width: 100%;
+}
+
+.sheetMapsBtn:hover {
+  background-color: #fef2f2;
+  border-color: #f87171;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.08);
+  transform: translateY(-1px);
+}
+
+/* Location picker search box */
+.pickerSearch {
+  position: relative;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #f3f4f6;
+  background-color: #ffffff;
+}
+
+.pickerSearchIcon {
+  position: absolute;
+  left: 2.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.125rem;
+  height: 1.125rem;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.pickerSearchInput {
+  width: 100%;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: none;
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  color: #111827;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+
+.pickerSearchInput:focus {
+  border: 2px solid var(--color-primary, #008e48);
+  box-shadow: none;
+}
+
+/* Location picker rows (inside the right sheet). */
+.locationList {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.pickerEmptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+  text-align: center;
+}
+
+.pickerEmptyIcon {
+  width: 4rem;
+  height: 4rem;
+  color: #94a3b8;
+  margin-bottom: 1.5rem;
+}
+
+.pickerEmptyText {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.locationRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.875rem;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f3f4f6;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.locationRow:hover {
+  background-color: #f9fafb;
+}
+
+.locationRowActive {
+  color: var(--color-primary, #008e48);
+  font-weight: 600;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MOBILE (/bayan only, <1024) — sticky bar, toolbar, calendar popup, page-like
+   detail. Desktop layout is untouched.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Page top offset: clear the fixed global header on desktop; on mobile the
+   global header is hidden for /bayan, so no offset (and the sticky bar sits
+   flush to the top). */
+.pageOffset {
+  padding-top: 0;
+  padding-bottom: 2.75rem;
+}
+
+@media (min-width: 1024px) {
+  .pageOffset {
+    padding-top: calc(
+      var(--layout-top-bar-height, 0px) +
+      var(--layout-header-desktop-height, 72px) +
+      50px
+    );
+    padding-bottom: 3rem;
+  }
+  .pageOffset .section {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 1023px) {
+  .pageOffset .section {
+    padding-top: 0;
+  }
+
+  .pageOffset .section > div:not([class*="mobileBar"]):not([class*="MobileTopBar"]) {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* Mobile sticky bar + toolbar: hidden on desktop, shown on mobile. */
+.mobileBar,
+.mobileToolbar {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .mobileBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: #ffffff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    height: var(--layout-header-mobile-height, 64px);
+    padding: 0 !important;
+    margin-bottom: 1.5rem;
+    box-sizing: border-box;
+  }
+
+  .mobileToolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Section header on mobile */
+  .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .hideHeaderOnMobile {
+    display: none !important;
+  }
+
+  .titleSection {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    display: none;
+  }
+
+  .dateHeading {
+    font-size: 1.1rem;
+  }
+
+  .calendarCard {
+    display: none;
+  }
+
+  /* No card chrome on mobile: the body already pads, and the box padding would
+     double-pad and shrink the inner cards. Cards use full content width. */
+  .listCard {
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  /* List flows with the page instead of an inner scroll box. */
+  .scrollContainer {
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  /* Location trigger fills the toolbar row (drop desktop min-width / auto). */
+  .mobileToolbar .locationTrigger {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    margin-left: 0;
+  }
+}
+
+.mobileBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.mobileBar :global(.header-back-btn) {
+  width: 45px;
+  min-width: 45px;
+  height: var(--layout-header-mobile-height, 64px);
+  margin: 0;
+  border-radius: 0;
+  align-self: stretch;
+  flex: 0 0 45px;
+  padding: 0 !important;
+}
+
+.mobileBar :global(.header-menu-btn) {
+  width: 45px;
+  min-width: 45px;
+  height: var(--layout-header-mobile-height, 64px);
+  margin: 0;
+  border-radius: 0;
+  align-self: stretch;
+  flex: 0 0 45px;
+  flex-shrink: 0;
+  padding: 0 !important;
+}
+
+.mobileTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.calendarIconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  background-color: var(--color-primary-soft, #e6f4ed);
+  color: var(--color-primary, #008e48);
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.calendarIconBtn:hover {
+  background-color: #d6ecdf;
+}
+
+/* Centered calendar popup (mobile). */
+.calendarModalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000000003;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.calendarModalBackdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.calendarModalCard {
+  position: relative;
+  width: min(360px, 92vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border-radius: 1.25rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  padding: 1.5rem 1.25rem;
+}
+
+/* ── Detail sheet: page-like on mobile ────────────────────────────────────── */
+.sheetMobileBar {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  /* Full-width bottom sheet, ~10vh of the page still visible above it. dvh so the
+     mobile URL bar collapsing can't clip the drawer. */
+  .sheetPanelBottom {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: none;
+    height: 90vh;
+    height: 90dvh;
+    border-radius: 1.25rem 1.25rem 0 0;
+    overflow: hidden;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
+    animation: bayanSheetUp 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .sheetHeader {
+    display: none;
+  }
+
+  .sheetMobileBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: #ffffff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    padding: 0.875rem 1.25rem;
+  }
+}
+
+.sheetMobileTitle {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary, #008e48);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+/* Drawer banner image */
+.sheetCoverWrap {
+  margin-top: 0.5rem;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+}
+
+.sheetCoverImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}

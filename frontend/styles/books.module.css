@@ -1,0 +1,425 @@
+/* Books (kitab) listing — book-specific pieces layered on top of the shared
+   listing.module.css chrome (section / pageHeader / title / searchBox /
+   contentGrid / sidebar / pagination). */
+
+/* On mobile the global header is hidden for this page, so drop the top offset
+   and let the sticky mobile bar act as the header (flush to the top). */
+@media (max-width: 1023px) {
+  .booksSection {
+    padding-top: 0 !important;
+  }
+
+  .desktopHeader {
+    display: none !important;
+  }
+}
+
+/* Tighter side margins on mobile (1rem vs default 1.25rem from Wrapper). */
+@media (max-width: 1023px) {
+  .booksSection > div:not([class*="mobileBar"]):not([class*="MobileTopBar"]) {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* ── Mobile bar: acts as the page header (<1024 only) ──────────────────────── */
+.mobileBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+}
+
+@media (min-width: 1024px) {
+  .mobileBar {
+    display: none;
+  }
+}
+
+/* Full-bleed white bar with a bottom shadow, stuck to the top like the real
+   header it replaces on these pages. */
+@media (max-width: 1023px) {
+  .mobileBar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: #ffffff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    padding: 0 !important;
+    height: var(--layout-header-mobile-height, 64px);
+    margin-bottom: 1.5rem;
+    box-sizing: border-box;
+  }
+}
+
+.desktopHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.mobileSearchBox {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .mobileSearchBox {
+    display: block;
+    position: relative;
+    margin-bottom: 1.5rem;
+    width: 100%;
+  }
+}
+
+.mobileBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.mobileBarRight {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 100%;
+  align-self: stretch;
+}
+
+.mobileDetailBackBtn {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  height: var(--layout-header-mobile-height, 64px);
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobileBar :global(.header-back-btn) {
+  width: 45px;
+  min-width: 45px;
+  height: var(--layout-header-mobile-height, 64px);
+  margin: 0;
+  border-radius: 0;
+  align-self: stretch;
+  flex: 0 0 45px;
+  padding: 0 !important;
+}
+
+.mobileBar :global(.header-menu-btn) {
+  width: 45px;
+  min-width: 45px;
+  height: var(--layout-header-mobile-height, 64px);
+  margin: 0;
+  border-radius: 0;
+  align-self: stretch;
+  flex: 0 0 45px;
+  flex-shrink: 0;
+  padding: 0 !important;
+}
+
+.mobileTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #393939;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.categoryBtn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  background-color: var(--color-primary, #008e48);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0 0.875rem;
+  border: none;
+  border-radius: 0.625rem;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: center;
+  transition: background-color 150ms ease;
+  --ripple-color: rgba(255, 255, 255, 0.3);
+}
+
+@media (hover: hover) {
+  .categoryBtn:hover {
+    background-color: var(--color-primary-hover, #0a644a);
+    color: #ffffff;
+  }
+}
+
+.categoryBtn:active {
+  background-color: var(--color-primary-hover, #0a644a);
+}
+
+.categoryBtnIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* ── Main column: white container (desktop) holding the grid + pagination ── */
+.booksContainer {
+  padding: 0;
+}
+
+@media (min-width: 1024px) {
+  .booksContainer {
+    background-color: #ffffff;
+    border: 1px solid #f0eee9;
+    border-radius: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    padding: 1.75rem;
+  }
+}
+
+/* ── Book cover grid ──────────────────────────────────────────────────────── */
+.bookGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .bookGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+.bookCard {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+}
+
+.bookCover {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: #f3f4f6;
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.bookCoverSkeleton {
+  background-color: #f3f4f6;
+}
+
+.bookCard:hover .bookCover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.bookCover img {
+  object-fit: cover;
+}
+
+.bookTitle {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: normal;
+  color: #3f3f3f;
+  text-align: center;
+  transition: color 150ms ease;
+}
+
+.bookCard:hover .bookTitle {
+  color: var(--color-primary, #008e48);
+}
+
+.bookAuthor {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: normal;
+  color: #6b7280;
+  text-align: center;
+}
+
+.paginationWrap {
+  margin-top: 1.75rem;
+}
+
+/* ── Mobile category drawer (full-screen sheet) ───────────────────────────── */
+.sheetOverlay {
+  position: fixed;
+  inset: 0;
+  /* Above the global header (9999999999) so the drawer is truly full-screen. */
+  z-index: 10000000001;
+}
+
+.sheetBackdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.sheetPanel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(420px, 80%);
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+  animation: booksSheetIn 0.25s ease;
+}
+
+.sheetScrollableContent {
+  flex: 1;
+  overflow-y: auto;
+}
+
+@media (min-width: 1024px) {
+  .sheetPanel {
+    left: auto;
+    width: min(420px, 80%);
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.08);
+  }
+}
+
+@keyframes booksSheetIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.sheetHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-inline: 1.25rem;
+  padding-block: 1rem;
+  background-color: var(--color-primary, #008e48);
+}
+
+.sheetHeaderIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.sheetTitle {
+  flex: 1;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.sheetClose {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.sheetClose:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+.sheetList {
+  display: flex;
+  flex-direction: column;
+}
+
+.sheetRow {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sheetRowIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #111111;
+  flex-shrink: 0;
+}
+
+.sheetRowPrimary .sheetRowLabel {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.sheetRowLabel {
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.sheetRow:hover .sheetRowLabel,
+.sheetRow:hover .sheetRowIcon,
+.sheetRowActive .sheetRowLabel,
+.sheetRowActive .sheetRowIcon {
+  color: var(--color-primary, #008e48);
+}
+
+.sheetRowCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.875rem;
+  height: 1.875rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background-color: #f3f4f6;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.sheetRowActive .sheetRowCount {
+  background-color: rgba(0, 142, 72, 0.2);
+  color: var(--color-primary, #008e48);
+}

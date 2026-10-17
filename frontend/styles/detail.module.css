@@ -1,0 +1,890 @@
+@reference "tailwindcss";
+
+/* ── Section shell ─────────────────────────────────────────────────────────
+   Same grey band and card tokens as styles/qa-listing.module.css so the
+   listing and the answer page read as one system. */
+.section {
+  width: 100%;
+  background-color: var(--background);
+  padding-top: calc(
+    var(--layout-top-bar-height, 0px) +
+    var(--layout-header-desktop-height, 72px) +
+    50px
+  );
+  padding-bottom: 3rem;
+}
+
+@media (max-width: 767px) {
+  .section {
+    padding-top: calc(
+      var(--layout-top-bar-height, 0px) +
+      var(--layout-header-mobile-height, 64px) +
+      1.5rem
+    );
+    padding-bottom: 2.75rem;
+  }
+}
+
+@media (max-width: 1023px) {
+  .section {
+    background-color: #ffffff;
+  }
+
+  .section > div:not([class*="mobileBar"]):not([class*="MobileTopBar"]) {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: 2rem;
+  color: var(--color-primary, #008e48);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.backLink:hover {
+  color: var(--color-primary-hover, #0a644a);
+}
+
+.backIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+@media (max-width: 1023px) {
+  .backLink {
+    display: none;
+  }
+}
+
+/* ── Two-column grid (mirrors the listing page) ───────────────────────────── */
+.contentGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .contentGrid {
+    grid-template-columns: minmax(0, 1fr) 21.25rem;
+    gap: 2rem;
+  }
+}
+
+.mainColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+/* ── Card shell ───────────────────────────────────────────────────────────── */
+.card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #f0eee9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  padding: 1.75rem;
+}
+
+/* Mobile: detail body cards lose all card chrome — full-width white bg, no
+   padding squeeze. Listing/related cards keep theirs. */
+@media (max-width: 1023px) {
+  .card {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+}
+
+/* ── Question panel ───────────────────────────────────────────────────────── */
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.title {
+  margin: 0;
+  flex: 1 1 auto;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #3f3f3f;
+  text-align: left;
+}
+
+@media (max-width: 639px) {
+  .title {
+    font-size: 1.25rem;
+  }
+}
+
+/* Bookmark toggle floated beside the title (or in header portal on mobile). */
+.titleBookmark {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .titleBookmark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 56px;
+    height: var(--layout-header-mobile-height, 64px);
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #4b5563;
+    cursor: pointer;
+    transition:
+      color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  .titleBookmark .metaIcon,
+  .titleBookmark svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  margin-top: 1rem;
+}
+
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.metaIcon {
+  width: 1rem;
+  height: 1rem;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.metaAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 150ms ease;
+}
+
+.metaAction .metaIcon {
+  color: currentColor;
+}
+
+.metaAction:hover {
+  color: var(--color-primary, #008e48);
+}
+
+.metaActionActive {
+  color: var(--color-primary, #008e48);
+}
+
+/* The card actions are the title bookmark on mobile. */
+@media (max-width: 639px) {
+  .metaActions {
+    display: none;
+  }
+}
+
+/* ── Tag pills ────────────────────────────────────────────────────────────── */
+.tagRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.tagRowIcon {
+  width: 1.0625rem;
+  height: 1.0625rem;
+  color: #9ca3af;
+  flex-shrink: 0;
+  margin-right: 0.25rem;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.375rem 0.9375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.tagPrimary {
+  background-color: var(--color-primary, #008e48);
+  color: #ffffff;
+}
+
+.tagDark {
+  background-color: #1f2430;
+  color: #ffffff;
+}
+
+.tagMuted {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+/* ── Section labels ───────────────────────────────────────────────────────────
+   Desktop shows "প্রশ্নঃ 2779" / "উত্তরঃ"; mobile shows the icon + word headers
+   from the mobile mockup. Both render, CSS picks one. */
+.labelDesktop {
+  display: block;
+  margin: 1.5rem 0 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.labelMobile {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .labelDesktop {
+    display: none;
+  }
+
+  .labelMobile {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1.5rem 0 0.875rem;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  .labelMobileIcon {
+    width: 1.125rem;
+    height: 1.125rem;
+    flex-shrink: 0;
+  }
+}
+
+/* ── Prose ────────────────────────────────────────────────────────────────── */
+.prose {
+  font-size: 0.9375rem;
+  line-height: normal;
+  color: #374151;
+  text-align: justify;
+}
+
+@media (max-width: 639px) {
+  .prose {
+    font-size: 1rem;
+  }
+}
+
+.blockParagraph {
+  margin: 0 0 1.125rem;
+}
+
+.blockParagraph:last-child {
+  margin-bottom: 0;
+}
+
+.blockBismillah {
+  margin: 0 0 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  text-align: left;
+}
+
+.blockArabic {
+  font-family: var(--font-arabic), "Traditional Arabic", "Scheherazade New", serif;
+  font-size: 1.25rem;
+  line-height: 2.4;
+  direction: rtl;
+  text-align: center;
+  color: #111827;
+  margin: 1.5rem 0;
+}
+
+@media (max-width: 639px) {
+  .blockArabic {
+    font-size: 1.375rem;
+    text-align: justify;
+  }
+}
+
+.blockTranslation {
+  margin: 0 0 1.125rem;
+}
+
+.blockQuote {
+  margin: 0 0 1.125rem;
+  color: #1f2937;
+}
+
+.blockReference {
+  margin: 0 0 1.125rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* ── Answerer box ─────────────────────────────────────────────────────────── */
+.answerer {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-top: 1.5rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid #1f9c5e0a;
+  border-radius: 0.875rem;
+  background-color: #1f9c5e0a;
+}
+
+.answererAvatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background-color: var(--color-primary-soft, #e6f4ed);
+  color: var(--color-primary, #008e48);
+}
+
+.answererAvatarIcon {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+.answererLabel {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.answererName {
+  margin: 0.125rem 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* ── Share row & separate card box ────────────────────────────────────────── */
+.shareRowDesktop {
+  display: block;
+}
+
+@media (max-width: 1023px) {
+  .shareRowDesktop {
+    display: none !important;
+  }
+}
+
+.shareCardMobile {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .shareCardMobile {
+    display: block;
+    background-color: #ffffff;
+    border: 1px solid #f0eee9;
+    border-radius: 0.875rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    padding: 0.875rem 1.25rem;
+    margin: 0;
+  }
+}
+
+.shareRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.shareRowDesktop .shareRow {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.shareCardMobile .shareRow {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.copyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  color: #4b5563;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.copyBtn:hover {
+  color: var(--color-primary, #008e48);
+}
+
+.copyIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.socialList {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.socialBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition:
+    transform 150ms ease,
+    opacity 150ms ease;
+}
+
+.socialBtn:hover {
+  transform: translateY(-1px);
+  opacity: 0.85;
+}
+
+.socialIcon {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+/* ── Ask-us CTA bar ───────────────────────────────────────────────────────── */
+.cta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: #ffffff;
+  border: 1px solid #f0eee9;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  padding: 1.125rem 1.5rem;
+  text-decoration: none;
+  transition:
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.cta:hover {
+  border-color: var(--color-primary, #008e48);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.ctaBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background-color: var(--color-primary, #008e48);
+  color: #ffffff;
+}
+
+.ctaBadgeIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.ctaText {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.ctaArrow {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  color: #4b5563;
+}
+
+/* ── Related questions ────────────────────────────────────────────────────── */
+.relatedSection {
+  width: 100%;
+  background-color: var(--background);
+  padding-top: 2rem;
+  padding-bottom: 3.5rem;
+}
+
+@media (max-width: 1023px) {
+  .relatedSection {
+    padding-top: 1.5rem;
+  }
+}
+
+.relatedHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.relatedTitle {
+  margin: 0;
+  font-size: var(--title-size);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #4a3320;
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .relatedTitle {
+    font-size: var(--title-size);
+  }
+}
+
+.relatedSubtitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.9375rem;
+  color: rgba(74, 51, 32, 0.65);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.relatedSubtitle:hover {
+  color: var(--color-primary, #008e48);
+}
+
+.relatedSubtitleIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.relatedGrid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .relatedGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .relatedGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+.relatedCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #ffffff;
+  border: 1px solid #f0eee9;
+  border-radius: 1.25rem;
+  box-shadow: none;
+  padding: 1.75rem 1.5rem 1.25rem;
+  height: 100%;
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease,
+    border-color 200ms ease;
+}
+
+.relatedCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border-color: #e2e8f0;
+}
+
+.relatedCardTopContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.relatedCardLink {
+  text-decoration: none;
+  flex: 1 1 auto;
+}
+
+.relatedCardTitle {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #111827;
+  transition: color 150ms ease;
+}
+
+.relatedCardLink:hover .relatedCardTitle {
+  color: var(--color-primary, #008e48);
+}
+
+.relatedCardExcerpt {
+  margin: 0 0 1rem 0;
+  font-size: 0.9375rem;
+  line-height: normal;
+  color: #4b5563;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 639px) {
+  .relatedCardExcerpt {
+    -webkit-line-clamp: 2;
+  }
+}
+
+.relatedCardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+}
+
+.qaRelatedFooter {
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+.relatedCardDivider {
+  margin: 0;
+  border: none;
+  border-top: 1px solid #f3f4f6;
+}
+
+.relatedCardViews {
+  margin-left: auto;
+}
+
+/* ── Author block (masail/article detail) ───────────────────────────────────
+   Avatar disc + name + relative time on the left, view count pinned right. */
+.authorBlock {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.125rem;
+  text-decoration: none;
+  width: max-content;
+}
+
+.authorAvatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background-color: var(--color-primary-soft, #e6f4ed);
+  color: var(--color-primary, #008e48);
+  overflow: hidden;
+}
+
+.authorAvatarIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.authorAvatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.authorText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.authorName {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.authorTime {
+  font-size: 0.8125rem;
+  color: #9ca3af;
+}
+
+.viewCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.viewCountIcon {
+  width: 1rem;
+  height: 1rem;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+/* Date + save/share sit under the author block on desktop; on mobile the
+   author block and the title bookmark carry all of it. */
+@media (max-width: 639px) {
+  .metaRowDesktop {
+    display: none;
+  }
+}
+
+/* ── Topic pills ────────────────────────────────────────────────────────────
+   Desktop puts them at the foot of the card, mobile just under the tag row.
+   Both render; CSS picks one, as with .labelDesktop / .labelMobile. */
+.topicsTop {
+  display: none;
+}
+
+.topicsBottom {
+  margin-top: 2rem;
+}
+
+@media (max-width: 639px) {
+  .topicsTop {
+    display: flex;
+  }
+
+  .topicsBottom {
+    display: none;
+  }
+}
+
+/* On the masail/article detail page the share row is its own card, so it drops
+   the separator it needs when it sits at the foot of the Q&A answer card. */
+.shareCard .shareRow {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+/* ── Body divider + label ─────────────────────────────────────────────────── */
+.divider {
+  height: 1px;
+  border: none;
+  background-color: #f0eee9;
+  margin: 1.25rem 0 1rem;
+}
+
+.qaMobileDivider {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .qaMobileDivider {
+    display: block;
+    height: 2px;
+    border: none;
+    background-color: #e5e7eb;
+    margin: 0 -1rem;
+    width: calc(100% + 2rem);
+  }
+}
+
+.bodyLabel {
+  margin: 0 0 0.875rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+/* ── Related card footer (date + read-more) ───────────────────────────────── */
+.relatedCardDate {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.relatedCardAuthor {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.relatedCardMore {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-primary, #008e48);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.relatedCardMoreIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+.blockHtml { width: 100%; margin-bottom: 1rem; }
+.blockHtml ul { list-style-type: disc; padding-left: 2rem; margin: 1em 0; }
+.blockHtml ol { list-style-type: decimal; padding-left: 2rem; margin: 1em 0; }
+.blockHtml li { margin-bottom: 0.5em; }

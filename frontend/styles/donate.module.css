@@ -1,0 +1,971 @@
+@reference "tailwindcss";
+
+/* ── Section shell ────────────────────────────────────────────────────────── */
+.section {
+  width: 100%;
+  background-color: var(--background);
+  padding-top: calc(
+    var(--layout-top-bar-height, 0px) +
+    var(--layout-header-desktop-height, 72px) +
+    50px
+  );
+  padding-bottom: 3rem;
+}
+
+@media (max-width: 1023px) {
+  .section > div,
+  .donateWrapper {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* Track proportions measured from tasks/Donate-PAge.jpg — 717 / 89 gap / 641
+   inside a 1446px content box — rescaled to the shared 1170px <Wrapper>:
+   578 / 72 / 520. Used by both .pageHeader and .contentGrid so the fund tabs
+   sit exactly over the form column. */
+
+@media (max-width: 767px) {
+  .section {
+    padding-top: calc(
+      var(--layout-top-bar-height, 0px) +
+      var(--layout-header-mobile-height, 64px) +
+      30px
+    );
+    padding-bottom: 2.75rem;
+  }
+}
+
+/* ── Header row: two-tone title left, fund tabs right ─────────────────────── */
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* From 1024px the header shares the content grid's track sizes, so the fund
+   tabs land exactly over the form column and match its width. */
+@media (min-width: 1024px) {
+  .pageHeader {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 32.5rem;
+    column-gap: 4.5rem;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 34rem;
+}
+
+/* The mobile mockup carries the title inside the green panel instead, but the
+   h1 stays in the DOM for SEO — clipped, not display:none. */
+@media (max-width: 1023px) {
+  .headerText {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+.title {
+  margin: 0;
+  font-weight: 700;
+  font-size: var(--title-size);
+  line-height: 1.2;
+  color: #3f3f3f;
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .title {
+    font-size: var(--title-size);
+  }
+}
+
+.titleHighlight {
+  color: var(--color-primary, #008e48);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--subtitle-color, rgba(74, 51, 32, 0.65));
+}
+
+/* ── Content grid ─────────────────────────────────────────────────────────── */
+.contentGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .contentGrid {
+    grid-template-columns: minmax(0, 1fr) 32.5rem;
+    column-gap: 4.5rem;
+    row-gap: 1.25rem;
+  }
+}
+
+.contentColumn,
+.formColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+  min-width: 0;
+}
+
+/* Mobile leads with the form in a full-width card with top rounded corners. */
+@media (max-width: 1023px) {
+  .formColumn {
+    order: -1;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    background-color: #ffffff;
+    border-top-left-radius: 1.75rem;
+    border-top-right-radius: 1.75rem;
+    padding: 1.5rem 1rem 2.5rem;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.02);
+    margin-bottom: -2.75rem;
+  }
+}
+
+/* ── Card shell (shared with every other page) ────────────────────────────── */
+.card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #f0eee9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  padding: 1.5rem;
+}
+
+@media (max-width: 1023px) {
+  .card {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    border-radius: 0;
+    background-color: transparent;
+  }
+}
+
+/* ── Segmented control ────────────────────────────────────────────────────── */
+.segmented {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 0.25rem;
+  background-color: #ffffff;
+  border: 1px solid #f0eee9;
+  border-radius: 0.875rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  padding: 0.3125rem;
+}
+
+.segment {
+  border: none;
+  border-radius: 0.625rem;
+  background-color: transparent;
+  padding: 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #4b5563;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  --ripple-color: rgba(0, 142, 72, 0.25);
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.segment:hover:not(.segmentActive):not(.segmentActiveAccent) {
+  background-color: #f3f4f6;
+}
+
+.segmentActive {
+  background-color: var(--color-primary, #008e48);
+  color: #ffffff;
+  font-weight: 600;
+  --ripple-color: rgba(255, 255, 255, 0.35);
+}
+
+.segmentActiveAccent {
+  background-color: var(--color-accent, #e5326f);
+  color: var(--color-accent-contrast, #ffffff);
+  font-weight: 600;
+  --ripple-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Compact variant for the inline "সাধারণ | যাকাত" row. */
+.segmentedInline {
+  width: 100%;
+  min-width: 0;
+}
+
+.segmentedInline .segment {
+  padding: 0.5625rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* ── Green panel (form header) ────────────────────────────────────────────── */
+.panel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.875rem;
+  background: linear-gradient(135deg, #0a9c55 0%, #007a3e 100%);
+  color: #ffffff;
+  padding: 1.5rem 1.375rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Decorative discs from the mockup. */
+.panel::before,
+.panel::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.07);
+  pointer-events: none;
+}
+
+.panel::before {
+  width: 9rem;
+  height: 9rem;
+  top: -3.5rem;
+  right: -2rem;
+}
+
+.panel::after {
+  width: 6rem;
+  height: 6rem;
+  bottom: -2.5rem;
+  left: -2rem;
+}
+
+.panelHeading {
+  position: relative;
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.panelText {
+  position: relative;
+  margin: 0.625rem 0 0;
+  font-size: 0.8125rem;
+  line-height: normal;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+/* The panel carries the "অংশ নিন" copy on desktop and the page title on
+   mobile — both render, CSS picks one. */
+.panelDesktop {
+  display: block;
+}
+
+.panelMobile {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .panelDesktop {
+    display: none;
+  }
+
+  .panelMobile {
+    display: block;
+  }
+
+  .panelHeading {
+    font-size: 1.375rem;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .panelText {
+    line-height: normal;
+    text-align: center;
+  }
+}
+
+/* ── Amount grid ──────────────────────────────────────────────────────────── */
+.amountGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.625rem;
+}
+
+.amountBtn {
+  border: 1px solid #f0eee9;
+  border-radius: 0.625rem;
+  background-color: #ffffff;
+  padding: 0.8125rem 0.5rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+  --ripple-color: rgba(0, 142, 72, 0.25);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.amountBtn:hover:not(.amountBtnActive) {
+  border-color: var(--color-primary, #008e48);
+  color: var(--color-primary, #008e48);
+}
+
+.amountBtnActive {
+  background-color: var(--color-primary, #008e48) !important;
+  border-color: var(--color-primary, #008e48) !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  --ripple-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ── Form body — uniform vertical gap ─────────────────────────────────── */
+.formBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Inline label + control rows ──────────────────────────────────────────── */
+.inlineRow {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  align-items: center;
+  column-gap: 0.75rem;
+}
+
+@media (max-width: 639px) {
+  .inlineRow {
+    grid-template-columns: 7.25rem 1fr;
+    column-gap: 0.5rem;
+  }
+}
+
+.inlineLabel {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.inlineLabel::after {
+  content: ":";
+  margin-left: 2px;
+}
+
+.inlineField {
+  justify-self: stretch;
+  min-width: 0;
+  width: 100%;
+}
+
+/* ── Fields ───────────────────────────────────────────────────────────────── */
+.field {
+}
+
+.fieldLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.fieldOptional {
+  color: #9ca3af;
+  font-weight: 400;
+  font-size: 0.8125rem;
+}
+
+/* ── Required asterisk ──────────────────────────────────────────────────── */
+.required {
+  color: var(--color-accent, #e5326f);
+  font-weight: 600;
+}
+
+/* ── Info icon inline with label ────────────────────────────────────────── */
+.infoIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.25rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: #3f3f3f;
+  color: #ffffff;
+  cursor: pointer;
+  line-height: 1;
+  position: relative;
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+}
+
+.infoIconGlyph {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.infoTooltip {
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 18rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background-color: #3f3f3f;
+  color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.5;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 150ms ease;
+  z-index: 10;
+}
+
+.infoTooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 0.375rem solid transparent;
+  border-top-color: #3f3f3f;
+}
+
+.infoIcon:hover .infoTooltip {
+  opacity: 1;
+}
+
+/* ── Payment method ─────────────────────────────────────────────────────── */
+.paymentField {
+}
+
+.paymentOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin-top: 0.625rem;
+}
+
+.paymentRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+.paymentRow:hover:not(.paymentRowActive) {
+  border-color: #d1d5db;
+}
+
+.paymentRowActive {
+  border-color: var(--color-primary, #008e48);
+  background-color: #f0faf4;
+}
+
+.paymentLogos {
+  display: flex;
+  align-items: center;
+}
+
+.paymentCardLogo {
+  height: 1.75rem;
+  width: auto;
+  object-fit: contain;
+}
+
+.paymentBkashLogo {
+  height: 1.75rem;
+  width: auto;
+  object-fit: contain;
+}
+
+.paymentCheck {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background-color: var(--color-primary, #008e48);
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.paymentCheckIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ── Bank details card ─────────────────────────────────────────────────── */
+.bankCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  background-color: #ffffff;
+  border: 1px solid #f0eee9;
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.bankLogo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5rem;
+  height: 5rem;
+}
+
+.bankLogoImg {
+  width: 5rem;
+  height: 5rem;
+  object-fit: contain;
+}
+
+.bankRows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+.bankRow {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.bankLabel {
+  font-weight: 700;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.bankValue {
+  color: #111827;
+  font-weight: 400;
+}
+
+@media (max-width: 639px) {
+  .bankCard {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .bankRow {
+    justify-content: center;
+  }
+}
+
+/* ── Terms text ─────────────────────────────────────────────────────────── */
+.terms {
+  margin: 0.75rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: #6b7280;
+  text-align: center;
+}
+
+.termsLink {
+  color: var(--color-primary, #008e48);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.termsLink:hover {
+  color: var(--color-primary-hover, #0a644a);
+}
+
+.input {
+  width: 100%;
+  background-color: #f7f8f7;
+  border: 1px solid transparent;
+  border-radius: 0.625rem;
+  padding: 0.875rem 1rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: #111827;
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+
+.input::placeholder {
+  color: #9ca3af;
+}
+
+.input:focus {
+  background-color: #ffffff;
+  border: 2px solid var(--color-primary, #008e48);
+  box-shadow: none;
+}
+
+.inputAmount {
+  text-align: center;
+}
+
+/* Locked while a preset pill is selected — only "যে কোনো পরিমাণ" opens it. */
+.inputLocked {
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.inputLocked:hover {
+  border-color: transparent;
+}
+
+.inputError {
+  border-color: var(--color-accent, #e5326f);
+}
+
+.inputError:focus {
+  border-color: var(--color-accent, #e5326f);
+  box-shadow: 0 0 0 3px rgba(229, 50, 111, 0.12);
+}
+
+.errorText {
+  margin: 0.4375rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--color-accent, #e5326f);
+}
+
+/* ── Submit ───────────────────────────────────────────────────────────────── */
+.submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  border: none;
+  border-radius: 0.75rem;
+  background-color: var(--color-primary, #008e48);
+  padding: 1rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.submit:hover {
+  background-color: var(--color-primary-hover, #0a644a);
+}
+
+.submitIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* ── Success state ────────────────────────────────────────────────────────── */
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.successBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 999px;
+  background-color: var(--color-primary-soft, #e6f4ed);
+  color: var(--color-primary, #008e48);
+  margin-bottom: 1rem;
+}
+
+.successIcon {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.successTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.successText {
+  margin: 0.625rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: #4b5563;
+  max-width: 24rem;
+}
+
+.successAgain {
+  margin-top: 1.5rem;
+  border: 1px solid var(--color-primary, #008e48);
+  border-radius: 0.75rem;
+  background-color: transparent;
+  padding: 0.75rem 1.5rem;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-primary, #008e48);
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.successAgain:hover {
+  background-color: var(--color-primary-soft, #e6f4ed);
+}
+
+/* ── Video facade ─────────────────────────────────────────────────────────── */
+.video {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid #f0eee9;
+  background-color: #0f172a;
+  padding: 0;
+  cursor: pointer;
+  display: block;
+}
+
+.videoThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.videoOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.12);
+  transition: background-color 200ms ease;
+}
+
+.video:hover .videoOverlay {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.videoPlay {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.25rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  background-color: #ff0000;
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 200ms ease;
+}
+
+.video:hover .videoPlay {
+  transform: scale(1.06);
+}
+
+.videoPlayIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.videoFrame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* ── Quote box ────────────────────────────────────────────────────────────── */
+.quote {
+  margin: 0;
+  background-color: #f3f4f2;
+  border-radius: 0.875rem;
+  padding: 1.375rem 1.5rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.9;
+  color: #1f2937;
+}
+
+@media (max-width: 639px) {
+  .quote {
+    font-size: 0.9375rem;
+    padding: 1.125rem;
+  }
+}
+
+/* ── Body copy ────────────────────────────────────────────────────────────── */
+.bodyText {
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+}
+
+.paragraph {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.9;
+  color: #374151;
+  text-align: justify;
+}
+
+/* ── Feature grid ─────────────────────────────────────────────────────────── */
+.featuresHeading {
+  margin: 0 0 1.25rem;
+  text-align: center;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.875rem;
+}
+
+@media (max-width: 479px) {
+  .featureGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.featureTile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid #f0eee9;
+  border-radius: 0.75rem;
+  padding: 0.75rem 0.875rem;
+  min-width: 0;
+}
+
+.featureIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  border-radius: 0.625rem;
+  background-color: var(--color-primary-soft, #e6f4ed);
+  color: var(--color-primary, #008e48);
+}
+
+.featureIconGlyph {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.featureLabel {
+  font-size: 0.875rem;
+  color: #374151;
+  min-width: 0;
+}
+
+/* ── Why card ─────────────────────────────────────────────────────────────── */
+.whyHeading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.875rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.whyHeadingIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  color: var(--color-primary, #008e48);
+}
+
+.whyText {
+  margin: 0 0 1.125rem;
+  font-size: 0.9375rem;
+  line-height: 1.9;
+  color: #374151;
+  text-align: justify;
+}
+
+.checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.checkItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  font-size: 0.9375rem;
+  color: #374151;
+}
+
+.checkIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  margin-top: 0.1875rem;
+  color: var(--color-primary, #008e48);
+}

@@ -1,0 +1,157 @@
+@reference "tailwindcss";
+
+.section {
+  background-color: #084c33;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .section {
+    padding-top: 2.75rem;
+    padding-bottom: 2.75rem;
+  }
+}
+
+.container {
+  max-width: 1170px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .layout {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3rem;
+  }
+}
+
+.content {
+  flex: 1;
+}
+
+.title {
+  font-size: 2.875rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.25;
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+  .content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .title {
+    font-size: 2rem;
+    text-align: center;
+  }
+}
+
+.titleLine {
+  display: block;
+}
+
+.featureList {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.1875rem;
+  font-weight: 500;
+}
+
+.checkIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #34d399;
+  flex-shrink: 0;
+}
+
+.card {
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 1.5rem;
+  padding: 3rem 2.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+}
+
+@media (min-width: 768px) {
+  .card {
+    width: 440px;
+    flex-shrink: 0;
+  }
+}
+
+.statNumber {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--color-primary, #008e48);
+  line-height: 1.1;
+  margin: 0;
+}
+
+.statText {
+  margin-top: 0.5rem;
+  font-size: 1.0625rem;
+  color: rgba(0, 0, 0, 0.65);
+  margin-bottom: 2.25rem;
+}
+
+.askButton {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  background-color: var(--color-primary, #008e48);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.125rem;
+  padding: 1rem 2rem;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.askButton:hover {
+  background-color: var(--color-primary-hover, #0a644a);
+}
+
+.buttonIcon {
+  width: 1.375rem;
+  height: 1.375rem;
+  flex-shrink: 0;
+}

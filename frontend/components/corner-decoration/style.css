@@ -1,0 +1,32 @@
+/* Large pale circle whose centre sits off-screen past the top-right corner, so
+   only its bottom-left arc is visible. Purely decorative, never interactive.
+   Starts directly below the fixed header so its full arc is visible without being squashed. */
+.corner-decoration {
+  position: absolute;
+  top: calc(var(--layout-top-bar-height, 0px) + var(--layout-header-mobile-height, 64px));
+  right: 0;
+  width: 221.79px;
+  height: 209.38px;
+  pointer-events: none;
+  z-index: 0;
+  display: none;
+}
+
+.corner-decoration-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: top right;
+}
+
+@media (min-width: 800px) {
+  .corner-decoration {
+    display: block;
+  }
+}
+
+@media (min-width: 1170px) {
+  .corner-decoration {
+    top: calc(var(--layout-top-bar-height, 0px) + var(--layout-header-desktop-height, 72px));
+  }
+}

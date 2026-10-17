@@ -1,0 +1,569 @@
+@reference "tailwindcss";
+
+/* ── Section shell ─────────────────────────────────────────────────────────
+   The listing sits on a light grey band; the Essential Masail section below
+   keeps the white page background. Padding includes the fixed header offset
+   so content sits exactly 50px (desktop) / 30px (mobile) below the header. */
+.section {
+  width: 100%;
+  background-color: var(--background);
+  padding-top: calc(
+    var(--layout-top-bar-height, 0px) +
+    var(--layout-header-desktop-height, 72px) +
+    50px
+  );
+  padding-bottom: 3rem;
+}
+
+@media (max-width: 767px) {
+  .section {
+    padding-top: calc(
+      var(--layout-top-bar-height, 0px) +
+      var(--layout-header-mobile-height, 64px) +
+      1.5rem
+    );
+    padding-bottom: 2.75rem;
+  }
+}
+
+@media (max-width: 1023px) {
+  .section > div:not([class*="mobileBar"]):not([class*="MobileTopBar"]) {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* ── Page header: title/subtitle left, search right ───────────────────────── */
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+@media (max-width: 899px) {
+  .pageHeader {
+    display: none;
+  }
+}
+
+@media (min-width: 900px) {
+  .pageHeader {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+}
+
+.headerTextGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 32rem;
+}
+
+.title {
+  margin: 0;
+  font-weight: 700;
+  font-size: var(--title-size);
+  line-height: 1.2;
+  color: #3f3f3f;
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .title {
+    font-size: var(--title-size);
+  }
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.93rem;
+  line-height: 1.6;
+  color: var(--subtitle-color, rgba(74, 51, 32, 0.65));
+}
+
+/* ── Search ───────────────────────────────────────────────────────────────── */
+.searchBox {
+  position: relative;
+  width: 100%;
+  max-width: 33.75rem;
+  flex-shrink: 1;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 1.125rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.125rem;
+  height: 1.125rem;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid #f0eee9;
+  border-radius: 0.875rem;
+  box-shadow: none;
+  padding: 1.0625rem 1.25rem 1.0625rem 3rem;
+  font-size: 0.9375rem;
+  color: #111827;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+}
+
+.searchInput:focus {
+  border: 2px solid var(--color-primary, #008e48);
+  box-shadow: none;
+}
+
+/* ── Content grid ─────────────────────────────────────────────────────────── */
+.contentGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .contentGrid {
+    grid-template-columns: minmax(0, 1fr) 21.25rem;
+    gap: 2rem;
+  }
+}
+
+.mainColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+  height: 100%;
+}
+
+/* ── Mobile search box (visible <900px, replaces the pageHeader search) ──── */
+.mobileSearch {
+  display: none;
+}
+
+@media (max-width: 899px) {
+  .mobileSearch {
+    display: block;
+  }
+
+  .mainColumn {
+    gap: 1.5rem;
+  }
+}
+
+/* ── Question card ────────────────────────────────────────────────────────── */
+.card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background-color: #fff;
+  border: 1px solid #f0eee9;
+  border-radius: 1rem;
+  padding: 1.75rem;
+  transition:
+    transform 200ms ease,
+    box-shadow 0.2s,
+    border-color 0.2s;
+  box-shadow: 0 4px 20px #00000005;
+}
+
+@media (max-width: 639px) {
+  .card {
+    padding: 1.25rem;
+  }
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border-color: #e2e8f0;
+}
+
+.cardTitleLink {
+  text-decoration: none;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.45;
+  color: #111827;
+  transition: color 150ms ease;
+}
+
+.card:hover .cardTitle,
+.cardTitleLink:hover .cardTitle {
+  color: var(--color-primary, #008e48);
+}
+
+@media (max-width: 639px) {
+  .cardTitle {
+    font-size: 1.0625rem;
+  }
+}
+
+.questionNo {
+  margin: 0.625rem 0 0.875rem;
+  font-size: 0.9125rem;
+  font-weight: 600;
+  color: #000000;
+}
+
+@media (max-width: 639px) {
+  .questionNo {
+    margin: 0.5rem 0 0.625rem;
+    font-size: 0.875rem;
+  }
+}
+
+.cardExcerpt {
+  margin: 0.875rem 0 0;
+  font-size: 0.9375rem;
+  line-height: normal;
+  color: #4b5563;
+  text-align: justify;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.questionNo + .cardExcerpt {
+  margin-top: 0;
+}
+
+@media (max-width: 639px) {
+  .cardExcerpt {
+    margin-top: 0.75rem;
+    text-align: left;
+    -webkit-line-clamp: 2;
+  }
+}
+
+/* ── Card meta row ────────────────────────────────────────────────────────── */
+.metaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.375rem;
+  width: 100%;
+}
+
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.metaItemAuthor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.metaItemDate {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* Author, date and views are visible on both desktop and mobile now. */
+
+.metaIcon {
+  width: 1rem;
+  height: 1rem;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.metaAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  background-color: transparent;
+  border: 1px solid #ececec;
+  border-radius: 0.5rem;
+  padding: 0.4375rem 0.875rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+/* Inside the pill buttons the icon tracks the button's own colour so hover and
+   the saved state carry through to it. */
+.metaAction .metaIcon {
+  color: currentColor;
+}
+
+.metaAction:hover {
+  color: var(--color-primary, #008e48);
+  border-color: var(--color-primary, #008e48);
+  background-color: var(--color-primary-soft, #e6f4ed);
+}
+
+.metaActionActive {
+  color: var(--color-primary, #008e48);
+  border-color: var(--color-primary, #008e48);
+}
+
+/* ── Category sidebar (desktop) ───────────────────────────────────────────── */
+.sidebarWrapper {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .sidebarWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: sticky;
+    top: calc(var(--layout-header-desktop-height) + 1rem);
+    align-self: start;
+    transition: top 0.1s ease-out;
+  }
+
+  .sidebar {
+    display: block;
+    background-color: #ffffff;
+    border: 1px solid #f0eee9;
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    padding: 1.25rem 1rem;
+  }
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.5rem 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #3f3f3f;
+}
+
+.sidebarHeaderIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  color: #3f3f3f;
+}
+
+.categoryList {
+  display: flex;
+  flex-direction: column;
+}
+
+.categoryRow {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  text-align: left;
+}
+
+.categoryIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #111827;
+  flex-shrink: 0;
+}
+
+.categoryLabel {
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.categoryRow:hover .categoryLabel,
+.categoryRow:hover .categoryIcon,
+.categoryRowActive .categoryLabel,
+.categoryRowActive .categoryIcon {
+  color: var(--color-primary, #008e48);
+}
+
+.categoryCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.875rem;
+  height: 1.875rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background-color: #f3f4f6;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.categoryRowActive .categoryCount {
+  background-color: rgba(0, 142, 72, 0.2);
+  color: var(--color-primary, #008e48);
+}
+
+/* ── Category chips (mobile) ──────────────────────────────────────────────── */
+.chipRow {
+  display: flex;
+  gap: 0.625rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  scrollbar-width: none;
+}
+
+@media (max-width: 1023px) {
+  .chipRow {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+
+  .chipRow > :first-child {
+    margin-left: 1rem;
+  }
+
+  .chipRow > :last-child {
+    margin-right: 1rem;
+  }
+}
+
+.chipRow::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .chipRow {
+    display: none;
+  }
+}
+
+.chip {
+  flex: 0 0 auto;
+  background-color: #ffffff;
+  border: 1px solid #f0eee9;
+  border-radius: 999px;
+  padding: 0.5625rem 1.125rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: #374151;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.chipActive {
+  background-color: var(--color-primary, #008e48);
+  border-color: var(--color-primary, #008e48);
+  color: #ffffff;
+}
+
+/* ── Pagination ───────────────────────────────────────────────────────────── */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 1.5rem 0 0;
+  margin-top: auto;
+}
+
+.paginationPrevBtn,
+.paginationNextBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background-color: transparent;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+  white-space: nowrap;
+}
+
+.paginationPrevBtn:hover:not(:disabled),
+.paginationNextBtn:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.paginationPrevBtn:disabled,
+.paginationNextBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.paginationIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.paginationInfo {
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--color-primary, #008e48);
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-primary, #008e48);
+  white-space: nowrap;
+}
+
+/* ── Empty state ──────────────────────────────────────────────────────────── */
+.emptyState {
+  background-color: #ffffff;
+  border: 1px solid #f0eee9;
+  border-radius: 1rem;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.9375rem;
+}

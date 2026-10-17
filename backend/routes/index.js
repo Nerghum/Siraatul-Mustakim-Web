@@ -1,0 +1,46 @@
+import express from "express";
+import status from "http-status";
+import authRoutes from "./authRoutes.js";
+import faqRoutes from "./faqRoutes.js";
+import paymentRoutes from "./paymentRoutes.js";
+import masailRoutes from "./masailRoutes.js";
+import kitabRoutes from "./kitabRoutes.js";
+import quranRoutes from "./quranRoutes.js";
+import quranSubjectRoutes from "./quranSubjectRoutes.js";
+import noticeRoutes from "./noticeRoutes.js";
+import duaRoutes from "./duaRoutes.js";
+import eventsScheduleRoutes from "./eventsScheduleRoutes.js";
+import liveRoutes from "./liveRoutes.js";
+import audioRoutes from "./audioRoutes.js";
+import malfuzatRoutes from "./malfuzatRoutes.js";
+import boyanRoutes from "./boyanRoutes.js";
+import usersRoutes from "./usersRoutes.js";
+import articleRoutes from "./articleRoutes.js";
+import settingsRoutes from "./settingsRoutes.js";
+import adRoutes from "./adRoutes.js";
+
+const router = express.Router();
+router.get("/", (req, res) => {
+  res.status(status.OK).json({ message: "Server is running" });
+});
+router.use("/auth", authRoutes);
+router.use("/faq", faqRoutes);
+router.use("/payments", paymentRoutes);
+router.use("/masail", masailRoutes);
+router.use("/kitab", kitabRoutes);
+router.use("/quran", quranRoutes);
+router.use("/quran-subjects", quranSubjectRoutes);
+router.use("/dua", duaRoutes);
+router.use("/notice", noticeRoutes);
+router.use("/events-schedule", eventsScheduleRoutes);
+router.use("/bayan-schedule", eventsScheduleRoutes);
+router.use("/live", liveRoutes);
+router.use("/admin/audio", audioRoutes);
+router.use("/malfuzat", malfuzatRoutes);
+router.use("/boyan", boyanRoutes);
+router.use("/admin/users", usersRoutes);
+router.use("/articles", articleRoutes);
+router.use("/settings", settingsRoutes);
+router.use("/ads", adRoutes);
+
+export default router;

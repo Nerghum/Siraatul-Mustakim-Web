@@ -1,0 +1,11 @@
+@reference "tailwindcss";
+
+/* ── Masail card deltas ────────────────────────────────────────────────────
+   Everything the masail card shares with the Q&A card lives in
+   `styles/listing.module.css`. */
+
+/* The Q&A card gets its title-to-excerpt gap from the `প্রশ্নঃ` line's margins.
+   The masail card has no such line, so the excerpt carries the gap itself. */
+.cardExcerpt {
+  margin-top: 0.875rem;
+}

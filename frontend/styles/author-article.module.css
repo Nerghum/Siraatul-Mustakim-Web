@@ -1,0 +1,261 @@
+@reference "tailwindcss";
+
+/* ── Section shell ───────────────────────────────────────────────────────── */
+.section {
+  width: 100%;
+  background-color: var(--background);
+  padding-top: calc(
+    var(--layout-top-bar-height, 0px) +
+    var(--layout-header-desktop-height, 72px) +
+    50px
+  );
+  padding-bottom: 3rem;
+}
+
+@media (max-width: 767px) {
+  .section {
+    padding-top: calc(
+      var(--layout-top-bar-height, 0px) +
+      var(--layout-header-mobile-height, 64px) +
+      30px
+    );
+    padding-bottom: 2.75rem;
+  }
+}
+
+/* ── Page header: title/subtitle left, tabs right ────────────────────────── */
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+@media (min-width: 900px) {
+  .pageHeader {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+}
+
+.headerTextGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 32rem;
+}
+
+.title {
+  margin: 0;
+  font-weight: 700;
+  font-size: var(--title-size);
+  line-height: 1.2;
+  color: #3f3f3f;
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .title {
+    font-size: var(--title-size);
+  }
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--subtitle-color, rgba(74, 51, 32, 0.65));
+}
+
+/* ── Tab buttons (segmented control — matches malfujat style) ─────────────── */
+.tabGroup {
+  display: flex;
+  background-color: #ffffff;
+  border: 1px solid var(--palette-divider, #eaeaea);
+  border-radius: 8px;
+  padding: 4px;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  width: 480px;
+  max-width: 100%;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1023px) {
+  .tabGroup {
+    width: 100%;
+  }
+}
+
+.tab {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--palette-text-secondary, #666);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.tabActive {
+  background-color: var(--color-primary, #008e48);
+  color: #ffffff;
+}
+
+/* ── Content grid ────────────────────────────────────────────────────────── */
+.contentGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .contentGrid {
+    grid-template-columns: minmax(0, 1fr) 21.25rem;
+    gap: 2rem;
+  }
+}
+
+.mainColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+/* ── Author content card ─────────────────────────────────────────────────── */
+.card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #f0eee9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  padding: 1.75rem 1.75rem 1.25rem;
+  transition:
+    box-shadow 200ms ease,
+    border-color 200ms ease;
+}
+
+@media (max-width: 639px) {
+  .card {
+    padding: 1.25rem 1.125rem 1rem;
+  }
+}
+
+.card:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border-color: #e2e8f0;
+}
+
+/* ── Meta row: tags + date on one line ──────────────────────────────────── */
+.metaRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.375rem 0.875rem;
+  border-radius: 999px;
+  background-color: var(--color-primary-soft, #e6f4ed);
+  color: var(--color-primary, #008e48);
+}
+
+/* ── Date meta ───────────────────────────────────────────────────────────── */
+.metaRelative {
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.metaDate {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.metaDateIcon {
+  width: 1rem;
+  height: 1rem;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+/* ── Card title ──────────────────────────────────────────────────────────── */
+.cardTitleLink {
+  text-decoration: none;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.45;
+  color: #111827;
+  transition: color 150ms ease;
+}
+
+.cardTitleLink:hover .cardTitle {
+  color: var(--color-primary, #008e48);
+}
+
+@media (max-width: 639px) {
+  .cardTitle {
+    font-size: 1.0625rem;
+  }
+}
+
+/* ── Card excerpt (3-line desktop, 2-line mobile clamp) ────────────────── */
+.cardExcerpt {
+  margin: 0.875rem 0 0;
+  font-size: 0.9375rem;
+  line-height: normal;
+  color: #4b5563;
+  text-align: justify;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 639px) {
+  .cardExcerpt {
+    margin-top: 0.75rem;
+    text-align: left;
+    -webkit-line-clamp: 2;
+  }
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+.emptyState {
+  background-color: #ffffff;
+  border: 1px solid #f0eee9;
+  border-radius: 1rem;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.9375rem;
+}
+
+/* ── Sidebar, chips, pagination — reuse listing.module.css classes via
+     the listing module directly. The skeleton and listing components import
+     listing.module.css for those. ────────────────────────────────────────── */

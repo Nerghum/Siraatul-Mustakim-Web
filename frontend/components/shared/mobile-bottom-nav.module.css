@@ -1,0 +1,91 @@
+/* ── Mobile Sticky Bottom Navigation Bar (bKash app UI style) ─────────────── */
+
+.container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 64px;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: #fffffff0;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  border-top: 1px solid #e5e7ebcc;
+  box-shadow: 0 -4px 20px #0000000d;
+}
+
+@media (min-width: 1024px) {
+  .container {
+    display: none;
+  }
+}
+
+.tabItem {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
+  max-width: 25%;
+  height: 100%;
+  padding: 6px 2px;
+  text-decoration: none;
+  color: #6b7280;
+  transition:
+    color 150ms ease,
+    transform 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tabItem:active {
+  transform: scale(0.96);
+}
+
+.tabItemActive {
+  color: var(--color-primary, #008e48);
+}
+
+.iconWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-bottom: 3px;
+  transition: transform 150ms ease;
+}
+
+.tabItemActive .iconWrapper {
+  transform: translateY(-1px);
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  transition: font-weight 150ms ease;
+}
+
+.tabItemActive .label {
+  font-weight: 700;
+  color: var(--color-primary, #008e48);
+}
+
+.activeIndicator {
+  position: absolute;
+  top: 0;
+  width: 24px;
+  height: 3px;
+  background-color: var(--color-primary, #008e48);
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}

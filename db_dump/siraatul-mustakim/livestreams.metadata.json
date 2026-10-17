@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"roomName":{"$numberInt":"1"}},"name":"roomName_1","unique":true}],"uuid":"8e87e401b1c344688facb8d6df37fc30","collectionName":"livestreams","type":"collection"}

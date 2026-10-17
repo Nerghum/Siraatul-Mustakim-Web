@@ -1,0 +1,382 @@
+.flipContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: 1px solid #f0eee9;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+/* Fullscreen mode styling */
+.flipContainer:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+  border: none;
+  margin: 0;
+  padding: 0;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  z-index: 999999;
+}
+
+.flipContainer:fullscreen .flipWrapper {
+  flex: 1;
+  height: calc(100vh - 68px);
+  min-height: 0;
+  padding: 0.5rem;
+  overflow: hidden;
+}
+
+/* Toolbar matching site design */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f0eee9;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  z-index: 10;
+}
+
+.flipContainer:fullscreen .toolbar {
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.toolbarSection {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Button style matching site design */
+.toolBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  color: #374151;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.toolBtn:hover:not(:disabled) {
+  background-color: #e6f4ed;
+  color: var(--color-primary, #008e48);
+  border-color: #bbf7d0;
+  transform: translateY(-1px);
+}
+
+.toolBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.toolBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: #f3f4f6;
+  background: #f9fafb;
+}
+
+/* Page indicator pill - exactly matching site's green outline pill */
+.pageIndicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.875rem;
+  border: 1px solid var(--color-primary, #008e48);
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary, #008e48);
+  background: #e6f4ed;
+  white-space: nowrap;
+  min-width: 4rem;
+  font-family: inherit;
+}
+
+/* Zoom percentage badge (clickable to reset) */
+.zoomBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4b5563;
+  background: #f9fafb;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-width: 3.25rem;
+}
+
+.zoomBadge:hover {
+  background: #e6f4ed;
+  color: var(--color-primary, #008e48);
+  border-color: #bbf7d0;
+}
+
+/* Flip book container wrapper */
+.flipWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem 0.75rem;
+  min-height: 60vh;
+  transition: background-color 0.3s ease;
+  overflow: hidden;
+  position: relative;
+  touch-action: pan-x pan-y;
+  user-select: none;
+}
+
+/* Zoom transform wrapper */
+.zoomContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: default;
+}
+
+.flipbook {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.flipPage {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.flipPageInner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: white;
+}
+
+.flipCanvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: white;
+  display: block;
+}
+
+.flipPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+}
+
+.loadingWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 50vh;
+}
+
+/* =========================================
+   Simple "Read" Prompt (Clean Brand Design)
+   ========================================= */
+
+.readPromptContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+  width: 100%;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 1.25rem;
+}
+
+.readMainBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 0.875rem 2.75rem;
+  border-radius: 9999px;
+  background: var(--color-primary, #008e48);
+  color: #ffffff;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 142, 72, 0.25);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.readMainBtn:hover {
+  background: var(--color-primary-hover, #0a644a);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 142, 72, 0.35);
+}
+
+.readMainBtn:active {
+  transform: translateY(0);
+}
+
+/* Loading Box */
+.loadingBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 320px;
+  gap: 0.875rem;
+  text-align: center;
+}
+
+.loadingSpinner {
+  color: var(--color-primary, #008e48);
+}
+
+.loadingText {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-foreground, #111111);
+}
+
+.progressTrack {
+  width: 100%;
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  position: relative;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary, #008e48) 0%, #10b981 100%);
+  border-radius: 9999px;
+  transition: width 0.2s ease-out;
+}
+
+.progressIndeterminate {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 35%;
+  background: linear-gradient(90deg, transparent, var(--color-primary, #008e48), transparent);
+  animation: indeterminate 1.4s infinite ease-in-out;
+}
+
+@keyframes indeterminate {
+  0% {
+    left: -35%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.cancelBtn {
+  background: none;
+  border: 1px solid #e5e7eb;
+  padding: 0.35rem 1.25rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.25rem;
+}
+
+.cancelBtn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #111111;
+}
+
+/* Error Banner */
+.errorCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
+  border-radius: 1rem;
+  text-align: center;
+  color: #991b1b;
+  max-width: 480px;
+  margin: 1.5rem auto;
+}
+
+.errorTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0.75rem 0 0.5rem 0;
+}
+
+.errorText {
+  font-size: 0.875rem;
+  color: #b91c1c;
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+}
+
+.retryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  background: #dc2626;
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.retryBtn:hover {
+  background: #b91c1c;
+}
+
+.closeReaderBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.closeReaderBtn:hover {
+  background: #f3f4f6;
+  color: #111111;
+}

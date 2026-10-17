@@ -1,0 +1,22 @@
+{
+  "arabicAndBengali": {
+    "provider": "QuranEnc",
+    "editionId": "bengali_rwwad",
+    "version": "V1.0.0",
+    "versionDate": "2020-10-15",
+    "translator": "Ruwad Translation Center",
+    "publisher": "Ruwad Translation Center, Rabwah Dawah Center, and IslamHouse.com",
+    "source": "https://quranenc.com/bn/browse/bengali_rwwad"
+  },
+  "bengaliTafsir": {
+    "provider": "QuranEnc",
+    "editionId": "bengali_mokhtasar",
+    "version": "Edition identifier published by QuranEnc; no separate version number is listed in its catalog",
+    "publisher": "Tafsir Center for Quranic Studies",
+    "source": "https://quranenc.com/bn/browse/bengali_mokhtasar"
+  },
+  "audio": {
+    "provider": "EveryAyah",
+    "source": "https://everyayah.com/data/"
+  }
+}

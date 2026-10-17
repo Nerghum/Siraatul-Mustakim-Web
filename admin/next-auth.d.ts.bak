@@ -1,0 +1,29 @@
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string
+      phone?: string
+      email?: string
+      role: "user" | "admin"
+    }
+    backendToken: string
+  }
+
+  interface User {
+    id: string
+    phone?: string
+    email?: string
+    role: "user" | "admin"
+    backendToken: string
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string
+    phone?: string
+    email?: string
+    role: "user" | "admin"
+    backendToken: string
+  }
+}

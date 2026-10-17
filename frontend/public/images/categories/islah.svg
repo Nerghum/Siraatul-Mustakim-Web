@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none">
+  <circle cx="24" cy="24" r="22" fill="#E6F4ED"/>
+  <!-- Tasbih prayer beads in an oval loop -->
+  <circle cx="24" cy="14" r="2.5" fill="#008E48"/>
+  <circle cx="29" cy="16" r="2.5" fill="#008E48"/>
+  <circle cx="33" cy="20" r="2.5" fill="#008E48"/>
+  <circle cx="34" cy="26" r="2.5" fill="#008E48"/>
+  <circle cx="31" cy="31" r="2.5" fill="#008E48"/>
+  <circle cx="26" cy="34" r="2.5" fill="#008E48"/>
+  <circle cx="21" cy="34" r="2.5" fill="#008E48"/>
+  <circle cx="16" cy="31" r="2.5" fill="#008E48"/>
+  <circle cx="13" cy="26" r="2.5" fill="#008E48"/>
+  <circle cx="14" cy="20" r="2.5" fill="#008E48"/>
+  <circle cx="18" cy="16" r="2.5" fill="#008E48"/>
+  <!-- Tasbih imamah tassel at bottom -->
+  <path d="M23.5 35.5H24.5V38.5H23.5Z" fill="#008E48"/>
+  <path d="M22 39H26L24 43L22 39Z" fill="#008E48"/>
+  <!-- Pure heart in the middle -->
+  <path d="M24 28C24 28 19 24.5 19 21.5C19 19.8 20.2 18.5 21.8 18.5C22.8 18.5 23.5 19 24 19.7C24.5 19 25.2 18.5 26.2 18.5C27.8 18.5 29 19.8 29 21.5C29 24.5 24 28 24 28Z" fill="#008E48"/>
+</svg>

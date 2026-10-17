@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"duaId":{"$numberInt":"1"}},"name":"duaId_1","unique":true},{"v":{"$numberInt":"2"},"key":{"chapterId":{"$numberInt":"1"}},"name":"chapterId_1"}],"uuid":"63cda6381ce54b0b98bded488d899407","collectionName":"duas","type":"collection"}

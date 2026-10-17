@@ -1,0 +1,78 @@
+export type District = {
+  id: string;
+  name: { bn: string; en: string };
+};
+
+export const BD_DISTRICTS: District[] = [
+  { id: "dhaka", name: { bn: "ঢাকা", en: "Dhaka" } },
+  { id: "gazipur", name: { bn: "গাজীপুর", en: "Gazipur" } },
+  { id: "kishoreganj", name: { bn: "কিশোরগঞ্জ", en: "Kishoreganj" } },
+  { id: "manikganj", name: { bn: "মানিকগঞ্জ", en: "Manikganj" } },
+  { id: "munshiganj", name: { bn: "মুন্সিগঞ্জ", en: "Munshiganj" } },
+  { id: "narayanganj", name: { bn: "নারায়ণগঞ্জ", en: "Narayanganj" } },
+  { id: "narsingdi", name: { bn: "নরসিংদী", en: "Narsingdi" } },
+  { id: "tangail", name: { bn: "টাঙ্গাইল", en: "Tangail" } },
+  { id: "faridpur", name: { bn: "ফরিদপুর", en: "Faridpur" } },
+  { id: "gopalganj", name: { bn: "গোপালগঞ্জ", en: "Gopalganj" } },
+  { id: "madaripur", name: { bn: "মাদারীপুর", en: "Madaripur" } },
+  { id: "rajbari", name: { bn: "রাজবাড়ী", en: "Rajbari" } },
+  { id: "shariatpur", name: { bn: "শরীয়তপুর", en: "Shariatpur" } },
+
+  { id: "chattogram", name: { bn: "চট্টগ্রাম", en: "Chattogram" } },
+  { id: "brahmanbaria", name: { bn: "ব্রাহ্মণবাড়িয়া", en: "Brahmanbaria" } },
+  { id: "comilla", name: { bn: "কুমিল্লা", en: "Cumilla" } },
+  { id: "chandpur", name: { bn: "চাঁদপুর", en: "Chandpur" } },
+  { id: "coxsbazar", name: { bn: "কক্সবাজার", en: "Cox's Bazar" } },
+  { id: "feni", name: { bn: "ফেনী", en: "Feni" } },
+  { id: "khagrachari", name: { bn: "খাগড়াছড়ি", en: "Khagrachhari" } },
+  { id: "lakshmipur", name: { bn: "লক্ষ্মীপুর", en: "Lakshmipur" } },
+  { id: "noakhali", name: { bn: "নোয়াখালী", en: "Noakhali" } },
+  { id: "rangamati", name: { bn: "রাঙ্গামাটি", en: "Rangamati" } },
+  { id: "bandarban", name: { bn: "বান্দরবান", en: "Bandarban" } },
+
+  { id: "sylhet", name: { bn: "সিলেট", en: "Sylhet" } },
+  { id: "habiganj", name: { bn: "হবিগঞ্জ", en: "Habiganj" } },
+  { id: "moulvibazar", name: { bn: "মৌলভীবাজার", en: "Moulvibazar" } },
+  { id: "sunamganj", name: { bn: "সুনামগঞ্জ", en: "Sunamganj" } },
+
+  { id: "rajshahi", name: { bn: "রাজশাহী", en: "Rajshahi" } },
+  { id: "bogura", name: { bn: "বগুড়া", en: "Bogura" } },
+  { id: "joypurhat", name: { bn: "জয়পুরহাট", en: "Joypurhat" } },
+  { id: "naogaon", name: { bn: "নওগাঁ", en: "Naogaon" } },
+  { id: "natore", name: { bn: "নাটোর", en: "Natore" } },
+  { id: "chapainawabganj", name: { bn: "চাঁপাইনবাবগঞ্জ", en: "Chapainawabganj" } },
+  { id: "pabna", name: { bn: "পাবনা", en: "Pabna" } },
+  { id: "sirajganj", name: { bn: "সিরাজগঞ্জ", en: "Sirajganj" } },
+
+  { id: "rangpur", name: { bn: "রংপুর", en: "Rangpur" } },
+  { id: "dinajpur", name: { bn: "দিনাজপুর", en: "Dinajpur" } },
+  { id: "gaibandha", name: { bn: "গাইবান্ধা", en: "Gaibandha" } },
+  { id: "kurigram", name: { bn: "কুড়িগ্রাম", en: "Kurigram" } },
+  { id: "lalmonirhat", name: { bn: "লালমনিরহাট", en: "Lalmonirhat" } },
+  { id: "nilphamari", name: { bn: "নীলফামারী", en: "Nilphamari" } },
+  { id: "panchagarh", name: { bn: "পঞ্চগড়", en: "Panchagarh" } },
+  { id: "thakurgaon", name: { bn: "ঠাকুরগাঁও", en: "Thakurgaon" } },
+
+  { id: "khulna", name: { bn: "খুলনা", en: "Khulna" } },
+  { id: "bagerhat", name: { bn: "বাগেরহাট", en: "Bagerhat" } },
+  { id: "chuadanga", name: { bn: "চুয়াডাঙ্গা", en: "Chuadanga" } },
+  { id: "jashore", name: { bn: "যশোর", en: "Jashore" } },
+  { id: "jhenaidah", name: { bn: "ঝিনাইদহ", en: "Jhenaidah" } },
+  { id: "kushtia", name: { bn: "কুষ্টিয়া", en: "Kushtia" } },
+  { id: "magura", name: { bn: "মাগুরা", en: "Magura" } },
+  { id: "meherpur", name: { bn: "মেহেরপুর", en: "Meherpur" } },
+  { id: "narail", name: { bn: "নড়াইল", en: "Narail" } },
+  { id: "satkhira", name: { bn: "সাতক্ষীরা", en: "Satkhira" } },
+
+  { id: "barishal", name: { bn: "বরিশাল", en: "Barishal" } },
+  { id: "barguna", name: { bn: "বরগুনা", en: "Barguna" } },
+  { id: "bhola", name: { bn: "ভোলা", en: "Bhola" } },
+  { id: "jhalokati", name: { bn: "ঝালকাঠি", en: "Jhalokati" } },
+  { id: "patuakhali", name: { bn: "পটুয়াখালী", en: "Patuakhali" } },
+  { id: "pirojpur", name: { bn: "পিরোজপুর", en: "Pirojpur" } },
+
+  { id: "mymensingh", name: { bn: "ময়মনসিংহ", en: "Mymensingh" } },
+  { id: "jamalpur", name: { bn: "জামালপুর", en: "Jamalpur" } },
+  { id: "netrokona", name: { bn: "নেত্রকোণা", en: "Netrokona" } },
+  { id: "sherpur", name: { bn: "শেরপুর", en: "Sherpur" } },
+];

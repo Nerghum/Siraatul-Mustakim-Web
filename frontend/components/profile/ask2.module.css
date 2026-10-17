@@ -1,0 +1,223 @@
+@reference "tailwindcss";
+
+.headerProtected {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+@media (max-width: 1023px) {
+  .headerProtected {
+    display: none;
+  }
+}
+
+.headerProtected h1 {
+  margin-bottom: 0.5rem;
+}
+
+.infoCards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.infoCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: #1f9c5e0a;
+  border-radius: 1.25rem;
+  border: 1px solid #4caf5017;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  padding: 1.25rem 0.75rem;
+}
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.875rem;
+  background-color: var(--color-primary, #008e48);
+  color: #ffffff;
+  margin-bottom: 0.875rem;
+}
+
+.iconWrap svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  stroke: #ffffff;
+}
+
+.cardTitle {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #3f3f3f;
+}
+
+.cardDesc {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #9ca3af;
+  line-height: 1.4;
+}
+
+.hideOnMobile {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .infoCards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .infoCard {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .hideOnMobile {
+    display: flex;
+  }
+
+  .iconWrap {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .iconWrap svg {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .cardTitle {
+    font-size: 1rem;
+  }
+
+  .cardDesc {
+    font-size: 0.875rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .infoCards {
+    margin-bottom: 2rem;
+  }
+}
+
+.field {
+  margin-bottom: 1.5rem;
+}
+
+.fieldLabel {
+  display: block;
+  margin-bottom: 0.625rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+.input {
+  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.875rem;
+  padding: 1rem 1.125rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #111827;
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.input::placeholder {
+  color: #9ca3af;
+}
+
+.input:focus {
+  border: 2px solid var(--color-primary, #008e48);
+  box-shadow: none;
+}
+
+.select {
+  width: 100%;
+  appearance: none;
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1.125rem center;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.875rem;
+  padding: 1rem 3rem 1rem 1.125rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #111827;
+  outline: none;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.select:focus {
+  border: 2px solid var(--color-primary, #008e48);
+  box-shadow: none;
+}
+
+.hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.8125rem;
+  color: #9ca3af;
+}
+
+.termsText {
+  color: #374151;
+}
+
+.termsLink {
+  color: var(--color-primary, #008e48);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.termsLink:hover {
+  text-decoration: underline;
+}
+
+.formCard {
+  position: relative;
+  background-color: #ffffff;
+  border-radius: 1.25rem;
+  border: 1px solid #f0eee9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  padding: 2.5rem;
+}
+
+@media (max-width: 1023px) {
+  .formCard {
+    background-color: #ffffff;
+    border-top-left-radius: 1.75rem;
+    border-top-right-radius: 1.75rem;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border: none;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.02);
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding: 1.75rem 1.5rem 3rem;
+    margin-top: 1.25rem;
+    margin-bottom: -2.75rem;
+  }
+}

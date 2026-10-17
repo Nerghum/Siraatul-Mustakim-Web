@@ -1,0 +1,50 @@
+/* styles/video-modal.css */
+body.lightbox-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.video-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000000001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.85);
+}
+
+.video-modal-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  z-index: 10;
+  transition: background-color 0.2s;
+}
+
+.video-modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.video-modal-iframe-wrap {
+  line-height: 0;
+}
+
+.video-modal-iframe {
+  width: 90vw;
+  max-width: 900px;
+  height: 500px;
+  border: none;
+  border-radius: 8px;
+}

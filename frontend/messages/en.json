@@ -1,0 +1,811 @@
+{
+  "notFound": {
+    "heading": "Sorry, the page could not be found.",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "backToHome": "Back to Homepage"
+  },
+  "askSuccess": {
+    "heading": "Alhamdulillah! Your question has been submitted.",
+    "description": "Please wait! Your answer will be provided very soon.",
+    "backToHome": "Back to Homepage",
+    "askButton": "Ask Question"
+  },
+  "common": {
+    "share": "Share",
+    "save": "Save",
+    "bookmark": "Bookmark",
+    "bookmarked": "Bookmarked",
+    "readMore": "Read more",
+    "backToTop": "Back to top",
+    "close": "Close",
+    "relative": {
+      "justNow": "just now",
+      "minute": "{count} minute ago",
+      "minutes": "{count} minutes ago",
+      "hour": "{count} hour ago",
+      "hours": "{count} hours ago",
+      "day": "{count} day ago",
+      "days": "{count} days ago",
+      "month": "{count} month ago",
+      "months": "{count} months ago",
+      "year": "{count} year ago",
+      "years": "{count} years ago"
+    }
+  },
+  "auth": {
+    "title": "Log in",
+    "logout": "Logout",
+    "welcomeBack": "Welcome back",
+    "contactLabel": "Enter your 11-digit mobile number",
+    "enterContact": "Enter your 11-digit mobile number",
+    "continue": "Continue",
+    "verifying": "Verifying",
+    "or": "or",
+    "google": "Continue with Google",
+    "facebook": "Continue with Facebook",
+    "required": "Enter your 11-digit mobile number",
+    "confirmTitle": "Confirm it's you",
+    "codeSentTo": "We sent a code to",
+    "codeSent": "Code sent",
+    "newCodeSent": "New code sent",
+    "sendNewCode": "Send a new code",
+    "tryAnotherWay": "Try another way",
+    "welcome": "Welcome, {name}",
+    "welcomeSocial": "Signed in with {provider}",
+    "confirmationText": "We'll send a code to verify your phone number.",
+    "privacy": "Privacy Policy",
+    "didntGetIt": "Didn't get it?"
+  },
+  "nav": {
+    "home": "Home",
+    "books": "Books",
+    "quran": "Quran",
+    "masail": "Masail",
+    "qa": "Q&A",
+    "articles": "Articles",
+    "bayan": "Bayan",
+    "bayanSchedule": "Bayan Schedule",
+    "videos": "Videos",
+    "dua": "Dua",
+    "notice": "Notice",
+    "malfujat": "Malfujat"
+  },
+  "quran": {
+    "surahPrefix": "Surah",
+    "sourceName": "QuranEnc",
+    "title": "The Noble Quran",
+    "subtitle": "Recitation, translation, and tafsir",
+    "coverAlt": "The Noble Quran",
+    "selectSurah": "Select a surah",
+    "searchSurahs": "Search surahs",
+    "search": "Search",
+    "noSurahs": "No surahs found",
+    "noResults": "No results found",
+    "origin": {
+      "makki": "Makki",
+      "madani": "Madani"
+    },
+    "ayahCount": "Ayahs: {count}",
+    "ayahLabel": "Ayah",
+    "meaning": "Meaning",
+    "audio": "Audio",
+    "playSurah": "Play recitation of {surah}",
+    "playAyah": "Play ayah {ayah}",
+    "surahs": "Surahs",
+    "ayahs": "Ayahs",
+    "readerModes": "Reading mode",
+    "mode": {
+      "translation": "Translation",
+      "recitation": "Recitation",
+      "tafsir": "Tafsir"
+    },
+    "tafsir": "Tafsir",
+    "openTafsir": "Read tafsir",
+    "tafsirSource": "Bengali concise tafsir — Tafsir Center for Quranic Studies",
+    "tafsirUnavailable": "Tafsir is unavailable for this ayah.",
+    "tafsirPagination": "Tafsir pages",
+    "pageInfo": "Page {current} of {total}",
+    "attributionPrefix": "Translation: Ruwad Translation Center. Tafsir: Tafsir Center for Quranic Studies. Source",
+    "audioTitle": "Choose a reciter",
+    "reciter": "Reciter",
+    "reciters": {
+      "shatri": "Abu Bakr Al-Shatri",
+      "alafasy": "Mishary Rashid Alafasy",
+      "sudais": "Abdurrahman As-Sudais"
+    },
+    "includeTranslation": "Show Bengali translation",
+    "translationLoading": "Loading translation...",
+    "startAudio": "Play audio",
+    "pauseAudio": "Pause audio",
+    "audioUnavailable": "Audio could not be played. Please try again."
+  },
+  "mobileNav": {
+    "home": "Home",
+    "ask": "Ask",
+    "bayan": "Bayan",
+    "donate": "Donate",
+    "account": "Account"
+  },
+  "header": {
+    "donate": "Support",
+    "ask": "Ask Question",
+    "siteName": "Siraatul Mustaqim",
+    "topBar": {
+      "text": "Download the Siraatul Mustaqim App",
+      "googlePlay": "Google Play",
+      "close": "Close"
+    },
+    "userDropdown": {
+      "myProfile": "My Profile",
+      "myQuestions": "My Questions - User",
+      "myArticles": "My Articles - Writer",
+      "myMasail": "My Masail - Writer",
+      "bookmarks": "My Bookmarks",
+      "askQuestion": "Ask Question",
+      "answerQueue": "Answer Questions - Writer",
+      "logout": "Logout"
+    }
+  },
+  "sidebar": {
+    "back": "Back",
+    "menu": "Menu"
+  },
+  "home": {
+    "prayer": {
+      "titleLine1": "Today's",
+      "titleLine2": "Salat Times",
+      "subtitle": "Know the salat times and offer them on time",
+      "now": "Currently running",
+      "nowBadge": "Now",
+      "location": "Dhaka",
+      "giveLocation": "Share Location",
+      "names": {
+        "fajr": "Fajr",
+        "sunrise": "Sunrise",
+        "ishraq": "Ishraq-Chasht",
+        "dhuhr": "Dhuhr",
+        "asr": "Asr",
+        "maghrib": "Maghrib",
+        "iftar": "Iftar",
+        "isha": "Isha"
+      }
+    },
+    "categories": {
+      "iman": "Iman",
+      "namaz": "Salah",
+      "roza": "Sawm",
+      "hajj": "Hajj",
+      "zakat": "Zakat",
+      "muamalat": "Mu'amalat",
+      "muasharat": "Mu'asharat",
+      "akhlaq": "Akhlaq",
+      "dawatTabligh": "Dawah & Tabligh",
+      "islah": "Tazkiyah",
+      "aqida": "Aqidah",
+      "biye": "Marriage"
+    },
+    "askScholar": {
+      "titleLine1": "Get Shariah solutions from",
+      "titleLine2": "Expert Islamic Scholars",
+      "feature1": "Solutions provided by trusted scholars",
+      "feature2": "Complete privacy is maintained",
+      "statNumber": "100+",
+      "statText": "Questions answered so far",
+      "askButton": "Ask Your Question"
+    },
+    "bayanSchedule": {
+      "title": "Bayan Schedule",
+      "subtitle": "Know and share the masail you need in daily life",
+      "seeMore": "All Bayan Schedules",
+      "locationPlaceholder": "Select location",
+      "searchPlaceholder": "Search...",
+      "noResultsFound": "No results found",
+      "allLocations": "All locations",
+      "empty": "No bayans scheduled for this date",
+      "emptyHint": "Please select another date",
+      "openCalendar": "Calendar",
+      "detail": {
+        "time": "Time",
+        "location": "Location",
+        "highlight": "Highlight",
+        "contact": "Contact",
+        "maps": "Directions on Google Maps"
+      }
+    },
+    "recentBayan": {
+      "title": "Recent Bayans",
+      "subtitle": "Bayans by Hazratwala Mufti Zafar Ahmad",
+      "seeMore": "Listen to all Bayans"
+    },
+    "essentialMasail": {
+      "title": "Essential Masail",
+      "subtitle": "Essential Islamic rulings for daily life",
+      "seeMore": "View All Masail"
+    }
+  },
+  "qa": {
+    "title": "Questions",
+    "subtitle": "Answered and verified under the supervision of experienced muftis",
+    "searchPlaceholder": "Search Q&A",
+    "questionNo": "Question:",
+    "empty": "No questions found",
+    "categoriesTitle": "Q&A Categories",
+    "detail": {
+      "back": "Back to the previous page",
+      "questionLabel": "Question",
+      "answerLabel": "Answer",
+      "answeredBy": "Answered by",
+      "ctaText": "Not finding the answer you are looking for? Ask us.",
+      "relatedTitle": "Related Q&A",
+      "relatedSubtitle": "Not finding the answer you are looking for here? Ask us",
+      "answerHeading": "Answer:"
+    }
+  },
+  "detail": {
+    "back": "Back to the previous page",
+    "copyLink": "Copy link",
+    "copied": "Link copied",
+    "shareOn": "Share on {network}",
+    "shareSuccess": "Copied to clipboard",
+    "bookmarkAdd": "Bookmark added",
+    "bookmarkRemove": "Bookmark removed"
+  },
+  "listing": {
+    "categoriesTitle": "Masail Categories",
+    "allCategories": "All Category",
+    "categories": {
+      "iman": "Iman",
+      "namaz": "Salah",
+      "roza": "Sawm",
+      "hajj": "Hajj",
+      "zakat": "Zakat",
+      "muamalat": "Mu'amalat",
+      "muasharat": "Mu'asharat",
+      "akhlaq": "Akhlaq",
+      "dawatTabligh": "Dawah & Tabligh",
+      "islah": "Tazkiyah",
+      "aqida": "Aqidah",
+      "biye": "Marriage",
+      "imanAkida": "Iman & Aqidah",
+      "ilm": "Knowledge",
+      "siratItihas": "Seerah & History",
+      "rajniti": "Politics",
+      "samajik": "Social Etiquette, Rights & Law",
+      "taharat": "Purity & Taharah",
+      "janaza": "Janazah"
+    },
+    "pagination": {
+      "label": "Pagination",
+      "first": "First page",
+      "previous": "Previous page",
+      "next": "Next page",
+      "last": "Last page",
+      "previousBtn": "Previous",
+      "nextBtn": "Next",
+      "pageInfo": "Page {current} of {total}"
+    },
+    "bookCategories": {
+      "quran": "Quran",
+      "hadith": "Hadith",
+      "fiqh": "Fiqh",
+      "seerah": "Seerah",
+      "tasawwuf": "Tasawwuf"
+    },
+    "videoCategories": {
+      "waz": "Waz",
+      "jumah": "Jumah Khutbah",
+      "dars": "Dars",
+      "shortClip": "Short Clip"
+    },
+    "articleCategories": {
+      "samakal": "Contemporary",
+      "jiboni": "Biography",
+      "dawati": "Dawah",
+      "fikri": "Intellectual"
+    },
+    "duaCategories": {
+      "morningEvening": "Morning & Evening",
+      "namaz": "Namaz",
+      "sleep": "Sleep",
+      "travel": "Travel"
+    },
+    "malfujatCategories": {
+      "nasihat": "Advice",
+      "story": "Story",
+      "warning": "Warning"
+    },
+    "qaCategories": {
+      "aqida": "Aqida",
+      "ibadat": "Worship",
+      "muamalat": "Transactions",
+      "poribar": "Family"
+    },
+    "bayanCategories": {
+      "all": "All Categories",
+      "nasihat": "Advice",
+      "story": "Story",
+      "warning": "Warning"
+    }
+  },
+  "bayan": {
+    "title": "Bayan",
+    "subtitle": "Excerpts from the Bayans of Hazratwala Mufti Zafar Ahmad (DB)",
+    "searchPlaceholder": "Search bayan",
+    "empty": "No bayan found",
+    "categoriesTitle": "Categories",
+    "categoryButton": "Categories",
+    "locationPlaceholder": "Select Location",
+    "allLocations": "All Locations",
+    "adTitle": "Advertisement"
+  },
+  "books": {
+    "title": "Books",
+    "subtitle": "Books authored by Mufti Zafar Ahmad (db)",
+    "searchPlaceholder": "Search books",
+    "empty": "No books found",
+    "categoriesTitle": "Book Categories",
+    "categoryButton": "Categories",
+    "detail": {
+      "back": "Back to the previous page",
+      "prev": "Prev",
+      "next": "Next",
+      "pageIndicator": "Page {page} of {total}",
+      "tocTitle": "Table of Contents"
+    }
+  },
+  "videos": {
+    "title": "Video Bayans",
+    "subtitle": "Previous bayans by Hazratwala Mufti Zafar Ahmad (DB)",
+    "searchPlaceholder": "Search videos...",
+    "empty": "No videos found.",
+    "categoriesTitle": "Video Categories",
+    "categoryButton": "Categories"
+  },
+  "malfujat": {
+    "title": "Malfujat",
+    "subtitle": "Highlights of Bayans by Hazratwala Mufti Zafar Ahmad (DB)",
+    "tabText": "Text",
+    "tabAudio": "Audio",
+    "empty": "No malfujat found.",
+    "categoriesTitle": "Malfujat Categories"
+  },
+  "masail": {
+    "title": "Masail",
+    "subtitle": "Learn and share the masail you need in daily life",
+    "searchPlaceholder": "Search masail",
+    "empty": "No masail found",
+    "categoriesTitle": "Masail Categories",
+    "detail": {
+      "bodyLabel": "Masail",
+      "relatedTitle": "Related Masail"
+    }
+  },
+  "articles": {
+    "title": "Articles",
+    "subtitle": "Read and share research-based Islamic essays",
+    "searchPlaceholder": "Search articles",
+    "empty": "No articles found",
+    "categoriesTitle": "Article Categories",
+    "detail": {
+      "bodyLabel": "Article",
+      "relatedTitle": "Related Articles"
+    }
+  },
+  "dua": {
+    "title": "Dua & Dorud",
+    "subtitle": "Essential Duas and Doruds for everyday Islamic life",
+    "searchPlaceholder": "Search dua",
+    "empty": "No dua found",
+    "categoriesTitle": "Dua Topics",
+    "allTopics": "All Topics"
+  },
+  "donate": {
+    "titleBefore": "Take part in ",
+    "titleHighlight": "Sadaqah Jariyah",
+    "titleAfter": "",
+    "subtitle": "Donate to Sharafia Dhalkanagar and Siraatul Mustaqim and earn the reward of the hereafter",
+    "funds": {
+      "madrasa": "Madrasa",
+      "app": "App & Website"
+    },
+    "panel": {
+      "heading": "Take part in all the welfare work of the Foundation",
+      "text": "By donating to this fund you become a partner in the Foundation's welfare work, because the fund stays open for all of the programmes the Foundation runs."
+    },
+    "frequency": {
+      "oneTime": "One time",
+      "monthly": "Monthly"
+    },
+    "amount": {
+      "label": "Donation amount",
+      "custom": "Any amount",
+      "placeholder": "100"
+    },
+    "type": {
+      "label": "Donation type",
+      "general": "General",
+      "zakat": "Zakat"
+    },
+    "fields": {
+      "name": "Your name",
+      "namePlaceholder": "Your full name",
+      "mobile": "Mobile",
+      "mobilePlaceholder": "Enter your 11-digit mobile number",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email address"
+    },
+    "payment": {
+      "label": "Payment method"
+    },
+    "terms": {
+      "text": "By clicking Donate, you agree to our terms and privacy policy.",
+      "link": "Click here for details"
+    },
+    "submit": "Donate now",
+    "success": {
+      "title": "Jazakallahu Khairan",
+      "text": "Your donation has been received. May Allah accept this sadaqah from you.",
+      "again": "Make another donation"
+    },
+    "errors": {
+      "nameRequired": "Please enter your name",
+      "mobileRequired": "Please enter your 11-digit mobile number",
+      "mobileInvalid": "Enter a valid mobile number",
+      "emailInvalid": "Enter a valid email address",
+      "amountRequired": "Please enter a donation amount",
+      "amountInvalid": "Enter a number greater than zero",
+      "paymentRequired": "Please select a payment method"
+    },
+    "quote": "The deed most beloved to Allah is the one done consistently, even if it is small. (Sahih al-Bukhari, 6464)",
+    "body": {
+      "p1": "Regular donations are what keep the Foundation running; they fund nearly all of its welfare programmes. There is no fixed amount for a regular donation — any amount counts. And a small good deed done consistently is better than a large one done irregularly.",
+      "p2": "Many people intend to give regularly but simply forget. From now on, bKash, Nagad, Visa and Mastercard users can set up an automatic donation from the As-Sunnah Foundation website. Pick a daily or monthly option, set the amount, and the transfer happens on schedule even if it slips your mind. You can stop it at any time."
+    },
+    "features": {
+      "heading": "What the complex will include",
+      "masjid": "A masjid",
+      "research": "Research lab (R&D Centre)",
+      "dataCenter": "Data centre",
+      "maktab": "Maktab department",
+      "hifz": "Hifz department",
+      "education": "Islamic education centre",
+      "adult": "Madrasa for adults",
+      "training": "Training centre"
+    },
+    "why": {
+      "heading": "Why your support is needed",
+      "text": "What other nations achieved by spending billions, we can — if Allah wills — attain with a far smaller investment.",
+      "item1": "Building a thoughtful technical team",
+      "item2": "Creating solid infrastructure for data preservation",
+      "item3": "Building a shariah-compliant, secure and sustainable platform"
+    },
+    "video": {
+      "title": "Let the habit of regular giving start with one click",
+      "playLabel": "Play the video"
+    },
+    "bank": {
+      "heading": "Bank Details",
+      "name": "Bank",
+      "accountName": "Account Name",
+      "branch": "Branch",
+      "accountNumber": "Account Number",
+      "routingNumber": "Routing Number",
+      "swiftCode": "Swift Code"
+    }
+  },
+  "prayerTimes": {
+    "title": "Prayer Times",
+    "openAria": "View today's prayer time details",
+    "actions": {
+      "settings": "Settings",
+      "calendar": "Calendar"
+    },
+    "waqt": {
+      "heading": "Waqt Schedule",
+      "current": "Current"
+    },
+    "names": {
+      "fajr": "Fajr",
+      "dhuhr": "Dhuhr",
+      "asr": "Asr",
+      "maghrib": "Maghrib",
+      "isha": "Isha"
+    },
+    "nafl": {
+      "heading": "Nafl Salat Schedule",
+      "tahajjud": "Tahajjud",
+      "tahajjudNote": "Sahri (ends)",
+      "ishraq": "Ishraq",
+      "chasht": "Chasht"
+    },
+    "forbidden": {
+      "heading": "Forbidden Salat Times",
+      "sunrise": "Sunrise",
+      "noon": "Midday",
+      "sunset": "Sunset"
+    },
+    "info": {
+      "ishraqTitle": "About Ishraq and Chasht",
+      "ishraqText": "Ishraq, Chasht, Salatul Awwabin, and Salatud Duha—these are essentially different names for the same Nafl prayer. Therefore, Ishraq and Chasht can be prayed together. However, it is best to pray Ishraq at the beginning of the time and Salatud Duha (Chasht) towards the latter half.",
+      "tahajjudTitle": "About Tahajjud",
+      "tahajjudText": "This is dummy text for Tahajjud prayer details. Actual content will be provided later.",
+      "chashtTitle": "About Chasht",
+      "chashtText": "This is dummy text for Chasht prayer details. Actual content will be provided later.",
+      "sunriseTitle": "About Sunrise",
+      "sunriseText": "This is dummy text for Sunrise and forbidden prayer times details.",
+      "noonTitle": "About Zawal (Noon)",
+      "noonText": "This is dummy text for Noon (Zawal) and forbidden prayer times details.",
+      "sunsetTitle": "About Sunset",
+      "sunsetText": "This is dummy text for Sunset and forbidden prayer times details.",
+      "understood": "Understood"
+    },
+    "calendar": {
+      "title": "Prayer Time Calendar",
+      "prevMonth": "Previous month",
+      "nextMonth": "Next month",
+      "selectMonth": "Select month",
+      "iqamahLabel": "Iqamah",
+      "settings": {
+        "title": "Prayer Time Settings",
+        "precautionHeading": "Precaution Settings",
+        "precautionLabel": "Apply the precaution margin to Sahri and Iftar",
+        "iqamahHeading": "Mosque Iqamah Time",
+        "iqamahLabel": "Show mosque iqamah times",
+        "asrHeading": "Asr Time Method",
+        "asrHanafi": "Hanafi",
+        "asrShafi": "Shafi'i",
+        "cancel": "Cancel",
+        "reset": "Reset",
+        "save": "Save"
+      },
+      "location": {
+        "title": "Detect Location",
+        "autoDetect": "Detect my location automatically",
+        "detecting": "Detecting your location...",
+        "denied": "Could not detect your location. Pick a city below.",
+        "unsupported": "This browser cannot detect your location automatically.",
+        "countryLabel": "Select country",
+        "country": "Bangladesh",
+        "cityLabel": "Select city",
+        "cancel": "Cancel",
+        "save": "Save",
+        "shareHeading": "Share your location",
+        "shareText": "Your location is needed to show prayer times and the lunar date.",
+        "privacy": "Your privacy is protected"
+      },
+      "columns": {
+        "date": "Date",
+        "sahri": "Sahri Ends",
+        "fajr": "Fajr",
+        "sunrise": "Sunrise",
+        "dhuhr": "Dhuhr",
+        "asr": "Asr",
+        "maghrib": "Maghrib",
+        "isha": "Isha"
+      },
+      "picker": {
+        "heading": "Select Month",
+        "close": "Close",
+        "thisMonth": "This Month",
+        "done": "Close"
+      },
+      "notes": {
+        "builtForPrefix": "This calendar is prepared with a precaution margin for",
+        "city": "Dhaka",
+        "builtForSuffix": ". Following the Islamic Foundation's 2025 announcement (without the precaution margin), the times given here change as follows:",
+        "withoutPrecautionPrefix": "This calendar follows the Islamic Foundation's 2025 announcement (without the precaution margin) and is prepared for",
+        "withoutPrecautionSuffix": ".",
+        "sahriAdjust": "Sahri ends 4 minutes later",
+        "maghribAdjust": "The Maghrib adhan comes 2 minutes earlier",
+        "ishraq": "Ishraq",
+        "ishraqValue": "15 minutes after sunrise",
+        "zawal": "Zawal",
+        "zawalValue": "right at Dhuhr",
+        "sunset": "Sunset",
+        "sunsetValue": "3 minutes before Maghrib.",
+        "forbiddenLabel": "The 3 forbidden times:",
+        "forbidden1": "15 minutes from sunrise",
+        "forbidden2": "5 minutes before the Dhuhr waqt",
+        "forbidden3": "15 minutes before sunset — but pray the day's Asr first if it is still due."
+      }
+    }
+  },
+  "profile": {
+    "back": "Go back to the previous page",
+    "rail": {
+      "myQuestions": "My Questions - User",
+      "ask2": "Ask Question",
+      "answerQueue": "Answer Questions - Writer",
+      "profile": "My Profile",
+      "bookmarks": "My Bookmarks",
+      "articles": "My Articles - Writer",
+      "masail": "My Masail - Writer"
+    },
+    "edit": {
+      "title": "My Profile",
+      "hint": "Edit your name.",
+      "heading": "Edit your name",
+      "fullName": "Full name",
+      "email": "Email",
+      "update": "Update"
+    },
+    "myQuestions": {
+      "title": "Answers to My Questions",
+      "tabs": {
+        "answered": "Answered",
+        "waiting": "Waiting"
+      },
+      "statusAnswered": "Answered",
+      "statusWaiting": "Not answered yet",
+      "empty": "No questions found"
+    },
+    "answerQueue": {
+      "title": "Questions",
+      "tabs": {
+        "answered": "Answered",
+        "waiting": "Waiting"
+      },
+      "statusAnswered": "Answered",
+      "statusWaiting": "Not answered yet",
+      "answer": "Answer",
+      "view": "View question",
+      "empty": "No questions found"
+    },
+    "bookmarks": {
+      "title": "My Bookmarks",
+      "tabs": {
+        "masail": "Masail",
+        "article": "Articles"
+      },
+      "saved": "Saved",
+      "empty": "No bookmarks found"
+    },
+    "articles": {
+      "title": "Articles",
+      "create": "New article",
+      "tabs": {
+        "published": "Published",
+        "draft": "Draft"
+      },
+      "empty": "No articles found"
+    },
+    "masailList": {
+      "title": "Masail",
+      "create": "New masail",
+      "tabs": {
+        "published": "Published",
+        "draft": "Draft"
+      },
+      "empty": "No masail found"
+    },
+    "empty": {
+      "title": "No results found",
+      "ask": "Ask a question",
+      "browse": "Browse Q&A"
+    },
+    "qaAd": {
+      "badge": "Ad - QA",
+      "heading": "Place your halal advertisement here",
+      "body": "Proceeds from your advertisement will go toward the maintenance of the Siraatul Mustaqim app.",
+      "cta": "Contact us"
+    },
+    "ask": {
+      "title": "Ask a Question",
+      "tipsTitle": "How to get a good answer",
+      "tip1": "Before asking a new question, please search the Q&A above to check whether someone has already asked the same thing.",
+      "tip2": "Write your question in detail in Bengali; once done, re-read it carefully so your problem is easy to understand.",
+      "districtLabel": "Select district",
+      "districtPlaceholder": "Select district",
+      "districtHint": "Add a short title that sums up the question in one line.",
+      "questionLabel": "Write the question in detail",
+      "questionPlaceholder": "Write the question in detail",
+      "answerTypeTitle": "Answer type",
+      "public": "Public answer: Keep this answer open for everyone so the wider ummah can benefit from it (in-sha-Allah).",
+      "private": "Private answer: Keep the answer hidden; only I want to see it.",
+      "terms": "By submitting your question you agree to our terms and privacy policy.",
+      "submit": "Submit your question"
+    },
+    "ask2": {
+      "title": "Ask Question",
+      "card1Title": "Clear Question",
+      "card1Desc": "Write it well structured",
+      "card2Title": "Detailed info",
+      "card2Desc": "Add necessary details",
+      "card3Title": "Fast answer",
+      "card3Desc": "You will get it soon InshaAllah",
+      "districtLabel": "Select District",
+      "districtPlaceholder": "Select District",
+      "districtHint": "Add a short district reference to help identify your region.",
+      "nameLabel": "Your Name",
+      "namePlaceholder": "Enter your name",
+      "nameHint": "You may leave it blank if you want to keep your name private",
+      "mobileLabel": "Mobile Number",
+      "mobilePlaceholder": "Enter your mobile number",
+      "mobileHint": "You will receive a notification on your mobile number once answered Insha-Allah!",
+      "questionLabel": "Write detailed question",
+      "questionPlaceholder": "Write the question in detail",
+      "answerTypeTitle": "Answer Type",
+      "public": "Public Answer: Keep this answer open to everyone so others in the Ummah can benefit (Insha-Allah).",
+      "private": "Private Answer: Keep the answer hidden, I only want to see it myself.",
+      "terms1": "By submitting your question you agree to our",
+      "terms2": "Terms",
+      "terms3": "and",
+      "terms4": "Privacy Policy",
+      "terms5": ".",
+      "submit": "Submit your question",
+      "submitSuccess": "Your question has been submitted successfully"
+    },
+    "compose": {
+      "questionNo": "Question No.",
+      "categoryLabel": "Select category",
+      "categorySheetTitle": "Select category",
+      "categorySearchPlaceholder": "Search or add category",
+      "categoryAdd": "Add ‘{name}’",
+      "categories": ["Namaz", "Iman", "Aqidah", "Roza"],
+      "titleLabel": "Title",
+      "titlePlaceholder": "Write the question title",
+      "titleHint": "Add a short title that sums up the question in one line.",
+      "answerLabel": "Write the answer",
+      "answerPlaceholder": "Write the answer in detail",
+      "articleLabel": "Write the article",
+      "articlePlaceholder": "Write in detail",
+      "publishAnswer": "Publish the answer",
+      "publishArticle": "Publish the article",
+      "saveDraft": "Save to draft"
+    }
+  },
+  "notice": {
+    "title": "Notices",
+    "subtitle": "All notifications of Dhalkanagar Emdadia Ashrafia Khanqah and Madrasa",
+    "categoriesTitle": "Notice Categories",
+    "empty": "No notices found."
+  },
+  "noticeCategories": {
+    "islahiMajlis": "Islahi Majlis",
+    "madrasa": "Madrasa",
+    "exam": "Exam",
+    "safar": "Safar"
+  },
+  "authorArticle": {
+    "title": "Mufti Abdullah Masum",
+    "subtitle": "Q&A and Articles",
+    "tabQa": "Q&A",
+    "tabArticles": "Articles",
+    "searchPlaceholder": "Search...",
+    "empty": "No content found",
+    "sidebarTitle": "Categories"
+  },
+  "footer": {
+    "appBadge": "App Download",
+    "appTitle": "Siraatul Mustaqim App",
+    "appTitleSub": "Now on Mobile",
+    "appSubtitle": "Read Islamic masail and fatwas anytime, anywhere. Prayer schedules, Q&A all in one place.",
+    "download": "Download",
+    "googlePlay": "Google Play",
+    "importantLinks": "Important Links",
+    "otherLinks": "Other Links",
+    "allQuestions": "All Questions",
+    "authors": "Authors",
+    "articles": "Articles",
+    "categories": "Categories",
+    "supportUs": "Support Us",
+    "aboutUs": "About Us",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "siteName": "Siraatul Mustaqim",
+    "allRightsReserved": "All rights reserved.",
+    "contributors": "Contributors",
+    "andDeveloper": "& Developer:",
+    "developerName": "MicroWebs"
+  },
+  "contributors": {
+    "back": "Back to the previous page",
+    "title": "Contributors",
+    "subtitle": "Acknowledging all individuals and teams contributing to the creation and maintenance of Siraatul Mustaqim.",
+    "financial": "Financial Contributors",
+    "design": "Design & UI/UX",
+    "development": "Website & App Development",
+    "content": "Content & Editorial",
+    "thankYou": "Jazakumullahu Khairan — Siraatul Mustaqim continues forward through your sincere contributions."
+  }
+}

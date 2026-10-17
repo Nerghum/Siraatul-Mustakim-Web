@@ -1,0 +1,769 @@
+@reference "tailwindcss";
+
+.noticeListingSection {
+  padding-bottom: 3rem;
+}
+
+.noticeSection {
+  background-color: var(--background);
+  padding-bottom: 3rem;
+}
+
+/* Mobile: notice pages hide global header, use in-flow MobileTopBar + mobileBar instead.
+   Reset the fixed-header offset so content starts right below the bars. */
+@media (max-width: 1023px) {
+  .noticeSection {
+    padding-top: 0 !important;
+    padding-bottom: 2rem !important;
+    background-color: #ffffff !important;
+    margin-bottom: 2.75rem;
+  }
+
+  .noticeSection
+    > div:not([class*="mobileBar"]):not([class*="MobileTopBar"]):not(
+      [class*="noticeMobileTopBar"]
+    ) {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .noticeDetailWrapper {
+    padding-top: 1.25rem !important;
+  }
+}
+
+/* Mobile top bar inside notice pages (not fixed — sits in flow, but sticky) */
+.noticeMobileTopBar {
+  background-color: #1a5c2e;
+  color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+@media (min-width: 1024px) {
+  .noticeMobileTopBar {
+    display: none;
+  }
+}
+
+.noticeMobileTopBar .header-top-bar-inner {
+  max-width: var(--layout-max-width, 1170px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 1.25rem;
+  position: relative;
+  min-height: 2rem;
+}
+
+.noticeMobileTopBar .header-top-bar-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.noticeMobileTopBar .header-top-bar-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.noticeMobileTopBar .header-top-bar-text {
+  letter-spacing: -0.01em;
+}
+
+.noticeMobileTopBar .header-top-bar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background-color: #ffffff;
+  color: #1a5c2e;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.noticeMobileTopBar .header-top-bar-btn:hover {
+  opacity: 0.9;
+}
+
+.noticeMobileTopBar .header-top-bar-play-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.noticeMobileTopBar .header-top-bar-close {
+  position: absolute;
+  right: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 9999px;
+  opacity: 0.75;
+  transition: opacity 0.15s ease;
+}
+
+.noticeMobileTopBar .header-top-bar-close:hover {
+  opacity: 1;
+}
+
+.noticeMobileTopBar .header-top-bar-close svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ── Mobile back bar (below promo bar) ─────────────────────── */
+.noticeMobileBackBar {
+  display: flex;
+  align-items: center;
+  height: 3rem;
+  padding: 0 1rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f3f4f6;
+  position: sticky;
+  top: 2rem; /* Sits below the promo bar */
+  z-index: 49;
+}
+
+@media (min-width: 1024px) {
+  .noticeMobileBackBar {
+    display: none;
+  }
+}
+
+.noticeMobileBackBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  padding: 0.375rem 0;
+  color: #374151;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.noticeMobileBackBtn:hover {
+  color: #111827;
+}
+
+.noticeMobileBackIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+@media (max-width: 1023px) {
+  .noticeListingSection {
+    padding-top: 0 !important;
+    padding-bottom: 2.75rem !important;
+    background-color: var(--background, #fafafa) !important;
+  }
+
+  .noticeListingSection
+    > div:not([class*="mobileBar"]):not([class*="MobileTopBar"]):not(
+      [class*="noticeMobileTopBar"]
+    ) {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .desktopHeader {
+    display: none !important;
+  }
+
+  .dateGroup {
+    margin-bottom: 1.5rem;
+  }
+
+  .groupCards {
+    gap: 1rem;
+  }
+}
+
+.noticeListContainer {
+  background-color: #ffffff;
+  border-radius: 1.25rem;
+  border: 1px solid #f0eee9;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+@media (max-width: 1023px) {
+  .noticeListContainer {
+    background: none;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .noticeListContainer {
+    padding: 0;
+  }
+}
+
+.noticeList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.dateGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dateHeading {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.groupCards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Card Styles matching Bayan Event Card */
+.noticeCard {
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  border-radius: 0.875rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.variantAmber {
+  background-color: #fdf6e3;
+  border-color: #e8c98a;
+}
+
+.variantGreen {
+  background-color: #f2f9f5;
+  border-color: #c6e3d2;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cardIconAmber {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #b45309;
+  flex-shrink: 0;
+}
+
+.cardIconGreen {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-primary, #008e48);
+  flex-shrink: 0;
+}
+
+.cardTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.cardContent {
+  padding-left: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cardMeta {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin: 0;
+}
+
+.cardExcerpt {
+  font-size: 0.9375rem;
+  color: #374151;
+  margin: 0;
+  line-height: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 639px) {
+  .cardExcerpt {
+    -webkit-line-clamp: 2;
+  }
+}
+
+.paginationWrap {
+  margin-top: 1.5rem;
+}
+
+/* Mobile Bar & Category Sheet matches books */
+.mobileBar {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .mobileBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: #ffffff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    height: var(--layout-header-mobile-height, 64px);
+    padding: 0;
+    margin-bottom: 1.5rem;
+    box-sizing: border-box;
+  }
+
+  .noticeSection .mobileBar {
+    margin-bottom: 0;
+    box-shadow: none;
+    border-bottom: 1px solid #f3f4f6;
+  }
+}
+
+.mobileBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.mobileBarRight {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 100%;
+  align-self: stretch;
+}
+
+.mobileDetailBackBtn {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  height: var(--layout-header-mobile-height, 64px);
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobileBar :global(.header-back-btn) {
+  width: 45px;
+  min-width: 45px;
+  height: var(--layout-header-mobile-height, 64px);
+  margin: 0;
+  border-radius: 0;
+  align-self: stretch;
+  flex: 0 0 45px;
+  padding: 0 !important;
+}
+
+.mobileBar :global(.header-menu-btn) {
+  width: 45px;
+  min-width: 45px;
+  height: var(--layout-header-mobile-height, 64px);
+  margin: 0;
+  border-radius: 0;
+  align-self: stretch;
+  flex: 0 0 45px;
+  flex-shrink: 0;
+  padding: 0 !important;
+}
+
+.mobileTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.categoryBtn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  background-color: var(--color-primary, #008e48);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0 0.875rem;
+  border-radius: 0.625rem;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: center;
+  transition: background-color 150ms ease;
+  --ripple-color: rgba(255, 255, 255, 0.3);
+}
+
+@media (hover: hover) {
+  .categoryBtn:hover {
+    background-color: var(--color-primary-hover, #0a644a);
+    color: #ffffff;
+  }
+}
+
+.categoryBtn:active {
+  background-color: var(--color-primary-hover, #0a644a);
+}
+
+.categoryBtnIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* Mobile Category Sheet */
+.sheetOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000000002;
+}
+
+.sheetBackdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.sheetPanel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(420px, 80%);
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+  animation: noticeSheetIn 0.25s ease;
+}
+
+@keyframes noticeSheetIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.sheetHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-inline: 1.25rem;
+  padding-block: 1rem;
+  border-bottom: 1px solid #eef0ee;
+}
+
+.sheetHeaderIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-primary, #008e48);
+  flex-shrink: 0;
+}
+
+.sheetTitle {
+  flex: 1;
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-primary, #008e48);
+}
+
+.sheetClose {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  color: #111111;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.sheetClose:hover {
+  background-color: rgba(17, 17, 17, 0.06);
+}
+
+.sheetScrollableContent {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sheetList {
+  display: flex;
+  flex-direction: column;
+}
+
+.sheetRow {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sheetRowIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #111111;
+  flex-shrink: 0;
+}
+
+.sheetRowLabel {
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.sheetRowActive .sheetRowLabel,
+.sheetRowActive .sheetRowIcon {
+  color: var(--color-primary, #008e48);
+}
+
+.sheetRowCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.875rem;
+  height: 1.875rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background-color: #f3f4f6;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+/* Bottom Grid Styles */
+.bottomSection {
+  margin-top: 3.5rem;
+  padding: 4rem 0;
+  background-color: #fafafa;
+}
+
+.bottomHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .bottomHeader {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+}
+
+.bottomHeaderTextGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.bottomTitleSection {
+  margin: 0;
+  font-weight: 700;
+  font-size: var(--title-size);
+  line-height: 1.2;
+  color: #3f3f3f;
+}
+
+.bottomSubtitle {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: rgba(74, 51, 32, 0.65);
+  line-height: 1.5;
+}
+
+.bottomSeeMoreBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--color-primary, #008e48);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.625rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 200ms ease;
+  margin-left: auto;
+}
+
+.bottomSeeMoreBtn:hover {
+  background-color: var(--color-primary-hover, #0a644a);
+}
+
+.bottomGrid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .bottomGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .bottomGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.eventCard {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid #f0eee9;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.eventCard:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.eventCardTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.eventCardExcerpt {
+  font-size: 0.9375rem;
+  color: #4b5563;
+  margin: 0;
+  line-height: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 639px) {
+  .eventCardExcerpt {
+    -webkit-line-clamp: 2;
+  }
+}
+
+.eventCardMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: #111827;
+  font-weight: 500;
+}
+
+.eventCardMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.eventCardFooter {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.eventCardDetailsBtn {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.eventCardDetailsBtn:hover {
+  text-decoration: underline;
+}

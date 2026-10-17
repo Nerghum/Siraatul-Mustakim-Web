@@ -1,0 +1,263 @@
+/* styles/videos.module.css */
+
+.videosSection {
+  padding-bottom: 2.75rem;
+}
+
+@media (min-width: 1024px) {
+  .videosSection {
+    padding-bottom: 3rem;
+  }
+}
+
+@media (max-width: 1023px) {
+  .videosSection {
+    padding-top: 0 !important;
+  }
+
+  .videosSection > div:not([class*="mobileBar"]):not([class*="MobileTopBar"]) {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .desktopHeader {
+    display: none !important;
+  }
+}
+
+.mobileBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+}
+
+@media (max-width: 1023px) {
+  .mobileBar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: #ffffff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    padding: 0 !important;
+    height: var(--layout-header-mobile-height, 64px);
+    margin-bottom: 1.5rem;
+    box-sizing: border-box;
+  }
+}
+
+.mobileSearchBox {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .mobileSearchBox {
+    display: block;
+    position: relative;
+    margin-bottom: 1.5rem;
+    width: 100%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mobileBar {
+    display: none;
+  }
+}
+
+.mobileBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.mobileBarRight {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 100%;
+  align-self: stretch;
+}
+
+.mobileBar :global(.header-back-btn) {
+  width: 45px;
+  min-width: 45px;
+  height: var(--layout-header-mobile-height, 64px);
+  margin: 0;
+  border-radius: 0;
+  align-self: stretch;
+  flex: 0 0 45px;
+  padding: 0 !important;
+}
+
+.mobileBar :global(.header-menu-btn) {
+  width: 45px;
+  min-width: 45px;
+  height: var(--layout-header-mobile-height, 64px);
+  margin: 0;
+  border-radius: 0;
+  align-self: stretch;
+  flex: 0 0 45px;
+  flex-shrink: 0;
+  padding: 0 !important;
+}
+
+.mobileTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.categoryBtn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  background-color: var(--color-primary, #008e48);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0 0.875rem;
+  border: none;
+  border-radius: 0.625rem;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: center;
+  transition: background-color 150ms ease;
+  --ripple-color: rgba(255, 255, 255, 0.3);
+}
+
+@media (hover: hover) {
+  .categoryBtn:hover {
+    background-color: var(--color-primary-hover, #0a644a);
+    color: #ffffff;
+  }
+}
+
+.categoryBtn:active {
+  background-color: var(--color-primary-hover, #0a644a);
+}
+
+.categoryBtnIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* 
+ * Video Grid matching mazlum-ummah layout (3 columns on desktop)
+ */
+.videoGrid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 1fr;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 600px) {
+  .videoGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .videoGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* --- Video Card --- */
+.videoCard {
+  border-radius: 1rem;
+  border: 1px solid var(--color-border);
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 4px 15px 0px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #fff;
+  transition: transform 0.2s ease-in-out;
+  position: relative;
+}
+
+.videoCard:hover {
+  transform: translateY(-2px);
+}
+
+.thumbnailWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background-color: #f3f4f6;
+}
+
+.thumbnailImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s;
+}
+
+.videoCard:hover .thumbnailImg {
+  transform: scale(1.05);
+}
+
+.overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.pulseContainer {
+  position: relative;
+  width: 3.79375rem;
+  height: 3.79375rem;
+}
+
+.playBtn {
+  position: relative;
+  width: 3.79375rem;
+  height: 3.79375rem;
+  border-radius: 50%;
+  background-color: var(--color-primary); /* Use siraatul-mustaqim brand primary */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.titleWrapper {
+  padding: 1.1875rem 1.25rem;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--color-text-primary);
+  margin: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+}
+
+/* Pagination container */
+.paginationWrap {
+  margin-top: 1rem;
+}

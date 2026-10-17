@@ -1,0 +1,45 @@
+# Dependencies & Package Managers (no node files or lock files per user instruction)
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lockb
+
+# Build & Cache Outputs
+.next/
+dist/
+build/
+out/
+.turbo/
+.cache/
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Excluded per user instruction (admin, backend, frontend, database only)
+app/
+frontend-update/
+Start Dev.app/
+siratul-mustakim.apk
+test-lexical.js
+
+# Large Media & Audio downloads
+backend/data/quran/audio/
+backend/data/boyan/audio/
+backend/data/malfuzat/audio/
+backend/uploads/
+*.apk
+*.zip
+*.tar.gz
+
+# OS & Logs
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.idea/
+.vscode/
