@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import DuaAccordion from "@/components/dua/DuaAccordion";
@@ -19,22 +19,83 @@ export default function DuaPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const query = searchParams.get("q") ?? "";
+  const initialQuery = searchParams.get("q") ?? "";
   const category = searchParams.get("category");
   const page = Math.max(1, Number.parseInt(searchParams.get("page") ?? "1", 10) || 1);
 
+  const [searchValue, setSearchValue] = useState(initialQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
+
+  // Sync state if URL search param changes externally (e.g. browser back/forward)
+  useEffect(() => {
+    const urlQ = searchParams.get("q") ?? "";
+    if (urlQ !== debouncedQuery) {
+      setSearchValue(urlQ);
+      setDebouncedQuery(urlQ);
+    }
+  }, [searchParams]);
+
+  // Listen for reset-page-search events (e.g. from clicking header/sidebar menu links)
+  useEffect(() => {
+    const handleResetSearch = (e: Event) => {
+      const customEvent = e as CustomEvent<{ href?: string }>;
+      if (!customEvent.detail?.href || customEvent.detail.href === pathname || customEvent.detail.href === "/dua") {
+        setSearchValue("");
+        setDebouncedQuery("");
+        const params = new URLSearchParams(window.location.search);
+        params.delete("q");
+        params.delete("page");
+        const qs = params.toString();
+        window.history.replaceState(null, "", qs ? `${pathname}?${qs}` : pathname);
+      }
+    };
+    window.addEventListener("reset-page-search", handleResetSearch);
+    return () => window.removeEventListener("reset-page-search", handleResetSearch);
+  }, [pathname]);
+
   const { data: rawChapters, loading } = useAsyncData(
-    () => fetchDuaChapters({ q: query, includeItems: true }),
-    [query],
+    () => fetchDuaChapters({ q: debouncedQuery, includeItems: true }),
+    [debouncedQuery],
   );
 
-  const [searchValue, setSearchValue] = useState(query);
-  const [lastQuery, setLastQuery] = useState(query);
+  const handleClearSearch = React.useCallback(() => {
+    setSearchValue("");
+    setDebouncedQuery("");
+    const params = new URLSearchParams(window.location.search);
+    params.delete("q");
+    params.delete("page");
+    const qs = params.toString();
+    const target = qs ? `${pathname}?${qs}` : pathname;
+    window.history.replaceState(null, "", target);
+  }, [pathname]);
 
-  if (lastQuery !== query) {
-    setLastQuery(query);
-    setSearchValue(query);
-  }
+  // Debounce search input without triggering full-page router reloads
+  useEffect(() => {
+    if (searchValue === debouncedQuery) return;
+
+    if (searchValue.trim() === "") {
+      setDebouncedQuery("");
+      const params = new URLSearchParams(window.location.search);
+      params.delete("q");
+      params.delete("page");
+      const qs = params.toString();
+      const target = qs ? `${pathname}?${qs}` : pathname;
+      window.history.replaceState(null, "", target);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchValue);
+      const params = new URLSearchParams(window.location.search);
+      params.set("q", searchValue);
+      params.delete("page");
+      const qs = params.toString();
+      const target = qs ? `${pathname}?${qs}` : pathname;
+      window.history.replaceState(null, "", target);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchValue, debouncedQuery, pathname]);
 
   const setParams = React.useCallback(
     (next: Record<string, string | null>, options?: { replace?: boolean }) => {
@@ -53,15 +114,6 @@ export default function DuaPage() {
     },
     [pathname, router, searchParams],
   );
-
-  useEffect(() => {
-    if (searchValue === query) return;
-    const timer = setTimeout(
-      () => setParams({ q: searchValue, page: null }, { replace: true }),
-      300,
-    );
-    return () => clearTimeout(timer);
-  }, [searchValue, query, setParams]);
 
   const filteredChapters = React.useMemo(() => {
     if (!rawChapters) return [];
@@ -124,7 +176,31 @@ export default function DuaPage() {
                 aria-label={t("dua.searchPlaceholder")}
                 value={searchValue}
                 onChange={(event) => setSearchValue(event.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") {
+                    handleClearSearch();
+                  } else if (e.key === "Enter") {
+                    e.preventDefault();
+                    setDebouncedQuery(searchValue);
+                    const params = new URLSearchParams(window.location.search);
+                    if (searchValue.trim()) params.set("q", searchValue);
+                    else params.delete("q");
+                    params.delete("page");
+                    const qs = params.toString();
+                    window.history.replaceState(null, "", qs ? `${pathname}?${qs}` : pathname);
+                  }
+                }}
               />
+              {searchValue && (
+                <button
+                  type="button"
+                  className={styles.clearBtn}
+                  onClick={handleClearSearch}
+                  aria-label="Clear search"
+                >
+                  <X size={16} />
+                </button>
+              )}
             </div>
           </ScrollRevealItem>
 

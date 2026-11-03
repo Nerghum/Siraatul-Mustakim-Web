@@ -116,6 +116,17 @@ const Sidebar = ({ open, onClose, cta = "donate", isProtected: isProtectedProp }
     onClose();
   };
 
+  const handleNavClick = (targetHref?: string) => {
+    if (!targetHref) return;
+    handleClose();
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("reset-page-search", { detail: { href: targetHref } }));
+      if (pathname === targetHref) {
+        window.history.pushState(null, "", targetHref);
+      }
+    }
+  };
+
   const createRipple = (event: React.MouseEvent<HTMLElement>) => {
     const button = event.currentTarget;
     const ripple = document.createElement("span");
@@ -193,7 +204,12 @@ const Sidebar = ({ open, onClose, cta = "donate", isProtected: isProtectedProp }
             {activeSubmenu === null ? (
               <>
                 <div className="sidebar-header sidebar-top-row">
-                  <Link className="sidebar-top-brand" href="/" data-discover="true">
+                  <Link
+                    className="sidebar-top-brand"
+                    href="/"
+                    data-discover="true"
+                    onClick={() => handleNavClick("/")}
+                  >
                     {/* Real logo from assets/logo-header.jpg */}
                     <div className="sidebar-logo">
                       <Image
@@ -299,6 +315,10 @@ const Sidebar = ({ open, onClose, cta = "donate", isProtected: isProtectedProp }
                                           aria-label={label}
                                           href={href || "/"}
                                           data-discover="true"
+                                          onClick={(e) => {
+                                            createRipple(e);
+                                            handleNavClick(href || "/");
+                                          }}
                                         >
                                           <span className="sidebar-nav-link-text">
                                             <span
@@ -445,6 +465,10 @@ const Sidebar = ({ open, onClose, cta = "donate", isProtected: isProtectedProp }
                                       aria-label={label}
                                       href={href}
                                       data-discover="true"
+                                      onClick={(e) => {
+                                        createRipple(e);
+                                        handleNavClick(href);
+                                      }}
                                     >
                                       <span className="sidebar-nav-link-text submenu-item-content">
                                         {icon && <span className="submenu-item-icon">{icon}</span>}

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, Search } from "lucide-react";
+import { ChevronLeft, Search, X } from "lucide-react";
 import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import CategorySidebar, { CategoryChips } from "@/components/shared/CategorySidebar";
@@ -22,16 +22,37 @@ export default function DuaDetailClient() {
   const params = useParams();
 
   const chapterId = (params?.id as string) || "";
-  const query = searchParams.get("q") ?? "";
+  const initialQuery = searchParams.get("q") ?? "";
   const targetDuaId = searchParams.get("dua");
 
-  const [searchValue, setSearchValue] = useState(query);
-  const [lastQuery, setLastQuery] = useState(query);
+  const [searchValue, setSearchValue] = useState(initialQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
 
-  if (lastQuery !== query) {
-    setLastQuery(query);
-    setSearchValue(query);
-  }
+  // Sync state if URL search param changes externally
+  useEffect(() => {
+    const urlQ = searchParams.get("q") ?? "";
+    if (urlQ !== debouncedQuery) {
+      setSearchValue(urlQ);
+      setDebouncedQuery(urlQ);
+    }
+  }, [searchParams]);
+
+  // Listen for reset-page-search events
+  useEffect(() => {
+    const handleResetSearch = (e: Event) => {
+      const customEvent = e as CustomEvent<{ href?: string }>;
+      if (!customEvent.detail?.href || customEvent.detail.href === pathname || customEvent.detail.href === "/dua") {
+        setSearchValue("");
+        setDebouncedQuery("");
+        const p = new URLSearchParams(window.location.search);
+        p.delete("q");
+        const qs = p.toString();
+        window.history.replaceState(null, "", qs ? `${pathname}?${qs}` : pathname);
+      }
+    };
+    window.addEventListener("reset-page-search", handleResetSearch);
+    return () => window.removeEventListener("reset-page-search", handleResetSearch);
+  }, [pathname]);
 
   // Fetch chapters for the sidebar
   const { data: rawChapters } = useAsyncData(
@@ -39,12 +60,12 @@ export default function DuaDetailClient() {
     [],
   );
 
-  // Fetch duas for this chapter / id
+  // Fetch duas for this chapter / id using debouncedQuery (no router reloads)
   const { data: detailData, loading } = useAsyncData(
     async () => {
       if (!chapterId) return { chapter: null, items: [] };
       try {
-        const res = await fetchDuaChapterItems(chapterId, query);
+        const res = await fetchDuaChapterItems(chapterId, debouncedQuery);
         if (res.chapter || (res.items && res.items.length > 0)) {
           return res;
         }
@@ -62,11 +83,47 @@ export default function DuaDetailClient() {
 
       return { chapter: null, items: [] };
     },
-    [chapterId, query],
+    [chapterId, debouncedQuery],
   );
 
   const duas = detailData?.items ?? [];
   const currentChapter = detailData?.chapter;
+
+  const handleClearSearch = React.useCallback(() => {
+    setSearchValue("");
+    setDebouncedQuery("");
+    const p = new URLSearchParams(window.location.search);
+    p.delete("q");
+    const qs = p.toString();
+    const target = qs ? `${pathname}?${qs}` : pathname;
+    window.history.replaceState(null, "", target);
+  }, [pathname]);
+
+  // Debounce search input without triggering full-page router reloads
+  useEffect(() => {
+    if (searchValue === debouncedQuery) return;
+
+    if (searchValue.trim() === "") {
+      setDebouncedQuery("");
+      const p = new URLSearchParams(window.location.search);
+      p.delete("q");
+      const qs = p.toString();
+      const target = qs ? `${pathname}?${qs}` : pathname;
+      window.history.replaceState(null, "", target);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchValue);
+      const p = new URLSearchParams(window.location.search);
+      p.set("q", searchValue);
+      const qs = p.toString();
+      const target = qs ? `${pathname}?${qs}` : pathname;
+      window.history.replaceState(null, "", target);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchValue, debouncedQuery, pathname]);
 
   const setParams = React.useCallback(
     (next: Record<string, string | null>) => {
@@ -82,12 +139,6 @@ export default function DuaDetailClient() {
     },
     [pathname, router, searchParams],
   );
-
-  useEffect(() => {
-    if (searchValue === query) return;
-    const timer = setTimeout(() => setParams({ q: searchValue, page: null }), 300);
-    return () => clearTimeout(timer);
-  }, [searchValue, query, setParams]);
 
   // Smooth scroll to targeted dua
   useEffect(() => {
@@ -150,7 +201,30 @@ export default function DuaDetailClient() {
               aria-label={t("dua.searchPlaceholder")}
               value={searchValue}
               onChange={(event) => setSearchValue(event.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  handleClearSearch();
+                } else if (e.key === "Enter") {
+                  e.preventDefault();
+                  setDebouncedQuery(searchValue);
+                  const p = new URLSearchParams(window.location.search);
+                  if (searchValue.trim()) p.set("q", searchValue);
+                  else p.delete("q");
+                  const qs = p.toString();
+                  window.history.replaceState(null, "", qs ? `${pathname}?${qs}` : pathname);
+                }
+              }}
             />
+            {searchValue && (
+              <button
+                type="button"
+                className={listingStyles.clearBtn}
+                onClick={handleClearSearch}
+                aria-label="Clear search"
+              >
+                <X size={16} />
+              </button>
+            )}
           </div>
         </div>
 

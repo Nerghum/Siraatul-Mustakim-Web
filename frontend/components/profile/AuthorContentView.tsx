@@ -60,9 +60,9 @@ const AuthorCard: React.FC<{ item: AuthorItem; basePath: string; editPath?: stri
           {formatLocalizedShortDate(item.date, locale)}
         </span>
         {editPath && (
-          <span className={parts.pqEditBtn}>
+          <span className={parts.pqEditBtn} title="Edit">
             <Edit3 size={14} />
-            {t("profile.edit") || "Edit"}
+            Edit
           </span>
         )}
       </div>

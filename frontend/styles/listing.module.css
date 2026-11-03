@@ -111,11 +111,16 @@
   border: 1px solid #f0eee9;
   border-radius: 0.875rem;
   box-shadow: none;
-  padding: 1.0625rem 1.25rem 1.0625rem 3rem;
+  padding: 1.0625rem 2.75rem 1.0625rem 3rem;
   font-size: 0.9375rem;
   color: #111827;
   outline: none;
   transition: border-color 150ms ease;
+}
+
+.searchInput::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .searchInput::placeholder {
@@ -126,6 +131,31 @@
   border: 2px solid var(--color-primary, #008e48);
   box-shadow: none;
 }
+
+.clearBtn {
+  position: absolute;
+  right: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.625rem;
+  height: 1.625rem;
+  border-radius: 9999px;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 150ms ease;
+}
+
+.clearBtn:hover {
+  background-color: #e5e7eb;
+  color: #111827;
+}
+
 
 /* ── Content grid ─────────────────────────────────────────────────────────── */
 .contentGrid {

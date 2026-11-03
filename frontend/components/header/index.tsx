@@ -220,6 +220,16 @@ const Header = ({
       "/quran/",
     ].some((prefix) => pathname.startsWith(prefix));
 
+  const handleNavClick = (targetHref?: string) => {
+    if (!targetHref) return;
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("reset-page-search", { detail: { href: targetHref } }));
+      if (pathname === targetHref) {
+        window.history.pushState(null, "", targetHref);
+      }
+    }
+  };
+
   return (
     <>
       {topBarVisible && (
@@ -298,7 +308,12 @@ const Header = ({
               </button>
             )}
             {/* Real logo from assets/logo-header.jpg */}
-            <Link className="header-logo" aria-label="Logo" href="/">
+            <Link
+              className="header-logo"
+              aria-label="Logo"
+              href="/"
+              onClick={() => handleNavClick("/")}
+            >
               <Image
                 src={logo}
                 alt="Logo"
@@ -347,6 +362,7 @@ const Header = ({
                       aria-label={label}
                       href={href || "/"}
                       data-discover="true"
+                      onClick={() => handleNavClick(href || "/")}
                     >
                       <span className="header-nav-link-text">
                         {label}
@@ -368,6 +384,10 @@ const Header = ({
                               key={item.href}
                               href={item.href}
                               className={`nav-dropdown-item ${isItemActive ? "active" : ""}`}
+                              onClick={() => {
+                                setOpenDropdown(null);
+                                handleNavClick(item.href);
+                              }}
                             >
                               {item.label}
                             </Link>
