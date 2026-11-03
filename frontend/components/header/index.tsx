@@ -94,8 +94,10 @@ const Header = ({
       "/qa",
       "/question-answer",
       "/ask",
+      "/masail",
+      "/articles",
     ].some((route) => pathname === route || pathname.startsWith(`${route}/`));
-  /* CTA button ("প্রশ্ন করুন" on malfujat and qa, "সাপোর্ট করুন" on all other public pages, none on protected pages) */
+  /* CTA button ("প্রশ্ন করুন" on malfujat, qa, masail, articles; "সাপোর্ট করুন" on all other public pages, none on protected pages) */
   const cta = ctaProp ?? (isProtectedPage ? null : (isAskCtaPage && isQuestionsEnabled) ? "ask" : "donate");
   /* Protected pages show their section label in the mobile top bar next to the
      back arrow; null everywhere else keeps the logo/back button as-is. */
