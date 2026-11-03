@@ -26,7 +26,7 @@ const LocationDialog = ({ districtId, onSave, onClose }: LocationDialogProps) =>
   const [status, setStatus] = useState<DetectStatus>("idle");
 
   const [countries, setCountries] = useState<{name: string, isoCode: string}[]>([]);
-  const [cities, setCities] = useState<{name: string, lat: number, lng: number}[]>([]);
+  const [cities, setCities] = useState<{name: string, lat: number, lng: number, timezone?: string}[]>([]);
   
   // Keep track of which country is selected so we can load cities
   const [selectedCountry, setSelectedCountry] = useState(() => {
@@ -40,7 +40,7 @@ const LocationDialog = ({ districtId, onSave, onClose }: LocationDialogProps) =>
   });
   
   // Track selected city object to serialize on save
-  const [selectedCity, setSelectedCity] = useState<{name: string, lat: number, lng: number} | null>(null);
+  const [selectedCity, setSelectedCity] = useState<{name: string, lat: number, lng: number, timezone?: string} | null>(null);
 
   useEffect(() => {
     getCountries().then(setCountries);
@@ -71,7 +71,8 @@ const LocationDialog = ({ districtId, onSave, onClose }: LocationDialogProps) =>
             name: { bn: data[0].name, en: data[0].name },
             lat: data[0].lat,
             lng: data[0].lng,
-            countryCode: selectedCountry
+            countryCode: selectedCountry,
+            timezone: data[0].timezone,
           }));
         }
       });
@@ -220,7 +221,8 @@ const LocationDialog = ({ districtId, onSave, onClose }: LocationDialogProps) =>
                     name: { bn: c.name, en: c.name },
                     lat: c.lat,
                     lng: c.lng,
-                    countryCode: selectedCountry
+                    countryCode: selectedCountry,
+                    timezone: c.timezone,
                   }));
                 }
               }}

@@ -13,6 +13,8 @@ export type District = {
   name: { bn: string; en: string };
   lat: number;
   lng: number;
+  countryCode?: string;
+  timezone?: string;
 };
 
 /** Dhaka — the default location and the reference point for every offset. */
@@ -120,4 +122,12 @@ export function parseLocation(id: string): District {
     }
   }
   return getDistrict(id);
+}
+
+/** Determines the IANA timezone for a given district or global location */
+export function getTimezoneForLocation(district?: District | null): string {
+  if (!district || !district.countryCode || district.countryCode === "BD") {
+    return "Asia/Dhaka";
+  }
+  return district.timezone || "Asia/Dhaka";
 }

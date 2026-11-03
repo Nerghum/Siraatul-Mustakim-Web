@@ -98,14 +98,14 @@ export async function getPrayerHighlight(districtId: string = "dhaka", asrMethod
   const { slots, currentKey } = calculatePrayerTimes(new Date(), districtId, asrMethod);
   
   const formattedSlots: PrayerSlot[] = [
-    { key: "fajr", icon: "moon", time: slots.fajr.str },
+    { key: "fajr", icon: "moon", time: slots.fajr.str, endTime: slots.sunrise.str },
     { key: "sunrise", icon: "sunrise", time: slots.sunrise.str },
-    { key: "ishraq", icon: "sunrise", time: slots.ishraq.str, endTime: "11:59" },
-    { key: "dhuhr", icon: "sun", time: slots.dhuhr.str },
-    { key: "asr", icon: "sun", time: slots.asr.str },
-    { key: "maghrib", icon: "sunset", time: slots.maghrib.str },
+    { key: "ishraq", icon: "sunrise", time: slots.ishraq.str, endTime: slots.noonStart.str },
+    { key: "dhuhr", icon: "sun", time: slots.dhuhr.str, endTime: slots.asr.str },
+    { key: "asr", icon: "sun", time: slots.asr.str, endTime: slots.maghrib.str },
+    { key: "maghrib", icon: "sunset", time: slots.maghrib.str, endTime: slots.isha.str },
     { key: "iftar", icon: "moon", time: slots.iftar.str },
-    { key: "isha", icon: "moon", time: slots.isha.str },
+    { key: "isha", icon: "moon", time: slots.isha.str, endTime: slots.fajr.str },
   ];
 
   return { slots: formattedSlots, currentKey };
@@ -124,7 +124,7 @@ export async function getWaqtSchedule(districtId: string = "dhaka", asrMethod: A
   const formattedRows: TimeEntry[] = [
     { key: "fajr", icon: "sunrise", time: slots.fajr.str, endTime: slots.sunrise.str },
     { key: "dhuhr", icon: "sun", time: slots.dhuhr.str, endTime: slots.asr.str },
-    { key: "asr", icon: "sun", time: slots.asr.str, endTime: slots.sunset.str },
+    { key: "asr", icon: "sun", time: slots.asr.str, endTime: slots.maghrib.str },
     { key: "maghrib", icon: "sunset", time: slots.maghrib.str, endTime: slots.isha.str },
     { key: "isha", icon: "moon", time: slots.isha.str, endTime: slots.fajr.str },
   ];
@@ -139,8 +139,8 @@ export async function getTimeGroup(namespace: "nafl" | "forbidden", districtId: 
   if (namespace === "nafl") {
     return [
       { key: "tahajjud", icon: "moon", time: slots.tahajjud.str, info: true },
-      { key: "ishraq", icon: "sun", time: slots.ishraq.str, endTime: "11:59", info: true },
-      { key: "chasht", icon: "sun", time: slots.chasht.str, endTime: "11:59", info: true },
+      { key: "ishraq", icon: "sun", time: slots.ishraq.str, endTime: slots.noonStart.str, info: true },
+      { key: "chasht", icon: "sun", time: slots.chasht.str, endTime: slots.noonStart.str, info: true },
     ];
   } else {
     return [

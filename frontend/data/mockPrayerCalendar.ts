@@ -10,9 +10,9 @@
  */
 
 import { mockFetch } from "@/lib/mock-api";
-import { calculatePrayerTimes } from "@/lib/prayer-times";
+import { calculatePrayerTimes, formatInTimezone } from "@/lib/prayer-times";
+import { getTimezoneForLocation, type District } from "@/data/bdDistricts";
 import { PrayerTimes, Coordinates, CalculationMethod, Madhab } from "adhan";
-import { format } from "date-fns";
 
 export type CalendarColumn = "sahri" | "fajr" | "sunrise" | "dhuhr" | "asr" | "maghrib" | "isha";
 
@@ -174,11 +174,11 @@ export function shiftTimeLabel(time: string, minutes: number): string {
 }
 
 export type MonthRowOptions = {
-  /** defaults to true — the transcribed table already includes the margin */
+  /** defaults to true — the shipped table already includes the margin */
   precaution?: boolean;
   asrMethod?: AsrMethod;
   /** location; omitted means Dhaka, the reference point */
-  district?: { lat: number; lng: number };
+  district?: District | { lat: number; lng: number };
 };
 
 /**
@@ -219,7 +219,8 @@ export function getMonthRows(
   const params = CalculationMethod.Karachi();
   params.madhab = asrMethod === "hanafi" ? Madhab.Hanafi : Madhab.Shafi;
 
-  const fmt = (d: Date) => format(d, "h:mm");
+  const timeZone = getTimezoneForLocation(district as District);
+  const fmt = (d: Date) => formatInTimezone(d, timeZone);
 
   return Array.from({ length: span }, (_, index) => {
     const day = index + 1;
@@ -227,22 +228,21 @@ export function getMonthRows(
 
     const prayerTimes = new PrayerTimes(coordinates, date, params);
 
-    // If precaution is false, maybe subtract precaution offsets, but by default Adhan is precise.
-    // For simplicity, we just format the exact Adhan times.
-    
-    // Adhan has `fajr`, `sunrise`, `dhuhr`, `asr`, `maghrib`, `isha`
-    // Sahri is typically a few minutes before Fajr, but the mockup uses it as its own column.
-    // Let's approximate Sahri as 10 mins before Fajr if precaution is true, else 5 mins.
-    const sahriOffset = precaution ? -10 : -5;
-    const sahriDate = new Date(prayerTimes.fajr.getTime() + sahriOffset * 60000);
+    // Islamic Foundation Bangladesh (IFB) / Muslim Bangla standard precaution offsets:
+    // 1. Sahri ends 5 mins before Fajr
+    // 2. Dhuhr has +2 mins precaution after true solar noon
+    // 3. Maghrib / Iftar is sunset + 2 mins precaution (আজান ও ইফতার সূর্যাস্তের ২ মিনিট পর)
+    const sahriDate = new Date(prayerTimes.fajr.getTime() - (precaution ? 5 : 0) * 60000);
+    const dhuhrDate = precaution ? new Date(prayerTimes.dhuhr.getTime() + 2 * 60000) : prayerTimes.dhuhr;
+    const maghribDate = precaution ? new Date(prayerTimes.sunset.getTime() + 2 * 60000) : prayerTimes.sunset;
 
     const times: Record<CalendarColumn, string> = {
       sahri: fmt(sahriDate),
       fajr: fmt(prayerTimes.fajr),
       sunrise: fmt(prayerTimes.sunrise),
-      dhuhr: fmt(prayerTimes.dhuhr),
+      dhuhr: fmt(dhuhrDate),
       asr: fmt(prayerTimes.asr),
-      maghrib: fmt(prayerTimes.maghrib),
+      maghrib: fmt(maghribDate),
       isha: fmt(prayerTimes.isha),
     };
 
