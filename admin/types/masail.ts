@@ -3,6 +3,14 @@ export interface Masail {
   title: string;
   description: string;
   category?: string;
+  author?: string;
+  createdBy?: {
+    _id: string;
+    name?: string;
+    email?: string;
+    role?: string;
+  } | string;
+  views?: number;
   createdAt: string;
   updatedAt: string;
 }

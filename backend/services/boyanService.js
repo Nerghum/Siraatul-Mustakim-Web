@@ -1,5 +1,6 @@
 import Boyan from "../models/Boyan.js";
 import BoyanCategory from "../models/BoyanCategory.js";
+import BoyanAuthor from "../models/BoyanAuthor.js";
 
 const getBaseUrl = () =>
   process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
@@ -21,6 +22,7 @@ const hydrateBoyanAudio = (doc) => {
 
 const getAll = async ({
   q,
+  search,
   category,
   author,
   location,
@@ -31,13 +33,14 @@ const getAll = async ({
   limit = 50,
 } = {}) => {
   const query = {};
-  if (q && String(q).trim()) {
-    const normalizedQuery = String(q).trim();
+  const searchTerm = String(q || search || "").trim();
+  if (searchTerm) {
+    const escaped = searchTerm.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
     query.$or = [
-      { title: { $regex: normalizedQuery, $options: "i" } },
-      { author: { $regex: normalizedQuery, $options: "i" } },
-      { category: { $regex: normalizedQuery, $options: "i" } },
-      { location: { $regex: normalizedQuery, $options: "i" } },
+      { title: { $regex: escaped, $options: "i" } },
+      { author: { $regex: escaped, $options: "i" } },
+      { category: { $regex: escaped, $options: "i" } },
+      { location: { $regex: escaped, $options: "i" } },
     ];
   }
   if (category) {
@@ -171,8 +174,106 @@ const deleteCategory = async (id) => {
 };
 
 const getAuthors = async () => {
-  const authors = await Boyan.distinct("author");
-  return authors.filter(Boolean).sort();
+  const authors = await BoyanAuthor.find().sort({ createdAt: -1 }).lean();
+  const counts = await Boyan.aggregate([
+    { $match: { author: { $ne: null, $ne: "" } } },
+    { $group: { _id: "$author", count: { $sum: 1 } } },
+  ]);
+
+  const countMap = {};
+  counts.forEach((c) => {
+    countMap[c._id] = c.count;
+  });
+
+  const result = authors.map((a) => ({
+    id: a._id.toString(),
+    _id: a._id.toString(),
+    name: a.name,
+    slug: a.slug || a.name,
+    bio: a.bio || "",
+    count: countMap[a.name] || 0,
+    createdAt: a.createdAt,
+    updatedAt: a.updatedAt,
+  }));
+
+  // Backwards compatibility: If any boyans have an author not yet in BoyanAuthor, add it
+  const existingAuthors = await Boyan.distinct("author");
+  const coveredNames = new Set(authors.map((a) => a.name.toLowerCase()));
+
+  for (const authName of existingAuthors.filter(Boolean)) {
+    const lower = authName.toLowerCase();
+    if (!coveredNames.has(lower)) {
+      result.push({
+        id: authName,
+        _id: authName,
+        name: authName,
+        slug: authName,
+        bio: "",
+        count: countMap[authName] || 0,
+      });
+    }
+  }
+
+  return result;
+};
+
+const createAuthor = async (data) => {
+  const { name, slug, bio } = data;
+  if (!name) throw new Error("Speaker/Author name is required");
+  const trimmedName = String(name).trim();
+  const trimmedSlug = (slug ? String(slug) : trimmedName)
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+
+  const exists = await BoyanAuthor.findOne({
+    $or: [{ name: trimmedName }, { slug: trimmedSlug }],
+  });
+  if (exists) {
+    throw new Error("Speaker/Author already exists");
+  }
+
+  return BoyanAuthor.create({
+    name: trimmedName,
+    slug: trimmedSlug,
+    bio: bio ? String(bio).trim() : "",
+  });
+};
+
+const updateAuthor = async (id, data) => {
+  const { name, slug, bio } = data;
+  const updates = {};
+  if (name !== undefined) updates.name = String(name).trim();
+  if (slug !== undefined) updates.slug = String(slug).trim().toLowerCase();
+  if (bio !== undefined) updates.bio = String(bio).trim();
+
+  if (!Object.keys(updates).length) throw new Error("Provide data to update");
+
+  const existingAuthor = await BoyanAuthor.findById(id);
+  if (!existingAuthor) throw new Error("Speaker/Author not found");
+
+  const oldName = existingAuthor.name;
+  const updatedAuthor = await BoyanAuthor.findByIdAndUpdate(
+    id,
+    { $set: updates },
+    { returnDocument: "after", runValidators: true }
+  );
+
+  // If author name was changed, sync to boyans that had the old author name
+  if (updates.name && updates.name !== oldName) {
+    await Boyan.updateMany(
+      { author: oldName },
+      { $set: { author: updates.name } }
+    );
+  }
+
+  return updatedAuthor;
+};
+
+const deleteAuthor = async (id) => {
+  const author = await BoyanAuthor.findByIdAndDelete(id);
+  if (!author) throw new Error("Speaker/Author not found");
+  return author;
 };
 
 const getLocations = async () => {
@@ -191,5 +292,8 @@ export {
   updateCategory,
   deleteCategory,
   getAuthors,
+  createAuthor,
+  updateAuthor,
+  deleteAuthor,
   getLocations,
 };

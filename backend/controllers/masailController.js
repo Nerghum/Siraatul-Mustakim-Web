@@ -4,7 +4,7 @@ import * as masailService from "../services/masailService.js";
 
 const getAllMasails = async (req, res) => {
     try {
-        const masails = await masailService.getAllMasails();
+        const masails = await masailService.getAllMasails(req.query);
         res.status(status.OK).json(masails);
     } catch (error) {
         res.status(status.INTERNAL_SERVER_ERROR).json({ error: error.message });
@@ -65,7 +65,10 @@ const createMasail = async (req, res) => {
             .json({ error: "Title and description are required" });
     }
     try {
-        const masail = await masailService.createMasail(req.body);
+        const masail = await masailService.createMasail({
+            ...req.body,
+            createdBy: req.user?.id || req.user?._id,
+        });
         res.status(status.CREATED).json(masail);
     } catch (error) {
         res.status(status.INTERNAL_SERVER_ERROR).json({ error: error.message });

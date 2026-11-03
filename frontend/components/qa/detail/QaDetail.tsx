@@ -3,6 +3,7 @@
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { toast } from "sonner";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import CategorySidebar from "@/components/shared/CategorySidebar";
 import ShareRow from "@/components/shared/detail/ShareRow";
@@ -11,6 +12,7 @@ import Wrapper from "@/components/wrapper";
 import { MOCK_QA_CATEGORIES } from "@/data/mockCategories";
 import { fetchQuestionPage } from "@/data/mockQaDetail";
 import { useAsyncData } from "@/hooks/use-async-data";
+import { useRecordView } from "@/hooks/use-record-view";
 import { useRipple } from "@/hooks/use-ripple";
 import { useTranslations } from "@/hooks/use-translations";
 import styles from "@/styles/detail.module.css";
@@ -30,6 +32,11 @@ const QaDetail: React.FC<{ id: string }> = ({ id }) => {
   const detail = data?.detail ?? null;
   const related = data?.related ?? [];
 
+  const liveViews = useRecordView(
+    { entityType: "faq", entityId: id },
+    detail?.views ?? 0
+  );
+
   // The question and answer cards share one saved state — they are one item.
   const [saved, setSaved] = React.useState(false);
 
@@ -37,11 +44,20 @@ const QaDetail: React.FC<{ id: string }> = ({ id }) => {
     if (!isAuthenticated) {
       setOnAuthenticated(() => {
         setSaved(true);
+        toast.success(t("detail.bookmarkAdd") || "বুকমার্কে যুক্ত করা হয়েছে");
       });
       openAuthModal();
       return;
     }
-    setSaved((prev) => !prev);
+    setSaved((prev) => {
+      const next = !prev;
+      toast.success(
+        next
+          ? t("detail.bookmarkAdd") || "বুকমার্কে যুক্ত করা হয়েছে"
+          : t("detail.bookmarkRemove") || "বুকমার্ক থেকে সরানো হয়েছে",
+      );
+      return next;
+    });
   };
 
   const handleShare = async () => {
@@ -87,7 +103,7 @@ const QaDetail: React.FC<{ id: string }> = ({ id }) => {
                 ) : (
                   <div className={styles.mainColumn}>
                     <QuestionPanel
-                      detail={detail}
+                      detail={{ ...detail, views: liveViews }}
                       saved={saved}
                       onToggleSave={handleToggleSave}
                       onShare={handleShare}
@@ -96,7 +112,7 @@ const QaDetail: React.FC<{ id: string }> = ({ id }) => {
                     <div className={styles.qaMobileDivider} />
 
                     <AnswerPanel
-                      detail={detail}
+                      detail={{ ...detail, views: liveViews }}
                       saved={saved}
                       onToggleSave={handleToggleSave}
                       onShare={handleShare}

@@ -149,7 +149,7 @@ export async function getQuestions(params: QuestionListParams): Promise<Question
       excerpt: faq.question?.question || "",
       author: faq.question?.author || "অজানা",
       date: faq.createdAt,
-      views: 0,
+      views: faq.views ?? 0,
       category: faq.answer?.category || "অন্যান্য"
     }));
 

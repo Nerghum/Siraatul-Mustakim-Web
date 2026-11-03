@@ -9,6 +9,7 @@ export type NoticeItem = {
   timeLabel?: string;
   category?: string;
   styleType?: "green" | "amber";
+  views?: number;
   createdAt?: string;
   updatedAt?: string;
 };

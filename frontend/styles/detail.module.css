@@ -728,6 +728,11 @@
   width: max-content;
 }
 
+.authorBlockNonClickable {
+  cursor: default;
+  user-select: text;
+}
+
 .authorAvatar {
   display: inline-flex;
   align-items: center;
@@ -788,11 +793,13 @@
   flex-shrink: 0;
 }
 
-/* Date + save/share sit under the author block on desktop; on mobile the
-   author block and the title bookmark carry all of it. */
+/* Date and views sit under the author block on both desktop and mobile;
+   on mobile the save/share actions are hidden via .metaActions. */
 @media (max-width: 639px) {
   .metaRowDesktop {
-    display: none;
+    display: flex;
+    gap: 0.5rem 1rem;
+    margin-top: 0.75rem;
   }
 }
 

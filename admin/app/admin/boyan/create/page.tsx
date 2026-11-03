@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useCreateBoyan, useBoyanCategories } from "@/hooks/use-boyan";
+import { useCreateBoyan, useBoyanCategories, useBoyanAuthors } from "@/hooks/use-boyan";
 import { boyanSchema } from "@/lib/validations/boyan";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,11 +25,14 @@ export default function CreateBoyanPage() {
   const router = useRouter();
   const createMutation = useCreateBoyan();
   const { data: categories } = useBoyanCategories();
+  const { data: authors } = useBoyanAuthors();
 
   const [mediaType, setMediaType] = useState<"audio" | "video">("audio");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [author, setAuthor] = useState("");
+  const [newAuthor, setNewAuthor] = useState("");
+  const [useNewAuthor, setUseNewAuthor] = useState(false);
   const [location, setLocation] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -38,14 +41,16 @@ export default function CreateBoyanPage() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+
   const youtubeId = extractYoutubeId(youtubeUrl);
 
   function validate(): boolean {
     const finalCategory = useNewCategory ? newCategory : category;
+    const finalAuthor = useNewAuthor ? newAuthor.trim() : author.trim();
     const base = {
       title,
       category: finalCategory,
-      author,
+      author: finalAuthor,
       location,
       mediaType,
       youtubeUrl,
@@ -85,11 +90,12 @@ export default function CreateBoyanPage() {
     e.preventDefault();
     if (!validate()) return;
     const finalCategory = useNewCategory ? newCategory : category;
+    const finalAuthor = useNewAuthor ? newAuthor.trim() : author.trim();
     createMutation.mutate(
       {
         title,
         category: finalCategory,
-        author,
+        author: finalAuthor,
         location,
         mediaType,
         ...(mediaType === "video"
@@ -293,13 +299,68 @@ export default function CreateBoyanPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="author">Speaker / Author</Label>
-              <Input
-                id="author"
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
-                placeholder="Author name (optional)"
-              />
+              <div className="flex items-center justify-between">
+                <Label htmlFor="author">Speaker / Author (বক্তা / আলোচক)</Label>
+                <Link
+                  href="/admin/boyan/speakers"
+                  className="text-xs text-primary hover:underline"
+                >
+                  Manage Speakers
+                </Link>
+              </div>
+              {useNewAuthor ? (
+                <Input
+                  id="author"
+                  placeholder="Enter new speaker / author name"
+                  value={newAuthor}
+                  onChange={(e) => setNewAuthor(e.target.value)}
+                />
+              ) : (
+                <Select
+                  value={author || "__none__"}
+                  onValueChange={(v) => {
+                    if (v === "__new__") {
+                      setUseNewAuthor(true);
+                      setAuthor("");
+                    } else if (v === "__none__" || !v) {
+                      setAuthor("");
+                    } else {
+                      setAuthor(v);
+                    }
+                  }}
+                >
+                  <SelectTrigger id="author">
+                    <SelectValue placeholder="Select speaker / author" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    <SelectItem value="__none__">None / Not specified</SelectItem>
+                    {authors?.map((auth) => {
+                      const authName = typeof auth === "string" ? auth : auth.name;
+                      const authKey =
+                        typeof auth === "string" ? auth : auth._id || auth.id || auth.name;
+                      return (
+                        <SelectItem key={authKey} value={authName}>
+                          {authName}
+                        </SelectItem>
+                      );
+                    })}
+                    <SelectItem value="__new__">+ Add new speaker</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+              {useNewAuthor && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setUseNewAuthor(false);
+                    setNewAuthor("");
+                  }}
+                >
+                  Select existing speaker
+                </Button>
+              )}
             </div>
 
             {/* Conditional: Video link or Audio upload */}

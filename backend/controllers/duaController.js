@@ -4,7 +4,7 @@ import * as duaService from "../services/duaService.js";
 const getChapters = async (req, res) => {
   try {
     const includeItems = req.query.includeItems === "true";
-    const chapters = await duaService.getChapters(req.query.q, { includeItems });
+    const chapters = await duaService.getChapters(req.query.q || req.query.search, { includeItems });
     res.status(status.OK).json({ chapters });
   } catch (error) {
     res
@@ -30,7 +30,10 @@ const getChapter = async (req, res) => {
 
 const getItems = async (req, res) => {
   try {
-    const items = await duaService.getItems(req.query);
+    const items = await duaService.getItems({
+      ...req.query,
+      q: req.query.q || req.query.search,
+    });
     res.status(status.OK).json({ items });
   } catch (error) {
     res
@@ -50,6 +53,7 @@ const getChapterItems = async (req, res) => {
     const items = await duaService.getItems({
       ...req.query,
       chapterId: req.params.chapterId,
+      q: req.query.q || req.query.search,
     });
 
     res.status(status.OK).json({ chapter, items });

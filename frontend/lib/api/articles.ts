@@ -86,11 +86,20 @@ export async function getAuthorArticles(params: { status: "published" | "draft";
   };
 }
 
-export async function fetchPublicArticles(params: { page?: number; limit?: number }) {
+export async function fetchPublicArticles(params: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  q?: string;
+  category?: string;
+}) {
   const url = new URL(`${API_BASE}/api/articles`);
   url.searchParams.set("status", "published");
   if (params.page) url.searchParams.set("page", params.page.toString());
   if (params.limit) url.searchParams.set("limit", params.limit.toString());
+  const term = params.search || params.q;
+  if (term) url.searchParams.set("search", term);
+  if (params.category) url.searchParams.set("category", params.category);
 
   const response = await fetch(url.toString());
 
@@ -110,10 +119,28 @@ export async function fetchPublicArticles(params: { page?: number; limit?: numbe
   };
 }
 
-export async function fetchArticleById(id: string) {
-  const response = await fetch(`${API_BASE}/api/articles/${id}`);
+export async function fetchArticleById(id: string, token?: string) {
+  const headers: Record<string, string> = {};
+  let authToken = token;
+  if (!authToken && typeof window !== "undefined") {
+    try {
+      const raw = window.localStorage.getItem("auth-session");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        authToken = parsed?.token;
+      }
+    } catch {
+      // ignore
+    }
+  }
+  if (authToken) {
+    headers["Authorization"] = `Bearer ${authToken}`;
+  }
+
+  const response = await fetch(`${API_BASE}/api/articles/${id}`, { headers });
   if (!response.ok) {
-    throw new Error("Failed to fetch article");
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to fetch article");
   }
   return response.json();
 }

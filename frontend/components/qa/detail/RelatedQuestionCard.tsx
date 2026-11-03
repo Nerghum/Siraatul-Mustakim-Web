@@ -3,6 +3,7 @@
 import { Bookmark, Share2 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { toast } from "sonner";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import type { QuestionItem } from "@/data/mockQuestions";
 import { useLocale } from "@/hooks/use-locale";
@@ -21,11 +22,20 @@ const RelatedQuestionCard: React.FC<{ item: QuestionItem }> = ({ item }) => {
     if (!isAuthenticated) {
       setOnAuthenticated(() => {
         setSaved(true);
+        toast.success(t("detail.bookmarkAdd") || "বুকমার্কে যুক্ত করা হয়েছে");
       });
       openAuthModal();
       return;
     }
-    setSaved((prev) => !prev);
+    setSaved((prev) => {
+      const next = !prev;
+      toast.success(
+        next
+          ? t("detail.bookmarkAdd") || "বুকমার্কে যুক্ত করা হয়েছে"
+          : t("detail.bookmarkRemove") || "বুকমার্ক থেকে সরানো হয়েছে",
+      );
+      return next;
+    });
   };
 
   const handleShare = async () => {

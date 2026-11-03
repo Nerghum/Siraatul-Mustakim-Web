@@ -20,11 +20,14 @@ const ComposePageClient: React.FC<{ mode: "articles" | "masail"; id?: string }> 
 
   React.useEffect(() => {
     if (id && mode === "articles") {
-      fetchArticleById(id)
+      fetchArticleById(id, session?.token)
         .then(setInitialData)
-        .catch((err) => alert("Failed to load article"));
+        .catch((err) => {
+          console.error("Failed to load article:", err);
+          alert(err.message || "Failed to load article");
+        });
     }
-  }, [id, mode]);
+  }, [id, mode, session?.token]);
 
   const handleSubmit = async (data: { title: string; content: string; status: "draft" | "published"; tags: string[] }) => {
     if (!session?.token) {

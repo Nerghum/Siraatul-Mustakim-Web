@@ -79,7 +79,7 @@ export async function getQuestionDetail(id: string): Promise<QuestionDetail | nu
       excerpt: faq.question?.question || "",
       author: faq.question?.author || "অজানা",
       date: faq.createdAt,
-      views: 0,
+      views: faq.views ?? 0,
       category: faq.answer?.category || "অন্যান্য",
       question: faq.question?.question || "",
       tags: [],

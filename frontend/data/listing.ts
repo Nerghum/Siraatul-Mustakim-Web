@@ -9,7 +9,7 @@
 
 import { mockFetch } from "@/lib/mock-api";
 import { fetchKitabList } from "@/lib/api/kitab";
-import { fetchMasailList } from "@/lib/api/masail";
+import { fetchMasailList, fetchMasailCategories } from "@/lib/api/masail";
 import { fetchMalfuzatList } from "@/lib/api/malfuzat";
 import { fetchPublicArticles } from "@/lib/api/articles";
 import type { ListingItem, ListingNamespace, VideoItem } from "@/types/listing";
@@ -43,12 +43,19 @@ export async function getListing(
   // ── Articles: real API ───────────────────────────────────────────────────
   if (namespace === "articles") {
     try {
-      const all = await fetchPublicArticles({ limit: 1000 });
+      const all = await fetchPublicArticles({ limit: 1000, search: params.query });
       const needle = (params.query ?? "").trim().toLowerCase();
       const category = params.category ?? null;
 
       let filtered = all.items.filter((a: any) => {
-        if (needle && !a.title.toLowerCase().includes(needle) && !a.content.toLowerCase().includes(needle)) return false;
+        if (needle) {
+          const authorMatch = a.author?.name ? a.author.name.toLowerCase().includes(needle) : false;
+          const tagsMatch = Array.isArray(a.tags) ? a.tags.some((t: string) => t.toLowerCase().includes(needle)) : false;
+          const titleMatch = a.title ? a.title.toLowerCase().includes(needle) : false;
+          const contentMatch = a.content ? a.content.toLowerCase().includes(needle) : false;
+          const excerptMatch = a.excerpt ? a.excerpt.toLowerCase().includes(needle) : false;
+          if (!titleMatch && !contentMatch && !excerptMatch && !authorMatch && !tagsMatch) return false;
+        }
         if (category && (!a.tags || !a.tags.includes(category))) return false;
         return true;
       });
@@ -65,7 +72,7 @@ export async function getListing(
         excerpt: a.excerpt,
         author: a.author?.name || "লেখক",
         date: a.date,
-        views: 0,
+        views: a.views ?? 0,
         category: a.tags?.[0] || "",
       }));
 
@@ -78,13 +85,35 @@ export async function getListing(
   // ── Masail: real API ─────────────────────────────────────────────────────
   if (namespace === "masail") {
     try {
-      const all = await fetchMasailList();
+      const [all, categories] = await Promise.all([
+        fetchMasailList(params.query ? { search: params.query } : undefined),
+        fetchMasailCategories().catch(() => []),
+      ]);
       const needle = (params.query ?? "").trim().toLowerCase();
       const category = params.category ?? null;
+      const targetCat = category
+        ? categories.find((c) => c.slug === category || c.id === category || c.name === category)
+        : null;
 
-      let filtered = all.filter((m) => {
-        if (needle && !m.title.toLowerCase().includes(needle) && !m.description.toLowerCase().includes(needle)) return false;
-        if (category && m.category !== category) return false;
+      let filtered = all.filter((m: any) => {
+        if (needle) {
+          const titleMatch = m.title ? m.title.toLowerCase().includes(needle) : false;
+          const descMatch = m.description ? m.description.toLowerCase().includes(needle) : false;
+          const catMatch = m.category ? m.category.toLowerCase().includes(needle) : false;
+          const authorMatch = m.author ? m.author.toLowerCase().includes(needle) : false;
+          const previewsMatch = Array.isArray(m.previews)
+            ? m.previews.some((p: any) => p.text && p.text.toLowerCase().includes(needle))
+            : false;
+          if (!titleMatch && !descMatch && !catMatch && !authorMatch && !previewsMatch) {
+            return false;
+          }
+        }
+        if (category) {
+          const match =
+            m.category === category ||
+            (targetCat && (m.category === targetCat.slug || m.category === targetCat.name || m.category === targetCat.id));
+          if (!match) return false;
+        }
         return true;
       });
 
@@ -94,15 +123,18 @@ export async function getListing(
       const start = (page - 1) * limit;
       const pageItems = filtered.slice(start, start + limit);
 
-      const items: ListingItem[] = pageItems.map((m) => ({
-        id: m._id,
-        title: m.title,
-        excerpt: (m.description || "").replace(/<[^>]*>?/gm, '').slice(0, 200),
-        author: "সিরাতুল মুস্তাকিম",
-        date: m.createdAt,
-        views: 0,
-        category: m.category ?? "",
-      }));
+      const items: ListingItem[] = pageItems.map((m) => {
+        const catObj = categories.find((c) => c.slug === m.category || c.id === m.category || c.name === m.category);
+        return {
+          id: m._id,
+          title: m.title,
+          excerpt: (m.description || "").replace(/<[^>]*>?/gm, "").slice(0, 200),
+          author: "সিরাতুল মুস্তাকিম",
+          date: m.createdAt,
+          views: m.views ?? 0,
+          category: catObj?.slug || m.category || "",
+        };
+      });
 
       return { items, totalPages };
     } catch {
@@ -128,7 +160,7 @@ export async function getListing(
         author: k.author,
         excerpt: k.content?.slice(0, 200) ?? "",
         date: k.createdAt,
-        views: 0,
+        views: k.views ?? 0,
         category: k.category ?? "",
         // Pass cover image URL through so BookCard can use it
         coverImage: k.coverImages?.[0] ?? "",
@@ -158,7 +190,7 @@ export async function getListing(
         excerpt: "",
         author: b.author ?? "",
         date: b.createdAt,
-        views: 0,
+        views: b.views ?? 0,
         category: b.category ?? "",
         youtubeId: extractYoutubeId(b.youtubeUrl),
       }));
@@ -188,7 +220,7 @@ export async function getListing(
         excerpt: "",
         author: b.author ?? "",
         date: b.createdAt,
-        views: 0,
+        views: b.views ?? 0,
         category: b.category ?? "",
         audioUrl: boyanAudioUrl(b.audioUrl),
         location: b.location ?? "",
@@ -219,7 +251,7 @@ export async function getListing(
         excerpt: m.description ?? "",
         author: m.author ?? "",
         date: m.createdAt,
-        views: 0,
+        views: m.views ?? 0,
         category: m.category ?? "",
         // Carry audio-specific fields for the audio card
         ...(mode === "audio" && {

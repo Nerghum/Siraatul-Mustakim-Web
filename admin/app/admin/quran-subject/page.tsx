@@ -18,9 +18,13 @@ export default function QuranSubjectListPage() {
   const grouped = useMemo(() => {
     if (!data) return [];
     const map = new Map<number, { id: number; title: string; count: number }>();
-    const filtered = search
-      ? data.filter((s) =>
-          s.category_title.toLowerCase().includes(search.toLowerCase()),
+    const needle = search.trim().toLowerCase();
+    const filtered = needle
+      ? data.filter(
+          (s) =>
+            s.category_title?.toLowerCase().includes(needle) ||
+            s.verse_text?.toLowerCase().includes(needle) ||
+            s.bn_meaning?.toLowerCase().includes(needle),
         )
       : data;
     filtered.forEach((s) => {

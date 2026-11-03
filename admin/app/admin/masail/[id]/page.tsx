@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useMasail, useDeleteMasail } from "@/hooks/use-masail";
+import { useMasail, useDeleteMasail, useMasailCategories } from "@/hooks/use-masail";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -25,6 +25,7 @@ export default function MasailDetailPage() {
   const hasAccess =
     currentUser && ALLOWED_ROLES.includes(currentUser.role || "");
   const { data, isLoading, isError } = useMasail(id);
+  const { data: categories = [] } = useMasailCategories();
   const deleteMutation = useDeleteMasail();
   const [showDelete, setShowDelete] = useState(false);
   const masail = data as unknown as Masail;
@@ -104,9 +105,28 @@ export default function MasailDetailPage() {
           <CardTitle>{masail.title}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          {masail.category && (
+            <div>
+              <p className="font-bold">Category</p>
+              <div className="mt-1">
+                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                  {categories.find((c: any) => c.slug === masail.category || c._id === masail.category || c.name === masail.category)?.name || masail.category}
+                </span>
+              </div>
+            </div>
+          )}
           <div>
             <p className="font-bold">Description</p>
             <div className="mt-1">{parse(masail.description)}</div>
+          </div>
+          <div>
+            <p className="font-bold">Posted By</p>
+            <p className="text-sm text-foreground mt-0.5">
+              {(typeof masail.createdBy === "object" && masail.createdBy?.name) ||
+                (typeof masail.createdBy === "object" && masail.createdBy?.email) ||
+                masail.author ||
+                "Admin"}
+            </p>
           </div>
           <div>
             <p className="font-medium">Created</p>

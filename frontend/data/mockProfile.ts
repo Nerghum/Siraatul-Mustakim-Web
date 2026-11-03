@@ -141,6 +141,25 @@ export async function getAnswerQueue(params: {
 
 /** Single question shown at the top of the answer panel. */
 export async function getAnswerQuestion(id: string): Promise<QuestionItem> {
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5001";
+  try {
+    const res = await fetch(`${API_BASE}/api/faq/${id}`);
+    if (res.ok) {
+      const faq = await res.json();
+      return {
+        id: faq._id,
+        title: (faq.question?.question || "").substring(0, 60) + "...",
+        questionNo: faq.serialNumber || (faq._id ? faq._id.substring(faq._id.length - 4) : "—"),
+        excerpt: faq.question?.question || "",
+        author: faq.question?.author || "অজানা",
+        date: faq.createdAt || new Date().toISOString(),
+        views: faq.views || 0,
+        category: faq.answer?.category || "অন্যান্য",
+      };
+    }
+  } catch (err) {
+    console.error("Failed to fetch answer question:", err);
+  }
   const base = MOCK_QUESTIONS[0];
   return mockFetch({ ...base, id, questionNo: 11211 });
 }

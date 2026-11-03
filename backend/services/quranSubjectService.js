@@ -70,9 +70,17 @@ const getSubject = async (id) => {
 
 const searchSubjects = async (query) => {
   try {
-    const { q, categoryId, surahId, page = 1, limit = 20 } = query;
+    const { q, search, categoryId, surahId, page = 1, limit = 20 } = query;
     const filter = {};
-    if (q) filter.$text = { $search: q };
+    const term = String(q || search || "").trim();
+    if (term) {
+      const safeRegex = new RegExp(term.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), "i");
+      filter.$or = [
+        { category_title: safeRegex },
+        { verse_text: safeRegex },
+        { bn_meaning: safeRegex },
+      ];
+    }
     if (categoryId) filter.category_id = parseInt(categoryId);
     if (surahId) filter.surah_id = parseInt(surahId);
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -89,6 +97,15 @@ const searchSubjects = async (query) => {
 const listAllSubjects = async (filterQuery = {}) => {
   try {
     const filter = {};
+    const term = String(filterQuery.q || filterQuery.search || "").trim();
+    if (term) {
+      const safeRegex = new RegExp(term.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), "i");
+      filter.$or = [
+        { category_title: safeRegex },
+        { verse_text: safeRegex },
+        { bn_meaning: safeRegex },
+      ];
+    }
     if (filterQuery.categoryId) filter.category_id = parseInt(filterQuery.categoryId);
     if (filterQuery.surahId) filter.surah_id = parseInt(filterQuery.surahId);
     const data = await QuranSubject.find(filter).sort({ id: 1 });

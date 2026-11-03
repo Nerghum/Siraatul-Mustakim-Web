@@ -35,8 +35,20 @@ const geteventsScheduleById = async (id) => {
   return eventsSchedule;
 };
 
-const getAlleventsSchedules = async () => {
-  const eventsSchedules = await EventsSchedule.find().sort({ createdAt: -1 });
+const getAlleventsSchedules = async (query = {}) => {
+  const searchTerm = String(query.search || query.q || "").trim();
+  const filter = {};
+  if (searchTerm) {
+    const safeRegex = new RegExp(searchTerm.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), "i");
+    filter.$or = [
+      { title: safeRegex },
+      { districtName: safeRegex },
+      { location: safeRegex },
+      { path: safeRegex },
+      { timeText: safeRegex },
+    ];
+  }
+  const eventsSchedules = await EventsSchedule.find(filter).sort({ createdAt: -1 });
   return eventsSchedules;
 };
 

@@ -25,7 +25,21 @@ const masailSchema = new mongoose.Schema(
       unique: true,
       min: 1,
     },
-    
+    views: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
+    author: {
+      type: String,
+      trim: true,
+      default: "",
+    },
   },
   { timestamps: true },
 );

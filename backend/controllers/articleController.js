@@ -1,6 +1,31 @@
 import status from "http-status";
 import mongoose from "mongoose";
 import Article from "../models/Article.js";
+import User from "../models/User.js";
+
+const categoryEquivalents = {
+  namaz: ["namaz", "নামাজ", "নামায"],
+  roza: ["roza", "রোজা", "রোযা"],
+  zakat: ["zakat", "যাকাত"],
+  hajj: ["hajj", "হজ্জ", "হজ"],
+  iman: ["iman", "ঈমান"],
+  aqida: ["aqida", "আকিদা", "আক্বীদা"],
+  muamalat: ["muamalat", "মুয়ামালাত", "মুআমালাত", "মুআ'মালাত"],
+  muasharat: ["muasharat", "মুয়াশারাত", "মুআশারাত", "মুআ'শারাত"],
+  akhlaq: ["akhlaq", "আখলাক"],
+  "dawat-tabligh": ["dawat-tabligh", "দাওয়াত ও তাবলীগ", "দাওয়াত", "তাবলীগ"],
+  islah: ["islah", "ইসলাহ", "তাসকিয়াহ", "আত্মশুদ্ধি"],
+  biye: ["biye", "বিবাহ", "বিয়ে"],
+  ilm: ["ilm", "ইলম"],
+  taharat: ["taharat", "তাহারাত", "পবিত্রতা"],
+  janaza: ["janaza", "জানাযা", "জানাযাহ"],
+  samakal: ["samakal", "সমকাল"],
+  jiboni: ["jiboni", "জীবনী"],
+  dawati: ["dawati", "দাওয়াতী", "দাওয়াতি"],
+  fikri: ["fikri", "ফিকরী", "ফিকরি"],
+  ibadat: ["ibadat", "ইবাদত"],
+  poribar: ["poribar", "পরিবার"],
+};
 
 export const createArticle = async (req, res) => {
   try {
@@ -47,24 +72,85 @@ export const createArticle = async (req, res) => {
 
 export const getArticles = async (req, res) => {
   try {
-    const { status: queryStatus, author, limit = 20, page = 1 } = req.query;
+    const { status: queryStatus, author, category, tag, search, q, limit = 20, page = 1 } = req.query;
     const filter = {};
 
-    // Only allow public to see published, unless admin/moderator, or author
-    if (req.user && (req.user.role === "admin" || req.user.role === "moderator")) {
+    // Determine access permissions:
+    // Staff (admin, moderator, mufti): can see all articles (drafts, pending, published)
+    // Regular logged in user: can see published articles OR their own drafts
+    // Public visitor: only published articles
+    const isStaff = req.user && ["admin", "moderator", "mufti"].includes(req.user.role);
+
+    if (isStaff) {
       if (queryStatus) filter.status = queryStatus;
-    } else {
-      // Regular users or writers
-      if (req.user && author === req.user.id) {
+    } else if (req.user) {
+      if (author && author === req.user.id) {
         filter.author = req.user.id;
         if (queryStatus) filter.status = queryStatus;
       } else {
-        filter.status = "published";
+        filter.$or = [
+          { status: "published" },
+          { author: req.user.id },
+        ];
+        if (queryStatus) {
+          filter.status = queryStatus;
+          filter.author = req.user.id;
+          delete filter.$or;
+        }
+      }
+    } else {
+      filter.status = "published";
+    }
+
+    if (author && (!req.user || author !== req.user.id || isStaff)) {
+      if (mongoose.Types.ObjectId.isValid(author)) {
+        filter.author = author;
+      } else {
+        const matchedUsers = await User.find({ name: { $regex: author.trim(), $options: "i" } }).select("_id").lean();
+        filter.author = { $in: matchedUsers.map((u) => u._id) };
       }
     }
 
-    if (author && (!req.user || author !== req.user.id)) {
-        filter.author = author;
+    if (category || tag) {
+      const catKey = (category || tag).toLowerCase().trim();
+      const equivs = categoryEquivalents[catKey];
+      if (equivs && equivs.length > 0) {
+        filter.tags = { $regex: new RegExp(equivs.map((e) => e.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')).join("|"), "i") };
+      } else {
+        filter.tags = { $regex: new RegExp((category || tag).trim(), "i") };
+      }
+    }
+
+    const searchTerm = (search || q || "").trim();
+    if (searchTerm) {
+      const safeRegex = new RegExp(searchTerm.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), "i");
+      let matchedUserIds = [];
+      try {
+        const matchedUsers = await User.find({ name: safeRegex }).select("_id").lean();
+        matchedUserIds = matchedUsers.map((u) => u._id);
+      } catch (err) {
+        // ignore
+      }
+
+      const searchOr = [
+        { title: safeRegex },
+        { content: safeRegex },
+        { tags: safeRegex },
+      ];
+      if (matchedUserIds.length > 0) {
+        searchOr.push({ author: { $in: matchedUserIds } });
+      }
+
+      if (filter.$or) {
+        const existingOr = filter.$or;
+        delete filter.$or;
+        filter.$and = filter.$and || [];
+        filter.$and.push({ $or: existingOr }, { $or: searchOr });
+      } else if (filter.$and) {
+        filter.$and.push({ $or: searchOr });
+      } else {
+        filter.$or = searchOr;
+      }
     }
 
     const skip = (Math.max(1, parseInt(page)) - 1) * parseInt(limit);
@@ -106,9 +192,12 @@ export const getArticleById = async (req, res) => {
       return res.status(status.NOT_FOUND).json({ error: "Article not found" });
     }
 
-    // if not published, only author or admin can see it
+    // if not published, only author or staff (admin/moderator/mufti) can see it
     if (article.status !== "published") {
-      if (!req.user || (req.user.role !== "admin" && req.user.role !== "moderator" && req.user.id !== article.author._id.toString())) {
+      const authorId = article.author?._id ? article.author._id.toString() : article.author?.toString();
+      const isStaff = req.user && ["admin", "moderator", "mufti"].includes(req.user.role);
+      const isOwner = req.user && authorId && req.user.id === authorId;
+      if (!isStaff && !isOwner) {
         return res.status(status.FORBIDDEN).json({ error: "Access denied" });
       }
     }
@@ -131,8 +220,11 @@ export const updateArticle = async (req, res) => {
       return res.status(status.NOT_FOUND).json({ error: "Article not found" });
     }
 
-    // Only author or admin/moderator can update
-    if (req.user.role !== "admin" && req.user.role !== "moderator" && req.user.id !== article.author.toString()) {
+    // Only author or staff (admin/moderator/mufti) can update
+    const authorId = article.author ? article.author.toString() : null;
+    const isStaff = req.user && ["admin", "moderator", "mufti"].includes(req.user.role);
+    const isOwner = req.user && authorId && req.user.id === authorId;
+    if (!isStaff && !isOwner) {
       return res.status(status.FORBIDDEN).json({ error: "Not authorized to update this article" });
     }
 
@@ -188,8 +280,11 @@ export const deleteArticle = async (req, res) => {
       return res.status(status.NOT_FOUND).json({ error: "Article not found" });
     }
 
-    // Only author or admin/moderator can delete
-    if (req.user.role !== "admin" && req.user.role !== "moderator" && req.user.id !== article.author.toString()) {
+    // Only author or staff (admin/moderator/mufti) can delete
+    const authorId = article.author ? article.author.toString() : null;
+    const isStaff = req.user && ["admin", "moderator", "mufti"].includes(req.user.role);
+    const isOwner = req.user && authorId && req.user.id === authorId;
+    if (!isStaff && !isOwner) {
       return res.status(status.FORBIDDEN).json({ error: "Not authorized to delete this article" });
     }
 

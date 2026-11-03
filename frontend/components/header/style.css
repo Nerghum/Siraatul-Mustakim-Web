@@ -672,6 +672,8 @@ body.has-top-bar .header {
   overflow: hidden;
   text-decoration: none;
   cursor: pointer;
+  background: transparent;
+  font-family: inherit;
 }
 
 .donate-btn-bg {
@@ -1902,6 +1904,8 @@ body.sidebar-open {
   overflow: hidden;
   text-decoration: none;
   cursor: pointer;
+  background: transparent;
+  font-family: inherit;
 }
 
 .sidebar-donate-btn .donate-btn-bg {

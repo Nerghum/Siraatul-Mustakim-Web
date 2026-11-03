@@ -137,12 +137,12 @@
     },
     "userDropdown": {
       "myProfile": "আমার প্রোফাইল",
-      "myQuestions": "আমার প্রশ্ন - ইউজার",
-      "myArticles": "আমার আর্টিকেল - লেখক",
-      "myMasail": "আমার মাসায়েল - লেখক",
+      "myQuestions": "আমার প্রশ্ন",
+      "myArticles": "আমার আর্টিকেল",
+      "myMasail": "আমার মাসায়েল",
       "bookmarks": "আমার বুকমার্ক",
       "askQuestion": "প্রশ্ন করুন",
-      "answerQueue": "প্রশ্নের উত্তর - লেখক",
+      "answerQueue": "প্রশ্নের উত্তর",
       "logout": "লগ আউট"
     }
   },
@@ -613,13 +613,13 @@
   "profile": {
     "back": "পূর্বের পাতায় ফিরে যান",
     "rail": {
-      "myQuestions": "আমার প্রশ্ন - ইউজার",
+      "myQuestions": "আমার প্রশ্ন",
       "ask2": "প্রশ্ন করুন",
-      "answerQueue": "প্রশ্নের উত্তর - লেখক",
+      "answerQueue": "প্রশ্নের উত্তর",
       "profile": "আমার প্রোফাইল",
       "bookmarks": "আমার বুকমার্ক",
-      "articles": "আমার আর্টিকেল - লেখক",
-      "masail": "আমার মাসায়েল - লেখক"
+      "articles": "আমার আর্টিকেল",
+      "masail": "আমার মাসায়েল"
     },
     "edit": {
       "title": "আমার প্রোফাইল",

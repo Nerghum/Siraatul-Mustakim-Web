@@ -25,11 +25,25 @@ export default function ArticleListPage() {
   const [page, setPage] = useState(1);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  const params: Record<string, string | number | undefined> = {};
+  const params: Record<string, string | number | undefined> = {
+    page,
+    limit: 50,
+  };
   if (search) params.search = search;
 
   const { data, isLoading, isError, error, refetch } = useArticleList(params);
   const deleteMutation = useDeleteArticle();
+
+  const rawList = data as any;
+  const articles: Article[] = Array.isArray(rawList)
+    ? rawList
+    : Array.isArray(rawList?.data)
+    ? rawList.data
+    : [];
+
+  const totalPages =
+    (rawList?.pagination?.totalPages as number | undefined) ||
+    Math.max(1, Math.ceil(articles.length / 50));
 
   async function handleDelete() {
     if (!deleteId) return;
@@ -119,7 +133,7 @@ export default function ArticleListPage() {
       <h1 className="text-2xl font-bold">Articles</h1>
       <DataTable<Article>
         columns={columns}
-        data={data as Article[] | undefined}
+        data={articles}
         isLoading={isLoading}
         isError={isError}
         error={error as Error | null}
@@ -133,7 +147,7 @@ export default function ArticleListPage() {
         createHref="/admin/articles/create"
         createLabel="Add Article"
         page={page}
-        totalPages={1}
+        totalPages={totalPages}
         emptyMessage="No articles found"
         emptyDescription="Create your first article to get started."
       />

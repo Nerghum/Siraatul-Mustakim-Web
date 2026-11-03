@@ -51,6 +51,11 @@ const AskForm2: React.FC<AskForm2Props> = ({ isPublicPage, hideHeader }) => {
   const forceDisabled = Boolean(!settingsLoading && settings && !settings.isQuestionsEnabled);
 
   const submitQuestion = React.useCallback(async () => {
+    if (forceDisabled) {
+      alert("প্রশ্ন জমা দেওয়া সাময়িকভাবে বন্ধ রয়েছে।");
+      return;
+    }
+
     if (!question.trim()) {
       alert("অনুগ্রহ করে আপনার প্রশ্নটি লিখুন।");
       return;
@@ -74,16 +79,19 @@ const AskForm2: React.FC<AskForm2Props> = ({ isPublicPage, hideHeader }) => {
         })
       });
       
-      if (!res.ok) throw new Error("Failed to submit");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to submit");
+      }
       
       toast(t("profile.ask2.submitSuccess"), { position: "bottom-center" });
       router.push("/ask/success");
-    } catch (err) {
-      alert("দুঃখিত, প্রশ্নটি জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
+    } catch (err: any) {
+      alert(err.message || "দুঃখিত, প্রশ্নটি জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
     } finally {
       setIsSubmitting(false);
     }
-  }, [t, router, question, district, answerType, isAuthenticated, user, userName]);
+  }, [forceDisabled, t, router, question, district, answerType, isAuthenticated, user, userName, mobile]);
 
   const handleSubmit = () => {
     if (!isAuthenticated) {

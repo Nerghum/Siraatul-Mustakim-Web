@@ -164,6 +164,39 @@ const getAuthors = async (_req, res) => {
   }
 };
 
+const createAuthor = async (req, res) => {
+  try {
+    const author = await boyanService.createAuthor(req.body);
+    res.status(status.CREATED).json(author);
+  } catch (error) {
+    res
+      .status(error.status || status.BAD_REQUEST)
+      .json({ error: error.message });
+  }
+};
+
+const updateAuthor = async (req, res) => {
+  try {
+    const author = await boyanService.updateAuthor(req.params.id, req.body);
+    res.status(status.OK).json(author);
+  } catch (error) {
+    res
+      .status(error.status || status.BAD_REQUEST)
+      .json({ error: error.message });
+  }
+};
+
+const deleteAuthor = async (req, res) => {
+  try {
+    await boyanService.deleteAuthor(req.params.id);
+    res.status(status.OK).json({ message: "Author deleted" });
+  } catch (error) {
+    res
+      .status(error.status || status.BAD_REQUEST)
+      .json({ error: error.message });
+  }
+};
+
 const getLocations = async (_req, res) => {
   try {
     const locations = await boyanService.getLocations();
@@ -186,5 +219,8 @@ export {
   updateCategory,
   deleteCategory,
   getAuthors,
+  createAuthor,
+  updateAuthor,
+  deleteAuthor,
   getLocations,
 };

@@ -18,6 +18,7 @@ import usersRoutes from "./usersRoutes.js";
 import articleRoutes from "./articleRoutes.js";
 import settingsRoutes from "./settingsRoutes.js";
 import adRoutes from "./adRoutes.js";
+import viewRoutes from "./viewRoutes.js";
 
 const router = express.Router();
 router.get("/", (req, res) => {
@@ -42,5 +43,6 @@ router.use("/admin/users", usersRoutes);
 router.use("/articles", articleRoutes);
 router.use("/settings", settingsRoutes);
 router.use("/ads", adRoutes);
+router.use("/views", viewRoutes);
 
 export default router;

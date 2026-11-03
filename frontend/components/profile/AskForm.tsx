@@ -42,6 +42,11 @@ const AskForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const handleSubmit = async () => {
+    if (forceDisabled) {
+      alert("প্রশ্ন জমা দেওয়া সাময়িকভাবে বন্ধ রয়েছে।");
+      return;
+    }
+
     if (!question.trim()) {
       alert("অনুগ্রহ করে আপনার প্রশ্নটি লিখুন।");
       return;
@@ -65,11 +70,14 @@ const AskForm: React.FC = () => {
         })
       });
       
-      if (!res.ok) throw new Error("Failed to submit");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || "দুঃখিত, প্রশ্নটি জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
+      }
       
       router.push("/ask/success");
-    } catch (err) {
-      alert("দুঃখিত, প্রশ্নটি জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
+    } catch (err: any) {
+      alert(err.message || "দুঃখিত, প্রশ্নটি জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
     } finally {
       setIsSubmitting(false);
     }

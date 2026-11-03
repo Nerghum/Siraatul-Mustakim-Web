@@ -9,7 +9,10 @@ export function useArticleList(params?: Record<string, string | number | undefin
     queryKey: ["article", params],
     queryFn: async () => {
       const res = await getArticleList(params);
-      return res.data;
+      const raw = res.data as any;
+      if (Array.isArray(raw)) return raw;
+      if (raw && Array.isArray(raw.data)) return raw.data;
+      return [];
     },
   });
 }

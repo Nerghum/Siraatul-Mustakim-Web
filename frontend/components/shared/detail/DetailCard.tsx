@@ -1,6 +1,7 @@
 "use client";
 
 import { Bookmark, Calendar, Eye, Folder, Share2, Tag as TagIcon } from "lucide-react";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLocale } from "@/hooks/use-locale";
@@ -21,12 +22,22 @@ const TAG_CLASS = {
   muted: styles.tagMuted,
 } as const;
 
-const renderTags = (tags: Tag[]) =>
-  tags.map((tag) => (
-    <span key={tag.label} className={cn(styles.tag, TAG_CLASS[tag.variant])}>
-      {tag.label}
-    </span>
-  ));
+const renderTags = (tags: Tag[], basePath?: string, categorySlug?: string) =>
+  tags.map((tag) => {
+    const pill = (
+      <span key={tag.label} className={cn(styles.tag, TAG_CLASS[tag.variant])}>
+        {tag.label}
+      </span>
+    );
+    if (basePath && categorySlug) {
+      return (
+        <Link key={tag.label} href={`${basePath}?category=${encodeURIComponent(categorySlug)}`}>
+          {pill}
+        </Link>
+      );
+    }
+    return pill;
+  });
 
 type DetailCardProps = {
   detail: DetailItem;
@@ -35,6 +46,7 @@ type DetailCardProps = {
   onToggleSave: () => void;
   onShare: () => void;
   path?: string;
+  basePath?: string;
 };
 
 const DetailCard: React.FC<DetailCardProps> = ({
@@ -44,6 +56,7 @@ const DetailCard: React.FC<DetailCardProps> = ({
   onToggleSave,
   onShare,
   path,
+  basePath,
 }) => {
   const t = useTranslations();
   const { locale } = useLocale();
@@ -76,7 +89,19 @@ const DetailCard: React.FC<DetailCardProps> = ({
 
       {/* Author identity for both breakpoints — it carries the name, so the
           meta row below only needs the date and the actions. */}
-      <AuthorBlock name={detail.author} avatar={detail.avatar} />
+      {(() => {
+        const isMasail = namespace === "masail";
+        const authorName = isMasail
+          ? (locale === "bn" ? "সিরাতুল মুস্তাকিম" : "Siraatul Mustaqim")
+          : detail.author;
+        return (
+          <AuthorBlock
+            name={authorName}
+            avatar={detail.avatar}
+            clickable={!isMasail}
+          />
+        );
+      })()}
 
       <div className={cn(styles.metaRow, styles.metaRowDesktop)}>
         <span className={styles.metaItem}>
@@ -109,17 +134,21 @@ const DetailCard: React.FC<DetailCardProps> = ({
         </span>
       </div>
 
-      <div className={styles.tagRow}>
-        <Folder className={styles.tagRowIcon} />
-        {renderTags(detail.tags)}
-      </div>
+      {detail.tags && detail.tags.length > 0 && (
+        <div className={styles.tagRow}>
+          <Folder className={styles.tagRowIcon} />
+          {renderTags(detail.tags, basePath, detail.category)}
+        </div>
+      )}
 
       {/* Topics render twice — CSS shows the top row on mobile and the bottom
           row on desktop, matching the two mockups. */}
-      <div className={cn(styles.tagRow, styles.topicsTop)}>
-        <TagIcon className={styles.tagRowIcon} />
-        {renderTags(detail.topics)}
-      </div>
+      {detail.topics && detail.topics.length > 0 && (
+        <div className={cn(styles.tagRow, styles.topicsTop)}>
+          <TagIcon className={styles.tagRowIcon} />
+          {renderTags(detail.topics)}
+        </div>
+      )}
 
       <hr className={styles.divider} />
 
@@ -129,7 +158,9 @@ const DetailCard: React.FC<DetailCardProps> = ({
         ))}
       </div>
 
-      <div className={cn(styles.tagRow, styles.topicsBottom)}>{renderTags(detail.topics)}</div>
+      {detail.topics && detail.topics.length > 0 && (
+        <div className={cn(styles.tagRow, styles.topicsBottom)}>{renderTags(detail.topics)}</div>
+      )}
 
       {path && (
         <div className={styles.shareRowDesktop}>

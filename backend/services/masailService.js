@@ -1,5 +1,6 @@
 import Masail from "../models/Masail.js";
 import MasailCategory from "../models/MasailCategory.js";
+import User from "../models/User.js";
 
 const nextMasailSl = async () => {
   const last = await Masail.findOne()
@@ -15,7 +16,7 @@ const nextPreviewSl = (previews) => {
 };
 
 const createMasail = async (data) => {
-  const { title, description, category, sl: slInput } = data;
+  const { title, description, category, sl: slInput, createdBy, author } = data;
 
   if (!title || !description) {
     throw new Error("Title and description are required");
@@ -36,6 +37,8 @@ const createMasail = async (data) => {
     description: String(description).trim(),
     category: category ? String(category).trim() : undefined,
     sl,
+    createdBy: createdBy || undefined,
+    author: author ? String(author).trim() : undefined,
     previews: [],
   });
 
@@ -54,8 +57,45 @@ const addPreview = async (masailId, data) => {
   return masail;
 };
 
-const getAllMasails = async () => {
-  return Masail.find().sort({ sl: 1 });
+const getAllMasails = async (query = {}) => {
+  const filter = {};
+  const searchTerm = String(query.search || query.q || "").trim();
+  if (searchTerm) {
+    const escaped = searchTerm.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    const safeRegex = new RegExp(escaped, "i");
+
+    let matchedUserIds = [];
+    try {
+      const matchedUsers = await User.find({ name: safeRegex }).select("_id").lean();
+      matchedUserIds = matchedUsers.map((u) => u._id);
+    } catch (e) {
+      // ignore
+    }
+
+    const orConditions = [
+      { title: safeRegex },
+      { description: safeRegex },
+      { category: safeRegex },
+      { author: safeRegex },
+      { "previews.text": safeRegex },
+    ];
+    if (matchedUserIds.length > 0) {
+      orConditions.push({ createdBy: { $in: matchedUserIds } });
+    }
+    filter.$or = orConditions;
+  }
+
+  if (query.category && String(query.category).trim()) {
+    const catSafe = new RegExp(String(query.category).trim().replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), "i");
+    if (filter.$or) {
+      filter.$and = [{ $or: filter.$or }, { category: catSafe }];
+      delete filter.$or;
+    } else {
+      filter.category = catSafe;
+    }
+  }
+
+  return Masail.find(filter).populate("createdBy", "name email role").sort({ sl: 1 });
 };
 
 const getCategories = async () => {
@@ -73,8 +113,8 @@ const getCategories = async () => {
     _id: c._id.toString(),
     name: c.name,
     slug: c.slug,
-    translationKey: c.name,
-    count: countMap[c.slug] || 0
+    translationKey: c.slug,
+    count: countMap[c.slug] || countMap[c.name] || countMap[c._id.toString()] || 0
   }));
 };
 
@@ -96,7 +136,7 @@ const updateCategory = async (id, data) => {
   const category = await MasailCategory.findByIdAndUpdate(
     id,
     { $set: updates },
-    { new: true, runValidators: true }
+    { returnDocument: "after", runValidators: true }
   );
   if (!category) throw new Error("Category not found");
   return category;
@@ -109,7 +149,7 @@ const deleteCategory = async (id) => {
 };
 
 const getMasailById = async (id) => {
-  const masail = await Masail.findById(id);
+  const masail = await Masail.findById(id).populate("createdBy", "name email role");
   if (!masail) throw new Error("Masail not found");
   return masail;
 };
@@ -121,11 +161,12 @@ const deleteMasailById = async (id) => {
 };
 
 const updateMasail = async (id, data) => {
-  const { title, description, category } = data;
+  const { title, description, category, author } = data;
   const updates = {};
   if (title !== undefined) updates.title = String(title).trim();
   if (description !== undefined) updates.description = String(description).trim();
-  if (category !== undefined) updates.category = String(category).trim();
+  if (category !== undefined) updates.category = category ? String(category).trim() : "";
+  if (author !== undefined) updates.author = String(author).trim();
   if (!Object.keys(updates).length) {
     throw new Error("Provide title and/or description to update");
   }
@@ -133,8 +174,8 @@ const updateMasail = async (id, data) => {
   const masail = await Masail.findByIdAndUpdate(
     id,
     { $set: updates },
-    { new: true, runValidators: true },
-  );
+    { returnDocument: "after", runValidators: true },
+  ).populate("createdBy", "name email role");
   if (!masail) throw new Error("Masail not found");
   return masail;
 };

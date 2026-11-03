@@ -326,18 +326,18 @@ export default function FaqDetailPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className=" ">Author</p>
+                <p className="text-muted-foreground text-xs">Asked By</p>
                 <p className="font-medium">{faq.question.author}</p>
               </div>
               {faq.question.district && (
                 <div>
-                  <p className=" ">District</p>
+                  <p className="text-muted-foreground text-xs">District</p>
                   <p className="font-medium">{faq.question.district}</p>
                 </div>
               )}
             </div>
             <div>
-              <p className=" ">Created</p>
+              <p className="text-muted-foreground text-xs">Created</p>
               <p className="font-medium">{formatDate(faq.createdAt)}</p>
             </div>
           </CardContent>
@@ -377,8 +377,17 @@ export default function FaqDetailPage() {
 
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs ">
                     <span>
-                      <strong>Author:</strong> {faq.answer.author}
+                      <strong>Answered By:</strong>{" "}
+                      {(typeof faq.answer.userId === "object" && faq.answer.userId?.name) ||
+                        faq.answer.author ||
+                        (typeof faq.answer.userId === "object" && faq.answer.userId?.email) ||
+                        "Admin"}
                     </span>
+                    {typeof faq.answer.userId === "object" && faq.answer.userId?.role && (
+                      <Badge variant="secondary" className="text-[10px] capitalize">
+                        {faq.answer.userId.role}
+                      </Badge>
+                    )}
                     {faq.answer.category && (
                       <Badge variant="outline" className="text-xs">
                         {faq.answer.category}

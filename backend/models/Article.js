@@ -16,6 +16,7 @@ const articleSchema = new mongoose.Schema(
     },
     image: { type: String },
     tags: [{ type: String }],
+    views: { type: Number, default: 0, min: 0 },
   },
   { timestamps: true }
 );

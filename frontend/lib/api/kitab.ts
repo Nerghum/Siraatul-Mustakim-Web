@@ -25,6 +25,7 @@ export type KitabItem = {
   bookType?: "text" | "pdf";
   chapters?: KitabChapter[];
   status: "published" | "draft";
+  views?: number;
   createdAt: string;
   updatedAt: string;
   slug?: string;
@@ -52,6 +53,8 @@ export async function fetchKitabList(params: {
 }): Promise<KitabListResult> {
   const url = new URL(`${API_BASE}/api/kitab`);
   if (params.status) url.searchParams.set("status", params.status);
+  if (params.q) url.searchParams.set("q", params.q);
+  if (params.category) url.searchParams.set("category", params.category);
 
   const response = await fetch(url.toString(), {
     next: { revalidate: 60 },
@@ -71,8 +74,16 @@ export async function fetchKitabList(params: {
     const needle = params.q.trim().toLowerCase();
     items = items.filter(
       (k) =>
-        k.title.toLowerCase().includes(needle) ||
-        k.author.toLowerCase().includes(needle),
+        k.title?.toLowerCase().includes(needle) ||
+        k.author?.toLowerCase().includes(needle) ||
+        k.category?.toLowerCase().includes(needle) ||
+        k.content?.toLowerCase().includes(needle) ||
+        (Array.isArray(k.chapters) &&
+          k.chapters.some(
+            (ch) =>
+              ch.title?.toLowerCase().includes(needle) ||
+              ch.content?.toLowerCase().includes(needle),
+          )),
     );
   }
 

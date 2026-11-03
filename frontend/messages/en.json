@@ -137,12 +137,12 @@
     },
     "userDropdown": {
       "myProfile": "My Profile",
-      "myQuestions": "My Questions - User",
-      "myArticles": "My Articles - Writer",
-      "myMasail": "My Masail - Writer",
+      "myQuestions": "My Questions",
+      "myArticles": "My Articles",
+      "myMasail": "My Masail",
       "bookmarks": "My Bookmarks",
       "askQuestion": "Ask Question",
-      "answerQueue": "Answer Questions - Writer",
+      "answerQueue": "Answer Questions",
       "logout": "Logout"
     }
   },
@@ -613,13 +613,13 @@
   "profile": {
     "back": "Go back to the previous page",
     "rail": {
-      "myQuestions": "My Questions - User",
+      "myQuestions": "My Questions",
       "ask2": "Ask Question",
-      "answerQueue": "Answer Questions - Writer",
+      "answerQueue": "Answer Questions",
       "profile": "My Profile",
       "bookmarks": "My Bookmarks",
-      "articles": "My Articles - Writer",
-      "masail": "My Masail - Writer"
+      "articles": "My Articles",
+      "masail": "My Masail"
     },
     "edit": {
       "title": "My Profile",

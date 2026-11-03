@@ -46,7 +46,17 @@ export default function QuranListingClient({ surahs }: Props) {
     const search = query.trim().toLocaleLowerCase();
     if (!search) return surahs;
     return surahs.filter((surah) =>
-      [surah.nameBengali, surah.listingNameBengali, surah.nameEnglish, surah.meaningEnglish, surah.nameArabic]
+      [
+        surah.nameBengali,
+        surah.listingNameBengali,
+        surah.nameEnglish,
+        surah.meaningEnglish,
+        surah.meaningBengali,
+        surah.nameArabic,
+        surah.slug,
+        surah.number.toString(),
+      ]
+        .filter(Boolean)
         .join(" ")
         .toLocaleLowerCase()
         .includes(search),

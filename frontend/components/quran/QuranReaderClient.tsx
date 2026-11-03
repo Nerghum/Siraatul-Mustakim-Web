@@ -4,6 +4,8 @@ import { Bookmark, BookOpen, ChevronLeft, ChevronRight, List, Play, Search, Shar
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { toast } from "sonner";
+import { useAuthContext } from "@/components/auth/AuthProvider";
 import type { QuranSurahContent, QuranSurah } from "@/data/quran";
 import { useLocale } from "@/hooks/use-locale";
 import { useTranslations } from "@/hooks/use-translations";
@@ -24,6 +26,7 @@ export default function QuranReaderClient({ surah, surahs }: Props) {
   const { locale } = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { isAuthenticated, openAuthModal, setOnAuthenticated } = useAuthContext();
   const [isPending, startTransition] = useTransition();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarTab, setSidebarTab] = useState<"surah" | "ayah">("surah");
@@ -53,11 +56,20 @@ export default function QuranReaderClient({ surah, surahs }: Props) {
     : surah.ayahs;
   const search = sidebarSearch.trim().toLocaleLowerCase();
   const filteredSurahs = useMemo(() => !search ? surahs : surahs.filter((entry) =>
-    [entry.number, entry.nameBengali, entry.nameEnglish, entry.nameArabic].join(" ").toLocaleLowerCase().includes(search),
+    [entry.number, entry.nameBengali, entry.listingNameBengali, entry.nameEnglish, entry.nameArabic, entry.meaningEnglish, entry.meaningBengali]
+      .filter(Boolean)
+      .join(" ")
+      .toLocaleLowerCase()
+      .includes(search),
   ), [search, surahs]);
   const filteredAyahs = useMemo(() => !search
     ? surah.ayahs
-    : surah.ayahs.filter((ayah) => String(ayah.number).includes(search)), [search, surah.ayahs]);
+    : surah.ayahs.filter((ayah) =>
+        String(ayah.number).includes(search) ||
+        ayah.translation?.toLowerCase().includes(search) ||
+        ayah.tafsir?.toLowerCase().includes(search) ||
+        ayah.arabic?.includes(search)
+      ), [search, surah.ayahs]);
   const title = `${t("quran.surahPrefix")} ${locale === "bn" ? surah.nameBengali : surah.nameEnglish}`;
   const getSavedKey = (ayahNumber: number) => `quran:${surah.number}:${ayahNumber}`;
 
@@ -134,12 +146,35 @@ export default function QuranReaderClient({ surah, surahs }: Props) {
     window.setTimeout(() => ayahRefs.current[number]?.scrollIntoView({ behavior: "smooth", block: "center" }), 180);
   };
 
-  const toggleSaved = (ayahNumber: number) => {
+  const applySaveAyah = (ayahNumber: number, forceSave = false) => {
     const key = getSavedKey(ayahNumber);
     const current = JSON.parse(window.localStorage.getItem("quran:saved-ayahs") ?? "[]") as string[];
-    const next = current.includes(key) ? current.filter((entry) => entry !== key) : [...current, key];
+    const isSaved = current.includes(key);
+    let next: string[];
+    if (forceSave) {
+      next = isSaved ? current : [...current, key];
+      toast.success(t("detail.bookmarkAdd") || "বুকমার্কে যুক্ত করা হয়েছে");
+    } else {
+      next = isSaved ? current.filter((entry) => entry !== key) : [...current, key];
+      toast.success(
+        !isSaved
+          ? t("detail.bookmarkAdd") || "বুকমার্কে যুক্ত করা হয়েছে"
+          : t("detail.bookmarkRemove") || "বুকমার্ক থেকে সরানো হয়েছে",
+      );
+    }
     window.localStorage.setItem("quran:saved-ayahs", JSON.stringify(next));
     setSavedKeys(next);
+  };
+
+  const toggleSaved = (ayahNumber: number) => {
+    if (!isAuthenticated) {
+      setOnAuthenticated(() => {
+        applySaveAyah(ayahNumber, true);
+      });
+      openAuthModal();
+      return;
+    }
+    applySaveAyah(ayahNumber, false);
   };
 
   const shareAyah = async (ayahNumber: number) => {

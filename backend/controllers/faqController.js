@@ -1,5 +1,7 @@
 import status from "http-status";
 import * as faqService from "../services/faqService.js";
+import Settings from "../models/Settings.js";
+
 const createFaq = async (req, res) => {
   const { question } = req.body;
   if (!question) {
@@ -8,16 +10,31 @@ const createFaq = async (req, res) => {
       .json({ error: "Question is required" });
   }
   try {
+    const settings = await Settings.findOne();
+    if (settings && settings.isQuestionsEnabled === false) {
+      return res.status(status.FORBIDDEN).json({
+        error: "প্রশ্নোত্তর সেবা বর্তমানে বন্ধ রয়েছে। নতুন প্রশ্ন গ্রহণ করা হচ্ছে না।"
+      });
+    }
+
     const faq = await faqService.createFaq(req.body);
     res.status(status.CREATED).json(faq);
   } catch (error) {
     res.status(status.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
 };
+
 const addAnswer = async (req, res) => {
   const { id } = req.params;
   try {
-    const faq = await faqService.addAnswer(id, req.body);
+    const userId = req.body.userId || req.user?.id || req.user?._id;
+    const author = req.body.author || req.user?.name || "Mufti";
+    const payload = {
+      ...req.body,
+      userId: userId || undefined,
+      author,
+    };
+    const faq = await faqService.addAnswer(id, payload);
     res.status(status.OK).json(faq);
   } catch (error) {
     const code = error.message.includes("Mufti") || error.message.includes("not found")

@@ -36,6 +36,42 @@ export default function MasailListPage() {
   const columns: Column<Masail>[] = [
     { key: "title", header: "Title", sortable: true },
     {
+      key: "category",
+      header: "Category",
+      render: (item) => item.category ? (
+        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted text-foreground">
+          {item.category}
+        </span>
+      ) : (
+        <span className="text-muted-foreground italic text-xs">-</span>
+      ),
+    },
+    {
+      key: "postedBy",
+      header: "Posted By",
+      render: (item) => {
+        const userObj = typeof item.createdBy === "object" ? item.createdBy : null;
+        const displayName =
+          userObj?.name ||
+          userObj?.email?.split("@")[0] ||
+          item.author ||
+          "Admin";
+        const role = userObj?.role;
+        return (
+          <div className="flex flex-col">
+            <span className="font-medium text-sm text-foreground">
+              {displayName}
+            </span>
+            {role && (
+              <span className="text-[10px] text-muted-foreground capitalize">
+                {role}
+              </span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
       key: "description",
       header: "Description",
       render: (item) => (

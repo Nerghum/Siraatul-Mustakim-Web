@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar } from "lucide-react";
+import { Calendar, Eye } from "lucide-react";
 import Link from "next/link";
 import type React from "react";
 import type { AuthorContentItem } from "@/data/mockAuthorContent";
@@ -30,14 +30,22 @@ const AuthorContentCard: React.FC<AuthorContentCardProps> = ({ item, basePath })
     ? t(`common.relative.${unit}`, { count: toLocalizedNumber(count, locale) })
     : "";
 
+  const tagLabel = (() => {
+    if (!firstTag) return null;
+    const catKey = slugToKey[firstTag] ?? firstTag;
+    const catTrans = t(`listing.categories.${catKey}`);
+    if (catTrans && catTrans !== `listing.categories.${catKey}`) return catTrans;
+    const artTrans = t(`listing.articleCategories.${firstTag}`);
+    if (artTrans && artTrans !== `listing.articleCategories.${firstTag}`) return artTrans;
+    const qaTrans = t(`listing.qaCategories.${firstTag}`);
+    if (qaTrans && qaTrans !== `listing.qaCategories.${firstTag}`) return qaTrans;
+    return firstTag;
+  })();
+
   return (
     <Link href={`${basePath}/${item.id}`} className={styles.card}>
       <div className={styles.metaRow}>
-        {firstTag && (
-          <span className={styles.tag}>
-            {t(`listing.categories.${slugToKey[firstTag] ?? firstTag}`)}
-          </span>
-        )}
+        {tagLabel && <span className={styles.tag}>{tagLabel}</span>}
 
         {showRelative && <span className={styles.metaRelative}>{relative}</span>}
 
@@ -45,6 +53,13 @@ const AuthorContentCard: React.FC<AuthorContentCardProps> = ({ item, basePath })
           <Calendar className={styles.metaDateIcon} />
           {formatLocalizedShortDate(item.date, locale)}
         </span>
+
+        {typeof item.views === "number" && (
+          <span className={styles.metaDate}>
+            <Eye className={styles.metaDateIcon} />
+            {toLocalizedNumber(item.views.toLocaleString("en-US"), locale)}
+          </span>
+        )}
       </div>
 
       <h3 className={styles.cardTitle}>{item.title}</h3>

@@ -7,7 +7,7 @@ import Pagination from "@/components/shared/Pagination";
 import { SkeletonBar as Skeleton } from "@/components/ui/skeleton-bar";
 import Wrapper from "@/components/wrapper";
 import { type AuthorContentTab, getAuthorContent } from "@/data/mockAuthorContent";
-import { MOCK_ARTICLE_CATEGORIES } from "@/data/mockCategories";
+import { MOCK_ARTICLE_CATEGORIES, MOCK_CATEGORIES } from "@/data/mockCategories";
 import { useAsyncData } from "@/hooks/use-async-data";
 import { useTranslations } from "@/hooks/use-translations";
 import { cn } from "@/lib/utils";
@@ -23,6 +23,11 @@ const AuthorArticleListing: React.FC = () => {
   const tab = (searchParams.get("tab") as AuthorContentTab) || "qa";
   const category = searchParams.get("category");
   const page = Math.max(1, Number(searchParams.get("page")) || 1);
+  const authorParam = searchParams.get("author") || searchParams.get("name") || "";
+
+  const categories = tab === "qa" ? MOCK_CATEGORIES : MOCK_ARTICLE_CATEGORIES;
+  const translationNamespace = tab === "qa" ? "listing.categories." : "listing.articleCategories.";
+  const sidebarPlacement = tab === "qa" ? "qa" : "articles";
 
   const setParams = React.useCallback(
     (next: Record<string, string | null>, options?: { replace?: boolean }) => {
@@ -43,8 +48,8 @@ const AuthorArticleListing: React.FC = () => {
   );
 
   const { data, loading } = useAsyncData(
-    () => getAuthorContent({ tab, category, page }),
-    [tab, category, page],
+    () => getAuthorContent({ tab, category, page, author: authorParam || null }),
+    [tab, category, page, authorParam],
   );
   const items = data?.items ?? [];
   const totalPages = data?.totalPages ?? 1;
@@ -59,13 +64,14 @@ const AuthorArticleListing: React.FC = () => {
   };
 
   const basePath = tab === "qa" ? "/question-answer" : "/articles";
+  const title = authorParam || t("authorArticle.title");
 
   return (
     <section className={styles.section}>
       <Wrapper>
         <div className={styles.pageHeader}>
           <div className={styles.headerTextGroup}>
-            <h1 className={styles.title}>{t("authorArticle.title")}</h1>
+            <h1 className={styles.title}>{title}</h1>
             <p className={styles.subtitle}>{t("authorArticle.subtitle")}</p>
           </div>
 
@@ -92,8 +98,8 @@ const AuthorArticleListing: React.FC = () => {
             <CategoryChips
               activeSlug={category}
               onSelect={(slug) => setParams({ category: slug, page: null })}
-              categories={MOCK_ARTICLE_CATEGORIES}
-              translationNamespace="listing.articleCategories."
+              categories={categories}
+              translationNamespace={translationNamespace}
             />
 
             {loading ? (
@@ -142,9 +148,9 @@ const AuthorArticleListing: React.FC = () => {
             activeSlug={category}
             onSelect={(slug) => setParams({ category: slug, page: null })}
             title={t("authorArticle.sidebarTitle")}
-            categories={MOCK_ARTICLE_CATEGORIES}
-            translationNamespace="listing.articleCategories."
-            placement="articles"
+            categories={categories}
+            translationNamespace={translationNamespace}
+            placement={sidebarPlacement}
           />
         </div>
       </Wrapper>

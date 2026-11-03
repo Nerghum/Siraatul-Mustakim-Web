@@ -61,6 +61,30 @@ const phoneRegex = (value) => {
   return `${digits.slice(-10)}$`;
 };
 
+const categoryEquivalents = {
+  namaz: ["namaz", "নামাজ", "নামায"],
+  roza: ["roza", "রোজা", "রোযা"],
+  zakat: ["zakat", "যাকাত"],
+  hajj: ["hajj", "হজ্জ", "হজ"],
+  iman: ["iman", "ঈমান"],
+  aqida: ["aqida", "আকিদা", "আক্বীদা"],
+  muamalat: ["muamalat", "মুয়ামালাত", "মুআমালাত", "মুআ'মালাত"],
+  muasharat: ["muasharat", "মুয়াশারাত", "মুআশারাত", "মুআ'শারাত"],
+  akhlaq: ["akhlaq", "আখলাক"],
+  "dawat-tabligh": ["dawat-tabligh", "দাওয়াত ও তাবলীগ", "দাওয়াত", "তাবলীগ"],
+  islah: ["islah", "ইসলাহ", "তাসকিয়াহ", "আত্মশুদ্ধি"],
+  biye: ["biye", "বিবাহ", "বিয়ে"],
+  ilm: ["ilm", "ইলম"],
+  taharat: ["taharat", "তাহারাত", "পবিত্রতা"],
+  janaza: ["janaza", "জানাযা", "জানাযাহ"],
+  samakal: ["samakal", "সমকাল"],
+  jiboni: ["jiboni", "জীবনী"],
+  dawati: ["dawati", "দাওয়াতী", "দাওয়াতি"],
+  fikri: ["fikri", "ফিকরী", "ফিকরি"],
+  ibadat: ["ibadat", "ইবাদত"],
+  poribar: ["poribar", "পরিবার"],
+};
+
 const getAllFaqs = async (query = {}) => {
   try {
     const filter = {};
@@ -77,6 +101,9 @@ const getAllFaqs = async (query = {}) => {
         authorConditions.push({ "question.phone": { $regex: pr, $options: "i" } });
       } else {
         authorConditions.push({ "question.author": { $regex: searchString, $options: "i" } });
+        if (query.status === "answered") {
+          authorConditions.push({ "answer.author": { $regex: searchString, $options: "i" } });
+        }
       }
     }
 
@@ -92,6 +119,32 @@ const getAllFaqs = async (query = {}) => {
       andConditions.push({ $or: authorConditions });
     }
 
+    if (query.answerAuthor) {
+      const searchAuthor = escapeRegex(query.answerAuthor);
+      const answerAuthorConditions = [
+        { "answer.author": { $regex: searchAuthor, $options: "i" } },
+      ];
+      try {
+        const matchedUsers = await User.find({ name: { $regex: searchAuthor, $options: "i" } }).select("_id").lean();
+        if (matchedUsers.length > 0) {
+          answerAuthorConditions.push({ "answer.userId": { $in: matchedUsers.map((u) => u._id) } });
+        }
+      } catch (e) {
+        // ignore
+      }
+      andConditions.push({ $or: answerAuthorConditions });
+    }
+
+    if (query.category) {
+      const catKey = query.category.toLowerCase().trim();
+      const equivs = categoryEquivalents[catKey];
+      if (equivs && equivs.length > 0) {
+        filter["answer.category"] = { $regex: equivs.map(escapeRegex).join("|"), $options: "i" };
+      } else {
+        filter["answer.category"] = { $regex: escapeRegex(query.category), $options: "i" };
+      }
+    }
+
     if (query.status) {
       if (query.status === "pending") {
         filter.status = { $in: ["", "pending"] };
@@ -103,14 +156,26 @@ const getAllFaqs = async (query = {}) => {
       filter["question.district"] = { $regex: escapeRegex(query.district), $options: "i" };
     }
     
-    if (query.search) {
-      const escapedSearch = escapeRegex(query.search);
-      andConditions.push({
-        $or: [
-          { "question.question": { $regex: escapedSearch, $options: "i" } },
-          { "question.author": { $regex: escapedSearch, $options: "i" } },
-        ]
-      });
+    const searchTerm = query.search || query.q;
+    if (searchTerm) {
+      const escapedSearch = escapeRegex(searchTerm);
+      const searchOr = [
+        { "question.question": { $regex: escapedSearch, $options: "i" } },
+        { "question.author": { $regex: escapedSearch, $options: "i" } },
+        { "question.district": { $regex: escapedSearch, $options: "i" } },
+        { "answer.answer": { $regex: escapedSearch, $options: "i" } },
+        { "answer.author": { $regex: escapedSearch, $options: "i" } },
+        { "answer.category": { $regex: escapedSearch, $options: "i" } },
+      ];
+      try {
+        const matchedUsers = await User.find({ name: { $regex: escapedSearch, $options: "i" } }).select("_id").lean();
+        if (matchedUsers.length > 0) {
+          searchOr.push({ "answer.userId": { $in: matchedUsers.map((u) => u._id) } });
+        }
+      } catch (e) {
+        // ignore
+      }
+      andConditions.push({ $or: searchOr });
     }
 
     if (andConditions.length > 0) {
@@ -127,7 +192,9 @@ const getAllFaqs = async (query = {}) => {
       }
     }
 
-    const faqs = await Faq.find(filter).sort({ createdAt: -1 });
+    const faqs = await Faq.find(filter)
+      .populate("answer.userId", "name email role")
+      .sort({ createdAt: -1 });
     return faqs;
   } catch (error) {
     throw error;
@@ -162,7 +229,7 @@ const getFaqFilters = async () => {
 
 const getFaqById = async (id) => {
   try {
-    const faq = await Faq.findById(id);
+    const faq = await Faq.findById(id).populate("answer.userId", "name email role");
 
     if (!faq) {
       throw new Error("FAQ not found");

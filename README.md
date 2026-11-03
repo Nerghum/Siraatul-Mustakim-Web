@@ -190,3 +190,15 @@ npm install
 npx expo start
 ```
 
+### 5. Build Release APK & Move to Desktop
+To compile the release APK and place it on your Desktop:
+```bash
+cd "app/android" && export JAVA_HOME="/opt/homebrew/opt/openjdk@17" && export PATH="$JAVA_HOME/bin:$PATH" && ./gradlew assembleRelease && cp app/build/outputs/apk/release/app-release.apk ~/Desktop/siratul-mustakim.apk && ls -lh ~/Desktop/siratul-mustakim.apk
+```
+Or from the `app` folder:
+```bash
+cd app
+npm run build:apk
+```
+*See [BUILD_APK.md](BUILD_APK.md) for full details and troubleshooting.*
+

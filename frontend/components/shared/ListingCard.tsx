@@ -1,10 +1,10 @@
 "use client";
 
-import { Calendar, User } from "lucide-react";
+import { Calendar, Eye, User } from "lucide-react";
 import Link from "next/link";
 import type React from "react";
 import { useLocale } from "@/hooks/use-locale";
-import { formatLocalizedShortDate } from "@/lib/banglaFormat";
+import { formatLocalizedShortDate, toLocalizedNumber } from "@/lib/banglaFormat";
 import { cn } from "@/lib/utils";
 import styles from "@/styles/listing.module.css";
 import card from "@/styles/listing-card.module.css";
@@ -37,10 +37,17 @@ const ListingCard: React.FC<ListingCardProps> = ({ item, basePath }) => {
           </span>
         </span>
 
-        <span className={styles.metaItemDate}>
-          <Calendar className={styles.metaIcon} />
-          {formatLocalizedShortDate(item.date, locale)}
-        </span>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: "0.875rem", flexShrink: 0 }}>
+          <span className={styles.metaItemDate} style={{ margin: 0 }}>
+            <Calendar className={styles.metaIcon} />
+            {formatLocalizedShortDate(item.date, locale)}
+          </span>
+
+          <span className={styles.metaItemDate} style={{ margin: 0 }}>
+            <Eye className={styles.metaIcon} />
+            {toLocalizedNumber((item.views || 0).toLocaleString("en-US"), locale)}
+          </span>
+        </div>
       </div>
     </Link>
   );

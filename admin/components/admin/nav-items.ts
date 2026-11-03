@@ -45,8 +45,10 @@ export const adminNavItems: AdminNavItem[] = [
     subItems: [
       { href: "/admin/boyan", label: "All Bayan" },
       { href: "/admin/boyan/categories", label: "Categories" },
+      { href: "/admin/boyan/speakers", label: "Speakers" },
       { href: "/admin/event-schedule", label: "Bayan Schedule" },
     ],
+
   },
   {
     href: "/admin/quran",

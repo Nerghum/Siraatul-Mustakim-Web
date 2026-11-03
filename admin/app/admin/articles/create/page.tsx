@@ -98,7 +98,7 @@ export default function CreateArticlePage() {
               <Label htmlFor="status">Status</Label>
               <Select
                 onValueChange={(val) => form.setValue("status", val as any)}
-                defaultValue={form.watch("status")}
+                value={form.watch("status")}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a status" />

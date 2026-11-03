@@ -94,6 +94,29 @@ function parseKitabListQuery(rawQuery = {}) {
     }
     filter.status = s;
   }
+
+  const term = String(rawQuery.search || rawQuery.q || "").trim();
+  if (term) {
+    const safeRegex = new RegExp(term.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), "i");
+    filter.$or = [
+      { title: safeRegex },
+      { author: safeRegex },
+      { category: safeRegex },
+      { content: safeRegex },
+      { slug: safeRegex },
+    ];
+  }
+
+  if (rawQuery.category && String(rawQuery.category).trim()) {
+    const catSafe = new RegExp(String(rawQuery.category).trim().replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), "i");
+    if (filter.$or) {
+      filter.$and = [{ $or: filter.$or }, { category: catSafe }];
+      delete filter.$or;
+    } else {
+      filter.category = catSafe;
+    }
+  }
+
   return filter;
 }
 

@@ -159,12 +159,19 @@ export default function BoyanPage() {
             Categories
           </Link>
           <Link
+            href="/admin/boyan/speakers"
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
+          >
+            Speakers
+          </Link>
+          <Link
             href="/admin/boyan/create"
             className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2"
           >
             <Plus className="mr-2 size-4" /> Add Bayan
           </Link>
         </div>
+
       </div>
 
       {/* Filter Dropdowns + Date Range */}
@@ -251,11 +258,16 @@ export default function BoyanPage() {
           </SelectTrigger>
           <SelectContent className="max-h-60">
             <SelectItem value="__all__">All Authors</SelectItem>
-            {authors?.map((a) => (
-              <SelectItem key={a} value={a}>
-                {a}
-              </SelectItem>
-            ))}
+            {authors?.map((a) => {
+              const name = typeof a === "string" ? a : a.name;
+              const key = typeof a === "string" ? a : a._id || a.id || a.name;
+              return (
+                <SelectItem key={key} value={name}>
+                  {name}
+                </SelectItem>
+              );
+            })}
+
           </SelectContent>
         </Select>
 

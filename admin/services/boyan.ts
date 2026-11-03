@@ -6,6 +6,9 @@ import type {
   BoyanCategory,
   CreateBoyanCategoryPayload,
   UpdateBoyanCategoryPayload,
+  BoyanAuthor,
+  CreateBoyanAuthorPayload,
+  UpdateBoyanAuthorPayload,
 } from "@/types/boyan";
 
 export const getBoyanList = (
@@ -35,10 +38,20 @@ export const deleteBoyanCategory = (id: string) =>
   apiClient.delete<null>(`/boyan/categories/${id}`);
 
 export const getBoyanAuthors = () =>
-  apiClient.get<string[]>("/boyan/authors");
+  apiClient.get<BoyanAuthor[]>("/boyan/authors");
+
+export const createBoyanAuthor = (data: CreateBoyanAuthorPayload) =>
+  apiClient.post<BoyanAuthor>("/boyan/authors/create", data);
+
+export const updateBoyanAuthor = (id: string, data: UpdateBoyanAuthorPayload) =>
+  apiClient.patch<BoyanAuthor>(`/boyan/authors/${id}`, data);
+
+export const deleteBoyanAuthor = (id: string) =>
+  apiClient.delete<null>(`/boyan/authors/${id}`);
 
 export const getBoyanLocations = () =>
   apiClient.get<string[]>("/boyan/locations");
+
 
 export const createBoyan = (data: CreateBoyanPayload) => {
   if (data.mediaType === "video") {

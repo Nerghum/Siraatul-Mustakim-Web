@@ -19,6 +19,10 @@ router.delete("/categories/:id", protect, staffOnly, boyanController.deleteCateg
 
 // Authors & locations
 router.get("/authors", boyanController.getAuthors);
+router.post("/authors/create", protect, staffOnly, boyanController.createAuthor);
+router.patch("/authors/:id", protect, staffOnly, boyanController.updateAuthor);
+router.put("/authors/:id", protect, staffOnly, boyanController.updateAuthor);
+router.delete("/authors/:id", protect, staffOnly, boyanController.deleteAuthor);
 router.get("/locations", boyanController.getLocations);
 
 // General listing & detail

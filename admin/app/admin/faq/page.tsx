@@ -165,7 +165,7 @@ export default function FaqListPage() {
     },
     {
       key: "author",
-      header: "Author",
+      header: "Asked By",
       render: (item) => item.question.author,
     },
     {
@@ -190,9 +190,36 @@ export default function FaqListPage() {
         ),
     },
     {
+      key: "answeredBy",
+      header: "Answered By",
+      render: (item) => {
+        if (!item.answer || item.status !== "answered") {
+          return <span className="text-muted-foreground italic text-xs">-</span>;
+        }
+        const userObj =
+          typeof item.answer.userId === "object" ? item.answer.userId : null;
+        const answererName =
+          userObj?.name ||
+          item.answer.author ||
+          userObj?.email?.split("@")[0] ||
+          "Mufti / Admin";
+        const role = userObj?.role;
+        return (
+          <div className="flex flex-col">
+            <span className="font-medium text-sm text-foreground">{answererName}</span>
+            {role && (
+              <span className="text-[10px] text-muted-foreground capitalize">
+                {role}
+              </span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
       key: "district",
       header: "District",
-      render: (item) => item.question.district,
+      render: (item) => item.question.district || "-",
     },
     {
       key: "createdAt",

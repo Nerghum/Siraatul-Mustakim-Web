@@ -22,6 +22,7 @@ export type MalfuzatApiItem = {
   audioUrl: string | null;
   audioFormat: string | null;
   audioDuration: number | null;
+  views?: number;
   createdAt: string;
   updatedAt: string;
 };

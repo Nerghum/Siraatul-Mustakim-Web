@@ -18,14 +18,16 @@ const hydrateMalfuzatAudio = (doc) => {
   return obj;
 };
 
-const getAll = async ({ q, category, mode, page = 1, limit = 50 } = {}) => {
+const getAll = async ({ q, search, category, mode, page = 1, limit = 50 } = {}) => {
   const query = {};
-  if (q && String(q).trim()) {
-    const normalizedQuery = String(q).trim();
+  const searchTerm = String(q || search || "").trim();
+  if (searchTerm) {
+    const escaped = searchTerm.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
     query.$or = [
-      { title: { $regex: normalizedQuery, $options: "i" } },
-      { author: { $regex: normalizedQuery, $options: "i" } },
-      { category: { $regex: normalizedQuery, $options: "i" } },
+      { title: { $regex: escaped, $options: "i" } },
+      { author: { $regex: escaped, $options: "i" } },
+      { category: { $regex: escaped, $options: "i" } },
+      { description: { $regex: escaped, $options: "i" } },
     ];
   }
   if (category) {

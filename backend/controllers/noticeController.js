@@ -42,9 +42,16 @@ function uploadedImageUrl(req) {
   return publicUrlFromRelativeDataPath(relativePath.split(path.sep).join("/"));
 }
 
-const getAllNotices = async (_req, res) => {
+const getAllNotices = async (req, res) => {
   try {
-    const notices = await Notice.find().sort({ date: -1, createdAt: -1 });
+    const q = String(req.query?.q ?? req.query?.search ?? "").trim();
+    const filter = {};
+    if (q) {
+      const escaped = q.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+      const regex = new RegExp(escaped, "i");
+      filter.$or = [{ title: regex }, { description: regex }];
+    }
+    const notices = await Notice.find(filter).sort({ date: -1, createdAt: -1 });
     res.status(status.OK).json(notices);
   } catch (error) {
     res.status(status.INTERNAL_SERVER_ERROR).json({ error: error.message });
@@ -68,12 +75,13 @@ const getNoticeById = async (req, res) => {
 };
 
 const searchNotices = async (req, res) => {
-  const q = String(req.query?.q ?? "").trim();
+  const q = String(req.query?.q ?? req.query?.search ?? "").trim();
   if (!q) {
     return res.status(status.OK).json([]);
   }
   try {
-    const regex = new RegExp(q, "i");
+    const escaped = q.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    const regex = new RegExp(escaped, "i");
     const notices = await Notice.find({
       $or: [{ title: regex }, { description: regex }],
     }).sort({ createdAt: -1 });

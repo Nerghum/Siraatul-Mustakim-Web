@@ -3,7 +3,7 @@
 import { ChevronLeft, ChevronRight, CircleHelp, LogOut } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type React from "react";
 import { useEffect, useState } from "react";
 import logo from "@/assets/logo-header.jpg";
@@ -56,10 +56,11 @@ type SidebarProps = {
 
 const Sidebar = ({ open, onClose, cta = "donate", isProtected: isProtectedProp }: SidebarProps) => {
   const pathname = usePathname();
+  const router = useRouter();
   const [openSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const t = useTranslations();
   const { locale, setLocale } = useLocale();
-  const { logout } = useAuthContext();
+  const { logout, isAuthenticated, openAuthModal, setOnAuthenticated } = useAuthContext();
   const headerNavItems = getHeaderNavItems((key) => t(key));
 
   const isProtected = isProtectedProp ?? isProtectedRoute(pathname);
@@ -126,6 +127,19 @@ const Sidebar = ({ open, onClose, cta = "donate", isProtected: isProtectedProp }
     ripple.style.top = `${event.clientY - rect.top - size / 2}px`;
     button.appendChild(ripple);
     setTimeout(() => ripple.remove(), 500);
+  };
+
+  const handleAskClick = (e: React.MouseEvent<HTMLElement>) => {
+    createRipple(e);
+    onClose();
+    if (!isAuthenticated) {
+      setOnAuthenticated(() => {
+        router.push("/ask-2");
+      });
+      openAuthModal();
+      return;
+    }
+    router.push("/ask-2");
   };
 
   const getCurrentSubmenuItems = () => {
@@ -513,17 +527,28 @@ const Sidebar = ({ open, onClose, cta = "donate", isProtected: isProtectedProp }
                   </button>
                 </div>
               </div>
-              <Link
-                href="/donate"
-                className="sidebar-donate-btn"
-                onClick={(e) => {
-                  createRipple(e);
-                  onClose();
-                }}
-              >
-                <span className="donate-btn-bg" />
-                <span className="donate-btn-content">{t("header.donate")}</span>
-              </Link>
+              {cta === "ask" ? (
+                <button
+                  type="button"
+                  className="sidebar-donate-btn"
+                  onClick={handleAskClick}
+                >
+                  <span className="donate-btn-bg" />
+                  <span className="donate-btn-content">{t("header.ask")}</span>
+                </button>
+              ) : cta === "donate" ? (
+                <Link
+                  href="/donate"
+                  className="sidebar-donate-btn"
+                  onClick={(e) => {
+                    createRipple(e);
+                    onClose();
+                  }}
+                >
+                  <span className="donate-btn-bg" />
+                  <span className="donate-btn-content">{t("header.donate")}</span>
+                </Link>
+              ) : null}
             </div>
           )}
         </div>

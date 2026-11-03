@@ -36,6 +36,11 @@ const kitabSchema = new mongoose.Schema(
       enum: ["published", "draft"],
       default: "draft",
     },
+    views: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
   { timestamps: true },
 );

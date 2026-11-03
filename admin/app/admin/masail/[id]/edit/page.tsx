@@ -22,7 +22,7 @@ import {
 import { toast } from "sonner";
 import { Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 
 interface ApiError {
@@ -42,20 +42,35 @@ export default function EditMasailPage() {
   const { data: categories = [] } = useMasailCategories();
   const updateMutation = useUpdateMasail();
   const masail = data as unknown as Masail;
+  const [formInitialized, setFormInitialized] = useState(false);
   const form = useForm<MasailForm>({
     resolver: zodResolver(masailSchema),
-    defaultValues: { title: "", description: "" },
+    defaultValues: { title: "", description: "", category: "" },
   });
 
   useEffect(() => {
     if (masail) {
-      form.reset({ 
-        title: masail?.title, 
-        description: masail?.description,
-        category: masail?.category || undefined,
-      });
+      const matched = categories.find(
+        (c: any) =>
+          c.slug === masail.category ||
+          c.name === masail.category ||
+          c._id === masail.category ||
+          c.id === masail.category
+      );
+      const categorySlug = matched?.slug || masail.category || "";
+
+      if (!formInitialized) {
+        form.reset({ 
+          title: masail.title || "", 
+          description: masail.description || "",
+          category: categorySlug,
+        });
+        setFormInitialized(true);
+      } else if (matched && form.getValues("category") !== matched.slug) {
+        form.setValue("category", matched.slug);
+      }
     }
-  }, [masail, form]);
+  }, [masail, categories, formInitialized, form]);
 
   function onSubmit(data: MasailForm) {
     updateMutation.mutate(
@@ -127,18 +142,24 @@ export default function EditMasailPage() {
                 control={form.control}
                 render={({ field }) => (
                   <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value ?? ""}
+                    onValueChange={(val) => field.onChange(val === "__none__" ? "" : (val ?? ""))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="__none__">None</SelectItem>
                       {categories.map((c: any) => (
                         <SelectItem key={c.slug} value={c.slug}>
                           {c.name}
                         </SelectItem>
                       ))}
+                      {field.value && field.value !== "__none__" && !categories.some((c: any) => c.slug === field.value) && (
+                        <SelectItem value={field.value}>
+                          {field.value}
+                        </SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 )}

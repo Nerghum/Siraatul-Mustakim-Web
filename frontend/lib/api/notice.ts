@@ -13,6 +13,7 @@ export type NoticeApiItem = {
   date: string;
   description: string;
   image?: string | null;
+  views?: number;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -53,6 +54,7 @@ export function mapNoticeApiItem(item: NoticeApiItem, index = 0): NoticeItem {
     _id: item._id,
     title: item.title || "",
     date: item.date,
+    views: item.views ?? 0,
     description: item.description || "",
     excerpt: formatNoticeExcerpt(item.description),
     image: item.image ? resolveNoticeImageUrl(item.image) : null,

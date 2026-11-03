@@ -6,6 +6,7 @@ import {
   useBoyan,
   useUpdateBoyan,
   useBoyanCategories,
+  useBoyanAuthors,
 } from "@/hooks/use-boyan";
 import type { Boyan } from "@/types/boyan";
 import { Button } from "@/components/ui/button";
@@ -35,12 +36,15 @@ export default function EditBoyanPage() {
   const { data, isLoading } = useBoyan(id);
   const updateMutation = useUpdateBoyan();
   const { data: categories } = useBoyanCategories();
+  const { data: authors } = useBoyanAuthors();
   const boyan = data as unknown as Boyan;
 
   const [mediaType, setMediaType] = useState<"audio" | "video">("audio");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [author, setAuthor] = useState("");
+  const [newAuthor, setNewAuthor] = useState("");
+  const [useNewAuthor, setUseNewAuthor] = useState(false);
   const [location, setLocation] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -83,6 +87,7 @@ export default function EditBoyanPage() {
     }
 
     const finalCategory = useNewCategory ? newCategory : category;
+    const finalAuthor = useNewAuthor ? newAuthor.trim() : author.trim();
 
     updateMutation.mutate(
       {
@@ -90,7 +95,7 @@ export default function EditBoyanPage() {
         data: {
           title,
           category: finalCategory,
-          author,
+          author: finalAuthor,
           location,
           mediaType,
           ...(mediaType === "video"
@@ -304,13 +309,76 @@ export default function EditBoyanPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="author">Speaker / Author</Label>
-              <Input
-                id="author"
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
-                placeholder="Author name (optional)"
-              />
+              <div className="flex items-center justify-between">
+                <Label htmlFor="author">Speaker / Author (বক্তা / আলোচক)</Label>
+                <Link
+                  href="/admin/boyan/speakers"
+                  className="text-xs text-primary hover:underline"
+                >
+                  Manage Speakers
+                </Link>
+              </div>
+              {useNewAuthor ? (
+                <Input
+                  id="author"
+                  placeholder="Enter new speaker / author name"
+                  value={newAuthor}
+                  onChange={(e) => setNewAuthor(e.target.value)}
+                />
+              ) : (
+                <Select
+                  value={author || "__none__"}
+                  onValueChange={(v) => {
+                    if (v === "__new__") {
+                      setUseNewAuthor(true);
+                      setAuthor("");
+                    } else if (v === "__none__" || !v) {
+                      setAuthor("");
+                    } else {
+                      setAuthor(v);
+                    }
+                  }}
+                >
+                  <SelectTrigger id="author">
+                    <SelectValue placeholder="Select speaker / author" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    <SelectItem value="__none__">None / Not specified</SelectItem>
+                    {/* If current boyan author isn't in authors list yet, ensure it shows */}
+                    {author &&
+                      !authors?.some((a) =>
+                        (typeof a === "string" ? a : a.name).toLowerCase() ===
+                        author.toLowerCase()
+                      ) && (
+                        <SelectItem value={author}>{author}</SelectItem>
+                      )}
+                    {authors?.map((auth) => {
+                      const authName = typeof auth === "string" ? auth : auth.name;
+                      const authKey =
+                        typeof auth === "string" ? auth : auth._id || auth.id || auth.name;
+                      return (
+                        <SelectItem key={authKey} value={authName}>
+                          {authName}
+                        </SelectItem>
+                      );
+                    })}
+                    <SelectItem value="__new__">+ Add new speaker</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+              {useNewAuthor && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setUseNewAuthor(false);
+                    setNewAuthor("");
+                  }}
+                >
+                  Select existing speaker
+                </Button>
+              )}
             </div>
 
             {/* Video vs Audio Fields */}

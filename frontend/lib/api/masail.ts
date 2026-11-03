@@ -11,12 +11,22 @@ export type MasailApiItem = {
   description: string;
   category?: string;
   sl: number;
+  views?: number;
   createdAt: string;
   updatedAt: string;
 };
 
-export async function fetchMasailList(): Promise<MasailApiItem[]> {
-  const res = await fetch(`${API_BASE}/api/masail`, {
+export async function fetchMasailList(params?: {
+  search?: string;
+  q?: string;
+  category?: string;
+}): Promise<MasailApiItem[]> {
+  const url = new URL(`${API_BASE}/api/masail`);
+  const term = params?.search || params?.q;
+  if (term) url.searchParams.set("search", term);
+  if (params?.category) url.searchParams.set("category", params.category);
+
+  const res = await fetch(url.toString(), {
     next: { revalidate: 60 },
   });
   if (!res.ok) throw new Error(`Failed to fetch masail: ${res.status}`);

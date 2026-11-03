@@ -76,9 +76,9 @@ const geteventsScheduleById = async (req, res) => {
   }
 };
 
-const getAlleventsSchedules = async (_req, res) => {
+const getAlleventsSchedules = async (req, res) => {
   try {
-    const eventsSchedules = await eventsScheduleService.getAlleventsSchedules();
+    const eventsSchedules = await eventsScheduleService.getAlleventsSchedules(req.query);
     res.status(status.OK).json(eventsSchedules);
   } catch (error) {
     res.status(status.INTERNAL_SERVER_ERROR).json({ error: error.message });

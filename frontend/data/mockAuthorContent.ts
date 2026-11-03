@@ -17,6 +17,8 @@ export type AuthorContentItem = {
   tags: string[];
   /** Determines which tab this item appears under. */
   type: "qa" | "article";
+  author?: string;
+  views?: number;
 };
 
 export type AuthorContentTab = "qa" | "article";
@@ -121,6 +123,7 @@ export type AuthorContentParams = {
   tab: AuthorContentTab;
   category?: string | null;
   page?: number;
+  author?: string | null;
 };
 
 export type AuthorContentResult = {
@@ -128,32 +131,108 @@ export type AuthorContentResult = {
   totalPages: number;
 };
 
-const ITEMS_PER_PAGE = 5;
-const MOCK_TOTAL_PAGES = 20;
+const ITEMS_PER_PAGE = 10;
 
 /**
- * Simulates the author content endpoint: filters by tab/category and paginates.
- * Swap the body for a real `fetch` later — the shape stays.
+ * Fetches dynamic author content (Q&A or Articles) from backend MongoDB APIs.
  */
 export async function getAuthorContent(params: AuthorContentParams): Promise<AuthorContentResult> {
-  const source = params.tab === "qa" ? MOCK_AUTHOR_QA : MOCK_AUTHOR_ARTICLES;
-  const category = params.category ?? null;
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5001";
+  const { tab, category, page = 1, author } = params;
+  const limit = ITEMS_PER_PAGE;
 
-  const filtered = source.filter((item) => {
-    if (category && !item.tags.includes(category)) return false;
-    return true;
-  });
+  try {
+    if (tab === "qa") {
+      const queryParams = new URLSearchParams();
+      queryParams.set("status", "answered");
+      queryParams.set("isPrivate", "false");
+      if (category) queryParams.set("category", category);
+      if (author) queryParams.set("answerAuthor", author);
 
-  if (filtered.length === 0) {
-    return mockFetch({ items: [], totalPages: 0 });
+      const res = await fetch(`${API_BASE}/api/faq?${queryParams.toString()}`);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch FAQs: ${res.statusText}`);
+      }
+      const data = await res.json();
+      const faqsArray: any[] = Array.isArray(data) ? data : (data.faqs || []);
+
+      const allItems: AuthorContentItem[] = faqsArray.map((faq: any) => {
+        const questionText = faq.question?.question || "";
+        const titleText =
+          faq.title ||
+          (questionText.length > 70 ? `${questionText.slice(0, 70)}...` : questionText) ||
+          "প্রশ্নোত্তর";
+        const rawExcerpt = faq.answer?.answer
+          ? faq.answer.answer.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
+          : questionText;
+        const excerpt = rawExcerpt.length > 200 ? `${rawExcerpt.slice(0, 200)}...` : rawExcerpt;
+
+        const tags: string[] = [];
+        if (faq.answer?.category) {
+          tags.push(faq.answer.category);
+        } else if (faq.category) {
+          tags.push(faq.category);
+        }
+
+        return {
+          id: faq._id,
+          title: titleText,
+          excerpt,
+          date: faq.answer?.timestamp || faq.createdAt || new Date().toISOString(),
+          tags,
+          type: "qa" as const,
+          author: faq.answer?.author || faq.answer?.userId?.name || "সিরাতুল মুস্তাকিম",
+          views: faq.views || 0,
+        };
+      });
+
+      const total = allItems.length;
+      const totalPages = Math.max(1, Math.ceil(total / limit));
+      const startIndex = (page - 1) * limit;
+      const items = allItems.slice(startIndex, startIndex + limit);
+
+      return { items, totalPages };
+    } else {
+      // Articles tab
+      const queryParams = new URLSearchParams();
+      queryParams.set("status", "published");
+      queryParams.set("page", String(page));
+      queryParams.set("limit", String(limit));
+      if (category) queryParams.set("category", category);
+      if (author) queryParams.set("author", author);
+
+      const res = await fetch(`${API_BASE}/api/articles?${queryParams.toString()}`);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch articles: ${res.statusText}`);
+      }
+      const result = await res.json();
+      const articlesArray: any[] = Array.isArray(result) ? result : (result.data || []);
+      const totalPages =
+        result.pagination?.totalPages ||
+        Math.max(1, Math.ceil((result.pagination?.total || articlesArray.length) / limit));
+
+      const items: AuthorContentItem[] = articlesArray.map((article: any) => {
+        const rawContent = article.content
+          ? article.content.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
+          : "";
+        const excerpt = rawContent.length > 200 ? `${rawContent.slice(0, 200)}...` : rawContent;
+
+        return {
+          id: article._id || article.id,
+          title: article.title || "আর্টিকেল",
+          excerpt,
+          date: article.createdAt || new Date().toISOString(),
+          tags: Array.isArray(article.tags) ? article.tags : [],
+          type: "article" as const,
+          author: article.author?.name || "সিরাতুল মুস্তাকিম",
+          views: article.views || 0,
+        };
+      });
+
+      return { items, totalPages };
+    }
+  } catch (err) {
+    console.error("Error in getAuthorContent:", err);
+    return { items: [], totalPages: 1 };
   }
-
-  const page = params.page ?? 1;
-  const items = filtered.slice(0, ITEMS_PER_PAGE).map((item, idx) => ({
-    ...item,
-    id: `${item.id}-p${page}-${idx}`,
-  }));
-  const totalPages = category ? 1 : MOCK_TOTAL_PAGES;
-
-  return mockFetch({ items, totalPages });
 }

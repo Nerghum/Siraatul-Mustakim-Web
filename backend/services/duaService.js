@@ -20,10 +20,34 @@ const parseIdsParam = (idsParam) => {
 const getChapters = async (q, { includeItems = false } = {}) => {
   let query = {};
   if (q && String(q).trim()) {
-    const normalizedQuery = String(q).trim();
+    const escaped = String(q).trim().replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    const safeRegex = new RegExp(escaped, "i");
+
+    // Also find any chapters that contain matching duas
+    let matchingChapterIds = [];
+    try {
+      const matchingDuas = await Dua.find({
+        $or: [
+          { title: safeRegex },
+          { arabic: safeRegex },
+          { translation: safeRegex },
+          { pronunciation: safeRegex },
+          { tafsir: safeRegex },
+          { sourceLabel: safeRegex },
+          { sourceLabelBangla: safeRegex },
+          { sourceLabelArabic: safeRegex },
+          { ayahLabel: safeRegex },
+        ],
+      }).select("chapterId").lean();
+      matchingChapterIds = [...new Set(matchingDuas.map((d) => d.chapterId))];
+    } catch (e) {
+      // ignore
+    }
+
     query.$or = [
-      { title: { $regex: normalizedQuery, $options: "i" } },
-      { chapterId: { $regex: normalizedQuery, $options: "i" } },
+      { title: safeRegex },
+      { chapterId: safeRegex },
+      ...(matchingChapterIds.length > 0 ? [{ chapterId: { $in: matchingChapterIds } }] : []),
     ];
   }
   const [chapters, counts] = await Promise.all([
@@ -63,9 +87,9 @@ const getChapterById = async (chapterId) => {
   return chapter ? { ...chapter, id: chapter.chapterId } : null;
 };
 
-const getItems = async ({ chapterId, ids, q } = {}) => {
+const getItems = async ({ chapterId, ids, q, search } = {}) => {
   const idList = parseIdsParam(ids);
-  const normalizedQuery = String(q || "").trim();
+  const searchTerm = String(q || search || "").trim();
 
   let query = {};
 
@@ -77,14 +101,19 @@ const getItems = async ({ chapterId, ids, q } = {}) => {
     query.duaId = { $in: idList };
   }
 
-  if (normalizedQuery) {
+  if (searchTerm) {
+    const escaped = searchTerm.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    const safeRegex = new RegExp(escaped, "i");
     query.$or = [
-      { title: { $regex: normalizedQuery, $options: "i" } },
-      { sourceLabel: { $regex: normalizedQuery, $options: "i" } },
-      { sourceLabelBangla: { $regex: normalizedQuery, $options: "i" } },
-      { pronunciation: { $regex: normalizedQuery, $options: "i" } },
-      { translation: { $regex: normalizedQuery, $options: "i" } },
-      { arabic: { $regex: normalizedQuery, $options: "i" } },
+      { title: safeRegex },
+      { sourceLabel: safeRegex },
+      { sourceLabelBangla: safeRegex },
+      { sourceLabelArabic: safeRegex },
+      { ayahLabel: safeRegex },
+      { pronunciation: safeRegex },
+      { translation: safeRegex },
+      { arabic: safeRegex },
+      { tafsir: safeRegex },
     ];
   }
 

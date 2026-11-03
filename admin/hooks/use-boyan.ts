@@ -13,6 +13,9 @@ import {
   updateBoyanCategory,
   deleteBoyanCategory,
   getBoyanAuthors,
+  createBoyanAuthor,
+  updateBoyanAuthor,
+  deleteBoyanAuthor,
   getBoyanLocations,
   createBoyan,
   updateBoyan,
@@ -21,7 +24,10 @@ import {
 import type {
   CreateBoyanCategoryPayload,
   UpdateBoyanCategoryPayload,
+  CreateBoyanAuthorPayload,
+  UpdateBoyanAuthorPayload,
 } from "@/types/boyan";
+
 
 export function useBoyanList(
   params?: Record<string, string | number | undefined>
@@ -104,6 +110,46 @@ export function useBoyanAuthors() {
     },
   });
 }
+
+export function useCreateBoyanAuthor() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CreateBoyanAuthorPayload) => createBoyanAuthor(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["boyan-authors"] });
+      queryClient.invalidateQueries({ queryKey: ["boyan"] });
+    },
+  });
+}
+
+export function useUpdateBoyanAuthor() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: UpdateBoyanAuthorPayload;
+    }) => updateBoyanAuthor(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["boyan-authors"] });
+      queryClient.invalidateQueries({ queryKey: ["boyan"] });
+    },
+  });
+}
+
+export function useDeleteBoyanAuthor() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteBoyanAuthor(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["boyan-authors"] });
+      queryClient.invalidateQueries({ queryKey: ["boyan"] });
+    },
+  });
+}
+
 
 export function useBoyanLocations() {
   return useQuery({

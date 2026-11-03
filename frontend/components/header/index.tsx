@@ -68,7 +68,7 @@ const Header = ({
   const { locale, setLocale } = useLocale();
   const createRipple = useRipple();
   const headerNavItems = getHeaderNavItems((key) => t(key));
-  const { user, isAuthenticated, openAuthModal, logout } = useAuthContext();
+  const { user, isAuthenticated, openAuthModal, logout, setOnAuthenticated } = useAuthContext();
   const { settings } = useSettings();
   const isQuestionsEnabled = settings?.isQuestionsEnabled ?? true;
 
@@ -87,10 +87,15 @@ const Header = ({
     ].some((route) => pathname === route || pathname.startsWith(`${route}/`));
   const isAskCtaPage =
     !isProtectedPage &&
-    ["/masail", "/question-answer", "/qa", "/articles", "/ask"].some(
-      (route) => pathname === route || pathname.startsWith(`${route}/`),
-    );
-  /* CTA button ("প্রশ্ন করুন" on public masail/qa/articles/ask, "সাপোর্ট করুন" on other public pages, none on protected pages) */
+    [
+      "/malfujat",
+      "/malfujat-text",
+      "/malfujat-audio",
+      "/qa",
+      "/question-answer",
+      "/ask",
+    ].some((route) => pathname === route || pathname.startsWith(`${route}/`));
+  /* CTA button ("প্রশ্ন করুন" on malfujat and qa, "সাপোর্ট করুন" on all other public pages, none on protected pages) */
   const cta = ctaProp ?? (isProtectedPage ? null : (isAskCtaPage && isQuestionsEnabled) ? "ask" : "donate");
   /* Protected pages show their section label in the mobile top bar next to the
      back arrow; null everywhere else keeps the logo/back button as-is. */
@@ -183,9 +188,20 @@ const Header = ({
   };
 
   const isPrayerTimesPage = pathname === "/prayer-times";
-  const showAskButton = ["/masail", "/question-answer", "/qa", "/articles"].some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`),
-  ) && isQuestionsEnabled;
+  const showAskButton = isAskCtaPage && isQuestionsEnabled;
+
+  const handleAskClick = (e: React.MouseEvent<HTMLElement>) => {
+    createRipple(e);
+    if (!isAuthenticated) {
+      e.preventDefault();
+      setOnAuthenticated(() => {
+        router.push("/ask-2");
+      });
+      openAuthModal();
+      return;
+    }
+    router.push("/ask-2");
+  };
   const displayMobileTitle = isPrayerTimesPage
     ? `${t("home.prayer.titleLine1")} ${t("home.prayer.titleLine2")}`
     : mobileTitle;
@@ -392,14 +408,14 @@ const Header = ({
               </div>
             </div>
             {cta === "ask" ? (
-              <Link
-                href="/ask"
+              <button
+                type="button"
                 className="header-donate-btn hide-on-mobile"
-                onClick={(e) => createRipple(e)}
+                onClick={handleAskClick}
               >
                 <span className="donate-btn-bg" />
                 <span className="donate-btn-content">{t("header.ask")}</span>
-              </Link>
+              </button>
             ) : cta === "donate" ? (
               <Link href="/donate" className="header-donate-btn" onClick={(e) => createRipple(e)}>
                 <span className="donate-btn-bg" />
@@ -459,16 +475,14 @@ const Header = ({
             )}
 
             {showAskButton && (
-              <Link
-                href="/ask"
+              <button
+                type="button"
                 className="header-ask-btn"
-                onClick={(e) => {
-                  createRipple(e);
-                }}
+                onClick={handleAskClick}
               >
                 <CircleHelp size={18} />
                 <span>{t("header.ask")}</span>
-              </Link>
+              </button>
             )}
 
             {pathname === "/my-articles" && (

@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, ChevronLeft } from "lucide-react";
+import { Calendar, ChevronLeft, Eye } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -9,10 +9,11 @@ import { SkeletonBar } from "@/components/ui/skeleton-bar";
 import Wrapper from "@/components/wrapper";
 import { useAsyncData } from "@/hooks/use-async-data";
 import { useLocale } from "@/hooks/use-locale";
+import { useRecordView } from "@/hooks/use-record-view";
 import { useRipple } from "@/hooks/use-ripple";
 import { useTranslations } from "@/hooks/use-translations";
 import { fetchNoticeById } from "@/lib/api/notice";
-import { formatLocalizedDate } from "@/lib/banglaFormat";
+import { formatLocalizedDate, toLocalizedNumber } from "@/lib/banglaFormat";
 import detailStyles from "@/styles/detail.module.css";
 import listingStyles from "@/styles/listing.module.css";
 import noticeStyles from "@/styles/notice.module.css";
@@ -77,6 +78,10 @@ export default function NoticeDetail({ id }: { id: string }) {
   const backBtnRef = React.useRef<HTMLButtonElement>(null);
 
   const { data: notice, loading } = useAsyncData(() => fetchNoticeById(id), [id]);
+  const liveViews = useRecordView(
+    { entityType: "notice", entityId: id },
+    notice?.views ?? 0
+  );
 
   return (
     <section className={`${listingStyles.section} ${noticeStyles.noticeSection}`}>
@@ -153,12 +158,18 @@ export default function NoticeDetail({ id }: { id: string }) {
             <h1 className={detailStyles.title} style={{ marginBottom: "0.5rem" }}>
               {notice.title}
             </h1>
-            {notice.date && (
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <Calendar className="w-4 h-4 text-[#008e48]" />
-                <span>{formatLocalizedDate(notice.date, locale as "bn" | "en")}</span>
+            <div className="flex items-center gap-4 text-sm text-gray-500">
+              {notice.date && (
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-[#008e48]" />
+                  <span>{formatLocalizedDate(notice.date, locale as "bn" | "en")}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-1.5">
+                <Eye className="w-4 h-4 text-gray-400" />
+                <span>{toLocalizedNumber(liveViews.toLocaleString("en-US"), locale)}</span>
               </div>
-            )}
+            </div>
           </div>
         ) : (
           <div style={{ marginBottom: "1.5rem" }}>

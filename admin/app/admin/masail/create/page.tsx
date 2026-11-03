@@ -29,7 +29,7 @@ export default function CreateMasailPage() {
 
   const form = useForm<MasailForm>({
     resolver: zodResolver(masailSchema),
-    defaultValues: { title: "", description: "" },
+    defaultValues: { title: "", description: "", category: "" },
   });
 
   function onSubmit(data: MasailForm) {
@@ -76,13 +76,14 @@ export default function CreateMasailPage() {
                 control={form.control}
                 render={({ field }) => (
                   <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value ?? ""}
+                    onValueChange={(val) => field.onChange(val === "__none__" ? "" : (val ?? ""))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="__none__">None</SelectItem>
                       {categories.map((c: any) => (
                         <SelectItem key={c.slug} value={c.slug}>
                           {c.name}

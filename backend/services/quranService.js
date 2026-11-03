@@ -56,8 +56,9 @@ const getQuranRoot = async (query = {}) => {
   try {
     const filter = {};
 
-    if (query.search && String(query.search).trim()) {
-      const { regex, flexRegex, num } = buildSearchRegexes(query.search);
+    const searchTerm = String(query.search || query.q || "").trim();
+    if (searchTerm) {
+      const { regex, flexRegex, num } = buildSearchRegexes(searchTerm);
       filter.$or = [
         { name_en: regex },
         { name_en: flexRegex },
@@ -154,9 +155,10 @@ const getLanguages = async () => {
  */
 const searchQuran = async (query) => {
   try {
-    const { q, surahId, verseStart, verseEnd } = query;
+    const { q, search, surahId, verseStart, verseEnd } = query;
+    const searchTerm = String(q || search || "").trim();
 
-    if (!q && !surahId) {
+    if (!searchTerm && !surahId) {
       const err = new Error("Please provide search query (q) or surahId");
       err.status = status.BAD_REQUEST;
       throw err;
@@ -164,8 +166,8 @@ const searchQuran = async (query) => {
 
     let filter = {};
 
-    if (q) {
-      const { regex, flexRegex, num } = buildSearchRegexes(q);
+    if (searchTerm) {
+      const { regex, flexRegex, num } = buildSearchRegexes(searchTerm);
 
       filter.$or = [
         { name_en: regex },

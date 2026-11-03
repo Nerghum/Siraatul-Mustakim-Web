@@ -49,3 +49,23 @@ export interface CreateBoyanCategoryPayload {
 }
 
 export type UpdateBoyanCategoryPayload = Partial<CreateBoyanCategoryPayload>;
+
+export interface BoyanAuthor {
+  _id: string;
+  id?: string;
+  name: string;
+  slug?: string;
+  bio?: string;
+  count?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateBoyanAuthorPayload {
+  name: string;
+  slug?: string;
+  bio?: string;
+}
+
+export type UpdateBoyanAuthorPayload = Partial<CreateBoyanAuthorPayload>;
+

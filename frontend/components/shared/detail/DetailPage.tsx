@@ -3,15 +3,18 @@
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { toast } from "sonner";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import CategorySidebar from "@/components/shared/CategorySidebar";
 import { ScrollRevealItem, ScrollRevealWrapper } from "@/components/shared/ScrollReveal";
 import Wrapper from "@/components/wrapper";
 import { MOCK_ARTICLE_CATEGORIES, MOCK_CATEGORIES } from "@/data/mockCategories";
-import { fetchMasailById } from "@/lib/api/masail";
+import { fetchMasailById, fetchMasailCategories, fetchMasailList } from "@/lib/api/masail";
 import { fetchDetailPage } from "@/data/mockDetail";
 import { fetchArticleById } from "@/lib/api/articles";
 import { useAsyncData } from "@/hooks/use-async-data";
+import { useLocale } from "@/hooks/use-locale";
+import { useRecordView } from "@/hooks/use-record-view";
 import { useRipple } from "@/hooks/use-ripple";
 import { useTranslations } from "@/hooks/use-translations";
 import { cn } from "@/lib/utils";
@@ -31,31 +34,76 @@ type DetailPageProps = {
 
 const DetailPage: React.FC<DetailPageProps> = ({ id, namespace, basePath }) => {
   const t = useTranslations();
+  const { locale } = useLocale();
   const router = useRouter();
   const createRipple = useRipple();
   const { isAuthenticated, openAuthModal, setOnAuthenticated } = useAuthContext();
 
+  const { data: dynamicCategories } = useAsyncData(
+    () => (namespace === "masail" ? fetchMasailCategories() : Promise.resolve(null)),
+    [namespace],
+  );
+
+  let categoriesToUse = dynamicCategories && dynamicCategories.length > 0 ? dynamicCategories : MOCK_CATEGORIES;
+  let translationNamespaceToUse = "listing.categories.";
+  if (namespace === "articles") {
+    categoriesToUse = MOCK_ARTICLE_CATEGORIES;
+    translationNamespaceToUse = "listing.articleCategories.";
+  }
+
   const { data, loading } = useAsyncData(
     async () => {
       if (namespace === "masail") {
-        const m = await fetchMasailById(id);
+        const [m, categories, allMasail] = await Promise.all([
+          fetchMasailById(id),
+          fetchMasailCategories().catch(() => []),
+          fetchMasailList().catch(() => []),
+        ]);
+
+        const matchedCategory = categories.find(
+          (c) => c.slug === m.category || c.name === m.category || c.id === m.category
+        );
+        const categoryLabel = matchedCategory?.name || m.category || "";
+        const categorySlug = matchedCategory?.slug || m.category || "";
+
+        const masailAuthor = locale === "bn" ? "সিরাতুল মুস্তাকিম" : "Siraatul Mustaqim";
+
         // Adapt MasailApiItem → DetailPageData shape
         const detail = {
           id: m._id,
           title: m.title,
-          excerpt: (m.description || "").replace(/<[^>]*>?/gm, '').slice(0, 200),
-          author: "সিরাতুল মুস্তাকিম",
+          excerpt: (m.description || "").replace(/<[^>]*>?/gm, "").slice(0, 200),
+          author: masailAuthor,
           date: m.createdAt,
-          views: 0,
-          category: "",
+          views: m.views ?? 0,
+          category: categorySlug,
           body: [
             { type: "bismillah" as const, text: "বিসমিল্লাহির রহমানির রহীম" },
             { type: "html" as const, text: m.description },
           ],
-          tags: [],
+          tags: categoryLabel
+            ? [{ label: categoryLabel, variant: "primary" as const }]
+            : [],
           topics: [],
         };
-        return { detail, related: [] };
+
+        const otherMasail = allMasail.filter((item) => item._id !== id);
+        const sameCategory = otherMasail.filter(
+          (item) => item.category && (item.category === categorySlug || item.category === m.category)
+        );
+        const remaining = otherMasail.filter((item) => !sameCategory.includes(item));
+        const relatedRaw = [...sameCategory, ...remaining].slice(0, 6);
+        const related = relatedRaw.map((item) => ({
+          id: item._id,
+          title: item.title,
+          excerpt: (item.description || "").replace(/<[^>]*>?/gm, "").slice(0, 200),
+          author: masailAuthor,
+          date: item.createdAt,
+          views: item.views ?? 0,
+          category: item.category ?? "",
+        }));
+
+        return { detail, related };
       }
       if (namespace === "articles") {
         const a = await fetchArticleById(id);
@@ -65,7 +113,7 @@ const DetailPage: React.FC<DetailPageProps> = ({ id, namespace, basePath }) => {
           excerpt: a.content.slice(0, 200),
           author: a.author?.name || "লেখক",
           date: a.createdAt,
-          views: 0,
+          views: a.views ?? 0,
           category: a.tags?.[0] || "",
           body: [
             {
@@ -80,10 +128,16 @@ const DetailPage: React.FC<DetailPageProps> = ({ id, namespace, basePath }) => {
       }
       return fetchDetailPage(namespace, id);
     },
-    [namespace, id],
+    [namespace, id, locale],
   );
   const detail = data?.detail ?? null;
   const related = data?.related ?? [];
+
+  const entityType = namespace === "articles" ? "article" : namespace === "masail" ? "masail" : namespace;
+  const liveViews = useRecordView(
+    { entityType, entityId: id },
+    detail?.views ?? 0
+  );
 
   const [saved, setSaved] = React.useState(false);
 
@@ -91,11 +145,20 @@ const DetailPage: React.FC<DetailPageProps> = ({ id, namespace, basePath }) => {
     if (!isAuthenticated) {
       setOnAuthenticated(() => {
         setSaved(true);
+        toast.success(t("detail.bookmarkAdd") || "বুকমার্কে যুক্ত করা হয়েছে");
       });
       openAuthModal();
       return;
     }
-    setSaved((prev) => !prev);
+    setSaved((prev) => {
+      const next = !prev;
+      toast.success(
+        next
+          ? t("detail.bookmarkAdd") || "বুকমার্কে যুক্ত করা হয়েছে"
+          : t("detail.bookmarkRemove") || "বুকমার্ক থেকে সরানো হয়েছে",
+      );
+      return next;
+    });
   };
 
   const path = detail ? `${basePath}/${detail.id}` : basePath;
@@ -143,12 +206,13 @@ const DetailPage: React.FC<DetailPageProps> = ({ id, namespace, basePath }) => {
                 ) : (
                   <div className={styles.mainColumn}>
                     <DetailCard
-                      detail={detail}
+                      detail={{ ...detail, views: liveViews }}
                       namespace={namespace}
                       saved={saved}
                       onToggleSave={handleToggleSave}
                       onShare={handleShare}
                       path={path}
+                      basePath={basePath}
                     />
 
                     <div className={styles.shareCardMobile}>
@@ -159,12 +223,10 @@ const DetailPage: React.FC<DetailPageProps> = ({ id, namespace, basePath }) => {
               </ScrollRevealItem>
 
               <CategorySidebar
-                activeSlug={null}
+                activeSlug={detail?.category || null}
                 onSelect={(slug) => router.push(slug ? `${basePath}?category=${slug}` : basePath)}
-                categories={namespace === "articles" ? MOCK_ARTICLE_CATEGORIES : MOCK_CATEGORIES}
-                translationNamespace={
-                  namespace === "articles" ? "listing.articleCategories." : "listing.categories."
-                }
+                categories={categoriesToUse}
+                translationNamespace={translationNamespaceToUse}
                 title={t(`${namespace}.categoriesTitle`)}
               />
             </div>

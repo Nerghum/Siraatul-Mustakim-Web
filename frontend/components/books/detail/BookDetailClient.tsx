@@ -1,11 +1,13 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Bookmark, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type React from "react";
 import { useRef, useState } from "react";
+import { toast } from "sonner";
+import { useAuthContext } from "@/components/auth/AuthProvider";
 import kitabCover from "@/assets/kitab.jpg";
 import { ScrollRevealItem, ScrollRevealWrapper } from "@/components/shared/ScrollReveal";
 import { FolderOpen } from "@/components/ui/folder-open";
@@ -20,6 +22,7 @@ const PdfReader = dynamic(() => import("@/components/books/PdfReader"), {
 
 import { useAsyncData } from "@/hooks/use-async-data";
 import { useLocale } from "@/hooks/use-locale";
+import { useRecordView } from "@/hooks/use-record-view";
 import { useRipple } from "@/hooks/use-ripple";
 import { useTranslations } from "@/hooks/use-translations";
 import { fetchKitabById, kitabFileUrl } from "@/lib/api/kitab";
@@ -88,8 +91,35 @@ export default function BookDetailClient({ id }: { id: string }) {
   const backBtnRef = useRef<HTMLButtonElement>(null);
 
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const { isAuthenticated, openAuthModal, setOnAuthenticated } = useAuthContext();
+
+  const handleBookmark = (e?: React.MouseEvent<HTMLElement>) => {
+    if (e) createRipple(e);
+    if (!isAuthenticated) {
+      setOnAuthenticated(() => {
+        setIsBookmarked(true);
+        toast.success(t("detail.bookmarkAdd") || "বুকমার্কে যুক্ত করা হয়েছে");
+      });
+      openAuthModal();
+      return;
+    }
+    setIsBookmarked((prev) => {
+      const next = !prev;
+      toast.success(
+        next
+          ? t("detail.bookmarkAdd") || "বুকমার্কে যুক্ত করা হয়েছে"
+          : t("detail.bookmarkRemove") || "বুকমার্ক থেকে সরানো হয়েছে",
+      );
+      return next;
+    });
+  };
 
   const { data: detail, loading: metaLoading } = useAsyncData(() => fetchKitabById(id), [id]);
+  const liveViews = useRecordView(
+    { entityType: "kitab", entityId: id },
+    detail?.views ?? 0
+  );
 
   const activePageParam = searchParams.get("p");
   const { data: readerData, loading: readerLoading } = useAsyncData(
@@ -165,6 +195,27 @@ export default function BookDetailClient({ id }: { id: string }) {
           </h1>
         </div>
         <div className={listStyles.mobileBarRight}>
+          <button
+            type="button"
+            className={cn(styles.actionBtn, isBookmarked && styles.actionBtnActive)}
+            onClick={handleBookmark}
+            aria-label={isBookmarked ? t("common.bookmarked") : t("common.bookmark")}
+            aria-pressed={isBookmarked}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "40px",
+              height: "40px",
+              color: isBookmarked ? "var(--color-primary, #008e48)" : "#64748b",
+              background: "transparent",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
+          >
+            <Bookmark size={20} fill={isBookmarked ? "currentColor" : "none"} />
+          </button>
           {hasToc && (
             <button
               type="button"
@@ -242,7 +293,13 @@ export default function BookDetailClient({ id }: { id: string }) {
               ) : (
                 <>
                   <h1 className={styles.bookTitle}>{detail.title}</h1>
-                  <p className={styles.bookAuthor}>{detail.author}</p>
+                  <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", flexWrap: "wrap", marginTop: "0.25rem" }}>
+                    <p className={styles.bookAuthor} style={{ margin: 0 }}>{detail.author}</p>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", fontSize: "0.875rem", color: "#6b7280" }}>
+                      <Eye style={{ width: "1rem", height: "1rem", color: "#9ca3af" }} />
+                      {toLocalizedNumber(liveViews.toLocaleString("en-US"), locale)}
+                    </span>
+                  </div>
                   {detail.pdf && (
                     <a
                       href={kitabFileUrl(detail.pdf)}
@@ -258,19 +315,35 @@ export default function BookDetailClient({ id }: { id: string }) {
               )}
             </div>
 
-            {hasToc && (
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexShrink: 0 }}>
               <button
                 type="button"
-                className={cn(listStyles.categoryBtn, styles.desktopTocBtn, styles.headerTocBtn)}
-                onClick={(e) => {
-                  createRipple(e);
-                  setSheetOpen(true);
+                className={cn(listStyles.categoryBtn, styles.headerTocBtn)}
+                style={{
+                  backgroundColor: isBookmarked ? "var(--color-primary, #008e48)" : "#f1f5f9",
+                  color: isBookmarked ? "#ffffff" : "#334155",
+                  border: isBookmarked ? "none" : "1px solid #cbd5e1",
                 }}
+                onClick={handleBookmark}
+                aria-pressed={isBookmarked}
               >
-                <FolderOpen className={listStyles.categoryBtnIcon} fill="currentColor" />
-                {t("books.detail.tocTitle")}
+                <Bookmark className={listStyles.categoryBtnIcon} fill={isBookmarked ? "currentColor" : "none"} />
+                {isBookmarked ? t("common.bookmarked") : t("common.bookmark")}
               </button>
-            )}
+              {hasToc && (
+                <button
+                  type="button"
+                  className={cn(listStyles.categoryBtn, styles.desktopTocBtn, styles.headerTocBtn)}
+                  onClick={(e) => {
+                    createRipple(e);
+                    setSheetOpen(true);
+                  }}
+                >
+                  <FolderOpen className={listStyles.categoryBtnIcon} fill="currentColor" />
+                  {t("books.detail.tocTitle")}
+                </button>
+              )}
+            </div>
           </ScrollRevealItem>
 
           <div className={styles.readerGrid}>

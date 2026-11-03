@@ -3,6 +3,7 @@
 import { Bookmark, Pause, Play, Share2 } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
+import { useAuthContext } from "@/components/auth/AuthProvider";
 import type { Bayan } from "@/data/mockRecentBayans";
 import { useRipple } from "@/hooks/use-ripple";
 import { useTranslations } from "@/hooks/use-translations";
@@ -44,6 +45,7 @@ const DuaCard: React.FC<{ item: DuaItemProps }> = ({ item }) => {
   const t = useTranslations();
   const createRipple = useRipple();
   const player = useAudioPlayer();
+  const { isAuthenticated, openAuthModal, setOnAuthenticated } = useAuthContext();
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   const rawArabic = item.arabicText || item.arabic || "";
@@ -104,9 +106,21 @@ const DuaCard: React.FC<{ item: DuaItemProps }> = ({ item }) => {
 
   const handleBookmark = (e: React.MouseEvent<HTMLButtonElement>) => {
     createRipple(e);
+    if (!isAuthenticated) {
+      setOnAuthenticated(() => {
+        setIsBookmarked(true);
+        toast.success(t("detail.bookmarkAdd") || "বুকমার্কে যুক্ত করা হয়েছে");
+      });
+      openAuthModal();
+      return;
+    }
     setIsBookmarked((prev) => {
       const next = !prev;
-      toast.success(next ? t("detail.bookmarkAdd") || "বুকমার্কে যুক্ত করা হয়েছে" : t("detail.bookmarkRemove") || "বুকমার্ক থেকে সরানো হয়েছে");
+      toast.success(
+        next
+          ? t("detail.bookmarkAdd") || "বুকমার্কে যুক্ত করা হয়েছে"
+          : t("detail.bookmarkRemove") || "বুকমার্ক থেকে সরানো হয়েছে",
+      );
       return next;
     });
   };

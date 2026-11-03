@@ -44,6 +44,11 @@ const boyanSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+    views: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
   { timestamps: true }
 );

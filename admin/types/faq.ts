@@ -17,7 +17,14 @@ export interface FaqAnswer {
   category: string;
   answer: string;
   timestamp: string;
-  userId?: string;
+  userId?:
+    | string
+    | {
+        _id: string;
+        name?: string;
+        email?: string;
+        role?: string;
+      };
 }
 
 export interface CreateFaqPayload {
