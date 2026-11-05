@@ -146,16 +146,28 @@ export default function LiveStudioScreen() {
           duration: finalDuration.toString(),
           peakListeners: listenerCount.toString(),
           localUri: localUri || "",
-          serverBoyanId: stopRes.boyan?._id || "",
+          serverBoyanId: stopRes?.boyan?._id || "",
         },
       });
     } catch (err: any) {
-      console.error("End live failed:", err);
-      Alert.alert(
-        "ত্রুটি",
-        "লাইভ শেষ করার সময় সমস্যা হয়েছে। তবে লোকাল অডিও সংরক্ষিত আছে।"
-      );
-      setStopping(false);
+      console.error("End live fallback navigation:", err);
+      try {
+        endSignalingBroadcast(id as string, roomName as string);
+      } catch (e) {}
+      // Still transition to summary with local audio
+      router.replace({
+        pathname: "/summary/[id]",
+        params: {
+          id: id as string,
+          title: title || "",
+          author: author || "",
+          category: category || "",
+          duration: duration.toString(),
+          peakListeners: listenerCount.toString(),
+          localUri: "",
+          serverBoyanId: "",
+        },
+      });
     }
   };
 

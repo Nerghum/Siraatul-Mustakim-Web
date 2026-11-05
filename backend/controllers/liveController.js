@@ -1,5 +1,6 @@
 import status from "http-status";
 import mongoose from "mongoose";
+import LiveStream from "../models/LiveStream.js";
 import * as liveService from "../services/liveService.js";
 import { handleHttpAudioStream } from "../services/signalingService.js";
 
@@ -62,7 +63,19 @@ const stopLive = async (req, res) => {
   try {
     requireAdmin(req);
 
-    const streamId = req.body.streamId || req.params.id;
+    let streamId =
+      req.body?.streamId ||
+      req.params?.id ||
+      req.query?.streamId ||
+      req.headers["x-stream-id"];
+
+    if (!streamId || !mongoose.Types.ObjectId.isValid(streamId)) {
+      const active = await LiveStream.findOne({ isLive: true }).sort({ startedAt: -1 });
+      if (active) {
+        streamId = active._id;
+      }
+    }
+
     if (!streamId || !mongoose.Types.ObjectId.isValid(streamId)) {
       return res.status(status.BAD_REQUEST).json({ error: "Valid streamId is required" });
     }

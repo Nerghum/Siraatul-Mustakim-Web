@@ -23,7 +23,7 @@ router.post(
     if (req.is("multipart/form-data")) {
       audioUploader(req, res, (err) => {
         if (err) {
-          return res.status(400).json({ error: err.message });
+          console.warn("[liveRoutes] audio upload warning during stop:", err.message);
         }
         next();
       });

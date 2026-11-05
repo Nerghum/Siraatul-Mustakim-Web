@@ -13,13 +13,19 @@ const IMAGE_MIMES = new Set([
 ]);
 
 const AUDIO_MIMES = new Set([
-    "audio/mp3",
+  "audio/mp3",
   "audio/mpeg",
   "audio/mp4",
+  "audio/m4a",
+  "audio/x-m4a",
+  "audio/mp4a-latm",
   "audio/wav",
+  "audio/x-wav",
   "audio/ogg",
   "audio/webm",
   "audio/aac",
+  "audio/x-aac",
+  "application/octet-stream",
 ]);
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
@@ -114,8 +120,13 @@ function pdfFileFilter(_req, file, cb) {
 }
 
 function audioFileFilter(_req, file, cb) {
-  if (AUDIO_MIMES.has(file.mimetype)) cb(null, true);
-  else cb(new Error("Only audio files are allowed"), false);
+  const ext = path.extname(file.originalname || "").toLowerCase();
+  const allowedExts = new Set([".m4a", ".mp3", ".aac", ".wav", ".ogg", ".webm", ".mp4"]);
+  if (AUDIO_MIMES.has(file.mimetype) || allowedExts.has(ext)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only audio files are allowed"), false);
+  }
 }
 
 export function createAudioUploader(relativeDirFromProjectRoot, options = {}) {

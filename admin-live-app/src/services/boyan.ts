@@ -100,29 +100,38 @@ export async function stopLiveBoyan(
 ): Promise<{ stream: LiveStreamData; boyan?: any }> {
   const headers = await getAuthHeaders();
 
+  // Try uploading local audio if present
   if (localAudioUri) {
-    const formData = new FormData();
-    formData.append("streamId", streamId);
-    const filename = localAudioUri.split("/").pop() || `live-${streamId}.m4a`;
-    formData.append("audio", {
-      uri: localAudioUri,
-      name: filename,
-      type: "audio/m4a",
-    } as any);
+    try {
+      const formData = new FormData();
+      formData.append("streamId", streamId);
+      const filename = localAudioUri.split("/").pop() || `live-${streamId}.m4a`;
+      formData.append("audio", {
+        uri: localAudioUri,
+        name: filename,
+        type: "audio/m4a",
+      } as any);
 
-    const res = await axios.post(`${API_BASE_URL}/live/stop`, formData, {
-      headers: {
-        ...headers,
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return res.data.data;
+      const res = await axios.post(`${API_BASE_URL}/live/stop`, formData, {
+        headers: {
+          ...headers,
+          Accept: "application/json",
+        },
+        timeout: 15000,
+      });
+      if (res.data?.data) {
+        return res.data.data;
+      }
+    } catch (uploadErr) {
+      console.warn("[stopLiveBoyan] Multipart upload warning, falling back to JSON stop:", uploadErr);
+    }
   }
 
+  // Guaranteed fallback: terminate stream via JSON
   const res = await axios.post(
     `${API_BASE_URL}/live/stop`,
     { streamId },
-    { headers }
+    { headers, timeout: 10000 }
   );
-  return res.data.data;
+  return res.data?.data || res.data;
 }
