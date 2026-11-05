@@ -49,22 +49,33 @@ export class LiveStreamer {
     this.config = config;
     await this.init();
 
-    this.recorder = new AudioModule.AudioRecorder({
+    const recorderOptions: any = {
       extension: ".aac",
       sampleRate: 44100,
       numberOfChannels: 1,
       bitRate: 64000,
+      outputFormat: "aac_adts",
+      audioEncoder: "aac",
+      isMeteringEnabled: true,
       android: {
         outputFormat: "aac_adts",
         audioEncoder: "aac",
+        sampleRate: 44100,
+        numberOfChannels: 1,
+        bitRate: 64000,
       },
       ios: {
         outputFormat: IOSOutputFormat.MPEG4AAC,
         audioQuality: AudioQuality.HIGH,
+        sampleRate: 44100,
+        numberOfChannels: 1,
+        bitRate: 64000,
       },
-    });
+    };
 
-    await this.recorder.prepareToRecordAsync();
+    this.recorder = new AudioModule.AudioRecorder(recorderOptions);
+
+    await this.recorder.prepareToRecordAsync(recorderOptions);
     this.recorder.record();
 
     this.isStreaming = true;

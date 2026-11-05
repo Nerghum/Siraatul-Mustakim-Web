@@ -97,15 +97,17 @@ export const handleHttpAudioStream = async (rawStreamId, req, res) => {
     Expires: "0",
     Connection: "keep-alive",
     "Access-Control-Allow-Origin": "*",
+    "Accept-Ranges": "none",
+    "X-Content-Type-Options": "nosniff",
+    "icy-name": "Siraatul Mustakim Live",
+    "icy-br": "64",
+    "icy-sr": "44100",
   });
 
-  // Prime client with recent buffered audio so ExoPlayer doesn't stall buffering
+  // Prime client with recent buffered audio aligned to the first ADTS syncword
+  let bufferToSend = null;
   if (session.recentChunks && session.recentChunks.length > 0) {
-    try {
-      for (const chunk of session.recentChunks) {
-        res.write(chunk);
-      }
-    } catch (e) {}
+    bufferToSend = Buffer.concat(session.recentChunks);
   } else if (session.recordingPath && fs.existsSync(session.recordingPath)) {
     try {
       const stat = fs.statSync(session.recordingPath);
@@ -115,8 +117,22 @@ export const handleHttpAudioStream = async (rawStreamId, req, res) => {
         const fd = fs.openSync(session.recordingPath, "r");
         fs.readSync(fd, buf, 0, tailSize, stat.size - tailSize);
         fs.closeSync(fd);
-        res.write(buf);
+        bufferToSend = buf;
       }
+    } catch (e) {}
+  }
+
+  if (bufferToSend && bufferToSend.length > 0) {
+    let startOffset = 0;
+    // Align to the nearest ADTS syncword (0xFF followed by 0xF0..0xFF)
+    for (let i = 0; i < bufferToSend.length - 1; i++) {
+      if (bufferToSend[i] === 0xFF && (bufferToSend[i + 1] & 0xF0) === 0xF0) {
+        startOffset = i;
+        break;
+      }
+    }
+    try {
+      res.write(bufferToSend.subarray(startOffset));
     } catch (e) {}
   }
 
