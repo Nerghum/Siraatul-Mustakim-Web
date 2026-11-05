@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "লাইভ অ্যাডমিন",
+    "slug": "admin-live-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "jsEngine": "hermes",
+    "userInterfaceStyle": "light",
+    "scheme": "adminliveapp",
+    "android": {
+      "package": "com.siratulmustakim.adminlive",
+      "permissions": [
+        "INTERNET",
+        "RECORD_AUDIO",
+        "MODIFY_AUDIO_SETTINGS",
+        "WAKE_LOCK",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_MICROPHONE",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-audio",
+        {
+          "enableBackgroundPlayback": true
+        }
+      ]
+    ]
+  }
+}

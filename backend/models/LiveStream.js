@@ -4,6 +4,9 @@ const liveStreamSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
     description: { type: String, trim: true, default: "" },
+    category: { type: String, trim: true, default: "বয়ান" },
+    author: { type: String, trim: true, default: "মুফতি জাফর আহমেদ" },
+    location: { type: String, trim: true, default: "" },
     roomName: { type: String, required: true, unique: true },
     streamKey: { type: String, required: true },
     startedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -19,6 +22,7 @@ const liveStreamSchema = new mongoose.Schema(
       enum: ["live", "ended", "processing"],
       default: "live",
     },
+    boyanId: { type: mongoose.Schema.Types.ObjectId, ref: "Boyan", default: null },
   },
   { timestamps: true }
 );

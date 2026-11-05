@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
 import routes from "./routes/index.js";
 import { FILES_PUBLIC_PREFIX } from "./utils/uploadStorage.js";
+import { initSignaling } from "./services/signalingService.js";
 
 connectDB();
 
@@ -110,9 +111,11 @@ const io = new SocketIOServer(httpServer, {
     credentials: true,
     methods: ["GET", "POST"],
   },
+  maxHttpBufferSize: 1e8,
 });
 
 global.io = io;
+initSignaling(io);
 
 io.on("connection", (socket) => {
   console.log(`[Socket] Client connected: ${socket.id}`);

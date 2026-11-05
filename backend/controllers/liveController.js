@@ -1,6 +1,7 @@
 import status from "http-status";
 import mongoose from "mongoose";
 import * as liveService from "../services/liveService.js";
+import { handleHttpAudioStream } from "../services/signalingService.js";
 
 const ADMIN_PHONES = (process.env.ADMIN_PHONES || "")
   .split(",")
@@ -11,16 +12,24 @@ const requireAdmin = (req) => {
   if (!req.user) {
     throw new Error("Unauthorized");
   }
-  if (ADMIN_PHONES.length > 0 && !ADMIN_PHONES.includes(req.user.phone)) {
-    throw new Error("Forbidden: Admin access required");
+  const allowedRoles = ["admin", "moderator", "mufti", "staff"];
+  if (req.user.role && allowedRoles.includes(req.user.role)) {
+    return;
   }
+  if (ADMIN_PHONES.length > 0 && ADMIN_PHONES.includes(req.user.phone)) {
+    return;
+  }
+  if (ADMIN_PHONES.length === 0 && !req.user.role) {
+    return;
+  }
+  throw new Error("Forbidden: Admin access required");
 };
 
 const startLive = async (req, res) => {
   try {
     requireAdmin(req);
 
-    const { title, description } = req.body;
+    const { title, description, category, author, location } = req.body;
     if (!title || !title.trim()) {
       return res.status(status.BAD_REQUEST).json({ error: "Title is required" });
     }
@@ -28,7 +37,12 @@ const startLive = async (req, res) => {
     const result = await liveService.startLive(
       title.trim(),
       (description || "").trim(),
-      req.user.id
+      req.user.id || req.user._id,
+      {
+        category: (category || "").trim(),
+        author: (author || "").trim(),
+        location: (location || "").trim(),
+      }
     );
 
     res.status(status.CREATED).json({ success: true, data: result });
@@ -48,13 +62,14 @@ const stopLive = async (req, res) => {
   try {
     requireAdmin(req);
 
-    const { streamId } = req.body;
+    const streamId = req.body.streamId || req.params.id;
     if (!streamId || !mongoose.Types.ObjectId.isValid(streamId)) {
       return res.status(status.BAD_REQUEST).json({ error: "Valid streamId is required" });
     }
 
-    const stream = await liveService.stopLive(streamId);
-    res.status(status.OK).json({ success: true, data: stream });
+    const uploadedFilePath = req.file ? req.file.path : null;
+    const result = await liveService.stopLive(streamId, uploadedFilePath);
+    res.status(status.OK).json({ success: true, data: result });
   } catch (error) {
     const msg = error.message;
     if (msg.includes("Unauthorized")) {
@@ -122,4 +137,27 @@ const getListenerCount = async (req, res) => {
   }
 };
 
-export { startLive, stopLive, getCurrentLive, getLiveHistory, getLiveById, getListenerCount };
+const streamLiveAudio = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(status.BAD_REQUEST).send("Invalid stream ID");
+    }
+    await handleHttpAudioStream(id, req, res);
+  } catch (error) {
+    console.error("[LiveController] streamLiveAudio error:", error);
+    if (!res.headersSent) {
+      res.status(status.INTERNAL_SERVER_ERROR).send("Stream error");
+    }
+  }
+};
+
+export {
+  startLive,
+  stopLive,
+  getCurrentLive,
+  getLiveHistory,
+  getLiveById,
+  getListenerCount,
+  streamLiveAudio,
+};

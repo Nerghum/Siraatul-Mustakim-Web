@@ -87,20 +87,36 @@ const verifyOtp = async (phone, otp) => {
   return { user: { id: user._id, name: user.name, phone: user.phone, email: user.email, role: user.role }, token };
 };
 
-// Email/Password Authentication
-const emailSignIn = async (email, password) => {
-  const user = await User.findOne({ email }).select('+password');
+// Email/Password or Username/Password Authentication
+const emailSignIn = async (identifier, password) => {
+  if (!identifier || !password) {
+    return { success: false, message: 'ইমেইল/ইউজারনেম এবং পাসওয়ার্ড প্রদান করুন' };
+  }
+
+  const raw = String(identifier).trim();
+  const escaped = raw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const ciRegex = new RegExp(`^${escaped}$`, 'i');
+
+  // Search by email, name (username), or phone
+  const user = await User.findOne({
+    $or: [
+      { email: ciRegex },
+      { name: ciRegex },
+      { phone: raw }
+    ]
+  }).select('+password');
+
   if (!user) {
-    return { success: false, message: 'Invalid email or password' };
+    return { success: false, message: 'ইমেইল/ইউজারনেম অথবা পাসওয়ার্ড সঠিক নয়' };
   }
 
   const isPasswordValid = await user.comparePassword(password);
   if (!isPasswordValid) {
-    return { success: false, message: 'Invalid email or password' };
+    return { success: false, message: 'ইমেইল/ইউজারনেম অথবা পাসওয়ার্ড সঠিক নয়' };
   }
 
   const token = jwt.sign(
-    { id: user._id, email: user.email, role: user.role },
+    { id: user._id, email: user.email, name: user.name, role: user.role, phone: user.phone },
     jwtConfig.secret,
     { expiresIn: jwtConfig.expiresIn },
   );

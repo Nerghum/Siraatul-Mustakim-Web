@@ -29,15 +29,16 @@ const verifyOtp = async (req, res) => {
   res.json(result);
 };
 
-// Email/Password Login
+// Email/Username/Password Login
 const emailLogin = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, identifier, username, password } = req.body;
+  const loginId = email || identifier || username;
   
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password required' });
+  if (!loginId || !password) {
+    return res.status(400).json({ message: 'Email/username and password required' });
   }
 
-  const result = await authService.emailSignIn(email, password);
+  const result = await authService.emailSignIn(loginId, password);
   
   if (!result.success) {
     return res.status(401).json({ message: result.message });
