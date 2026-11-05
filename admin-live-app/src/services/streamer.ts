@@ -1,6 +1,8 @@
 import {
   AudioModule,
+  AudioQuality,
   createAudioPlayer,
+  IOSOutputFormat,
   setAudioModeAsync,
   type AudioPlayer,
   type AudioRecorder,
@@ -48,10 +50,18 @@ export class LiveStreamer {
     await this.init();
 
     this.recorder = new AudioModule.AudioRecorder({
-      extension: ".m4a",
+      extension: ".aac",
       sampleRate: 44100,
       numberOfChannels: 1,
       bitRate: 64000,
+      android: {
+        outputFormat: "aac_adts",
+        audioEncoder: "aac",
+      },
+      ios: {
+        outputFormat: IOSOutputFormat.MPEG4AAC,
+        audioQuality: AudioQuality.HIGH,
+      },
     });
 
     await this.recorder.prepareToRecordAsync();
@@ -75,10 +85,10 @@ export class LiveStreamer {
       this.config?.onAudioLevel?.(simulatedLevel);
     }, 200);
 
-    // Stream audio chunks every 1 second to VPS
+    // Stream audio chunks every 750ms to VPS
     this.chunkInterval = setInterval(async () => {
       await this.readAndStreamChunk();
-    }, 1000);
+    }, 750);
   }
 
   private async readAndStreamChunk() {
@@ -182,7 +192,7 @@ export class LiveStreamer {
 
     const duration = Math.max(1, Math.floor((Date.now() - this.startTime) / 1000));
     const streamId = this.config?.streamId || Date.now().toString();
-    const permanentPath = `${RECORDING_DIR}live-boyan-${streamId}.m4a`;
+    const permanentPath = `${RECORDING_DIR}live-boyan-${streamId}.aac`;
 
     // Save permanently to local mobile storage
     if (recordedTempUri) {

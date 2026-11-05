@@ -61,11 +61,22 @@ const startLive = async (title, description, startedBy, extra = {}) => {
 
   await notificationService.sendLiveStarted(stream);
 
+  const streamUrl = `/api/live/stream/${stream._id}.aac`;
+
+  if (global.io) {
+    global.io.emit("live:started", { stream, streamUrl });
+    global.io.emit("live:status", {
+      isLive: true,
+      streamId: String(stream._id),
+      roomName,
+    });
+  }
+
   return {
     stream,
     token,
     wsUrl: LIVEKIT_HOST,
-    streamUrl: `/api/live/stream/${stream._id}`,
+    streamUrl,
   };
 };
 
@@ -90,17 +101,25 @@ const stopLive = async (streamId, uploadedFilePath = null) => {
   }
 
   let finalAudioRelPath = null;
-  const targetFileName = `live-${stream._id}.m4a`;
-  const targetFullPath = path.join(audioDir, targetFileName);
+  let finalFormat = "aac";
+  const aacTarget = `live-${stream._id}.aac`;
+  const m4aTarget = `live-${stream._id}.m4a`;
+  const aacFullPath = path.join(audioDir, aacTarget);
+  const m4aFullPath = path.join(audioDir, m4aTarget);
 
   if (uploadedFilePath && fs.existsSync(uploadedFilePath)) {
-    fs.copyFileSync(uploadedFilePath, targetFullPath);
-    finalAudioRelPath = `boyan/audio/${targetFileName}`;
-  } else if (fs.existsSync(targetFullPath)) {
-    const stats = fs.statSync(targetFullPath);
-    if (stats.size > 0) {
-      finalAudioRelPath = `boyan/audio/${targetFileName}`;
-    }
+    const ext = path.extname(uploadedFilePath).replace(".", "") || "aac";
+    const destName = `live-${stream._id}.${ext}`;
+    const destPath = path.join(audioDir, destName);
+    fs.copyFileSync(uploadedFilePath, destPath);
+    finalAudioRelPath = `boyan/audio/${destName}`;
+    finalFormat = ext;
+  } else if (fs.existsSync(aacFullPath) && fs.statSync(aacFullPath).size > 0) {
+    finalAudioRelPath = `boyan/audio/${aacTarget}`;
+    finalFormat = "aac";
+  } else if (fs.existsSync(m4aFullPath) && fs.statSync(m4aFullPath).size > 0) {
+    finalAudioRelPath = `boyan/audio/${m4aTarget}`;
+    finalFormat = "m4a";
   }
 
   let createdBoyan = null;
@@ -112,7 +131,7 @@ const stopLive = async (streamId, uploadedFilePath = null) => {
       location: stream.location || "",
       mediaType: "audio",
       audioUrl: finalAudioRelPath,
-      audioFormat: "m4a",
+      audioFormat: finalFormat,
       audioDuration: duration,
       views: stream.listenerCount || 0,
     });
@@ -129,11 +148,18 @@ const stopLive = async (streamId, uploadedFilePath = null) => {
   await notificationService.sendLiveEnded(stream);
 
   if (global.io) {
-    global.io.to(`live:${stream.roomName}`).emit("live:ended", {
+    const endPayload = {
       streamId: String(stream._id),
       roomName: stream.roomName,
       boyanId: createdBoyan ? String(createdBoyan._id) : null,
       boyan: createdBoyan,
+    };
+    global.io.to(`live:${stream.roomName}`).emit("live:ended", endPayload);
+    global.io.emit("live:ended", endPayload);
+    global.io.emit("live:status", {
+      isLive: false,
+      streamId: String(stream._id),
+      roomName: stream.roomName,
     });
   }
 
@@ -153,7 +179,7 @@ const getCurrentLive = async () => {
     stream,
     token,
     wsUrl: LIVEKIT_HOST,
-    streamUrl: `/api/live/stream/${stream._id}`,
+    streamUrl: `/api/live/stream/${stream._id}.aac`,
   };
 };
 

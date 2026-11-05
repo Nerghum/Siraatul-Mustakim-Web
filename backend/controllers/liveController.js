@@ -152,11 +152,12 @@ const getListenerCount = async (req, res) => {
 
 const streamLiveAudio = async (req, res) => {
   try {
-    const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    const rawId = req.params.id || "";
+    const cleanId = rawId.replace(/\.(aac|m4a|mp3|ogg|wav)$/i, "");
+    if (!mongoose.Types.ObjectId.isValid(cleanId)) {
       return res.status(status.BAD_REQUEST).send("Invalid stream ID");
     }
-    await handleHttpAudioStream(id, req, res);
+    await handleHttpAudioStream(cleanId, req, res);
   } catch (error) {
     console.error("[LiveController] streamLiveAudio error:", error);
     if (!res.headersSent) {

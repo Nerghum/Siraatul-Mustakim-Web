@@ -9,6 +9,7 @@ import connectDB from "./config/db.js";
 import routes from "./routes/index.js";
 import { FILES_PUBLIC_PREFIX } from "./utils/uploadStorage.js";
 import { initSignaling } from "./services/signalingService.js";
+import LiveStream from "./models/LiveStream.js";
 
 connectDB();
 
@@ -116,6 +117,18 @@ const io = new SocketIOServer(httpServer, {
 
 global.io = io;
 initSignaling(io);
+
+// Auto-cleanup any stale zombie live streams from previous restarts
+LiveStream.updateMany(
+  { isLive: true },
+  { $set: { isLive: false, status: "ended", endedAt: new Date() } }
+)
+  .then((res) => {
+    if (res.modifiedCount > 0) {
+      console.log(`[LiveStream] Cleaned up ${res.modifiedCount} zombie stream(s) on startup.`);
+    }
+  })
+  .catch((err) => console.warn("[LiveStream] Stale stream cleanup error:", err));
 
 io.on("connection", (socket) => {
   console.log(`[Socket] Client connected: ${socket.id}`);

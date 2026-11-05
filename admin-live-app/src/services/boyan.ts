@@ -105,11 +105,12 @@ export async function stopLiveBoyan(
     try {
       const formData = new FormData();
       formData.append("streamId", streamId);
-      const filename = localAudioUri.split("/").pop() || `live-${streamId}.m4a`;
+      const filename = localAudioUri.split("/").pop() || `live-${streamId}.aac`;
+      const isAac = filename.endsWith(".aac");
       formData.append("audio", {
         uri: localAudioUri,
         name: filename,
-        type: "audio/m4a",
+        type: isAac ? "audio/aac" : "audio/m4a",
       } as any);
 
       const res = await axios.post(`${API_BASE_URL}/live/stop`, formData, {

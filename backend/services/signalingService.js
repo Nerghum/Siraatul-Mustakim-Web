@@ -16,7 +16,7 @@ export const getOrCreateSession = (streamId, roomName) => {
     fs.mkdirSync(audioDir, { recursive: true });
   }
 
-  const recordingPath = path.join(audioDir, `live-${streamId}.m4a`);
+  const recordingPath = path.join(audioDir, `live-${streamId}.aac`);
   const writeStream = fs.createWriteStream(recordingPath, { flags: "a" });
 
   const session = {
@@ -29,6 +29,9 @@ export const getOrCreateSession = (streamId, roomName) => {
     writeStream,
     startedAt: Date.now(),
     headerChunk: null, // Initial audio header chunk to send to new listeners
+    recentChunks: [], // Ring buffer of recent ADTS chunks (~64KB) for instant playback
+    recentBytes: 0,
+    disconnectTimer: null,
   };
 
   activeStreamSessions.set(streamId, session);
@@ -38,6 +41,11 @@ export const getOrCreateSession = (streamId, roomName) => {
 export const endStreamSession = async (streamId) => {
   const session = activeStreamSessions.get(streamId);
   if (!session) return null;
+
+  if (session.disconnectTimer) {
+    clearTimeout(session.disconnectTimer);
+    session.disconnectTimer = null;
+  }
 
   try {
     if (session.writeStream) {
@@ -54,29 +62,35 @@ export const endStreamSession = async (streamId) => {
     } catch (e) {}
   }
   session.httpClients.clear();
+  session.recentChunks = [];
+  session.recentBytes = 0;
 
   activeStreamSessions.delete(streamId);
   return session;
 };
 
-export const handleHttpAudioStream = async (streamId, req, res) => {
+export const handleHttpAudioStream = async (rawStreamId, req, res) => {
+  const streamId = String(rawStreamId).replace(/\.(aac|m4a|mp3|ogg|wav)$/i, "");
   const stream = await LiveStream.findById(streamId);
   if (!stream) {
     return res.status(404).send("Stream not found");
   }
 
   // If stream already ended and has recording, redirect or serve file
-  if (!stream.isLive && stream.recordingUrl) {
-    const fullPath = path.join(process.cwd(), "data", stream.recordingUrl);
-    if (fs.existsSync(fullPath)) {
-      return res.sendFile(fullPath);
+  if (!stream.isLive) {
+    if (stream.recordingUrl) {
+      const fullPath = path.join(process.cwd(), "data", stream.recordingUrl);
+      if (fs.existsSync(fullPath)) {
+        return res.sendFile(fullPath);
+      }
     }
+    return res.status(404).send("Stream has ended");
   }
 
   const session = getOrCreateSession(streamId, stream.roomName);
 
   res.writeHead(200, {
-    "Content-Type": "audio/mp4",
+    "Content-Type": "audio/aac",
     "Transfer-Encoding": "chunked",
     "Cache-Control": "no-cache, no-store, must-revalidate",
     Pragma: "no-cache",
@@ -85,10 +99,24 @@ export const handleHttpAudioStream = async (streamId, req, res) => {
     "Access-Control-Allow-Origin": "*",
   });
 
-  // If we have an initial header chunk, send it to prime the client decoder
-  if (session.headerChunk) {
+  // Prime client with recent buffered audio so ExoPlayer doesn't stall buffering
+  if (session.recentChunks && session.recentChunks.length > 0) {
     try {
-      res.write(session.headerChunk);
+      for (const chunk of session.recentChunks) {
+        res.write(chunk);
+      }
+    } catch (e) {}
+  } else if (session.recordingPath && fs.existsSync(session.recordingPath)) {
+    try {
+      const stat = fs.statSync(session.recordingPath);
+      if (stat.size > 0) {
+        const tailSize = Math.min(stat.size, 64 * 1024);
+        const buf = Buffer.alloc(tailSize);
+        const fd = fs.openSync(session.recordingPath, "r");
+        fs.readSync(fd, buf, 0, tailSize, stat.size - tailSize);
+        fs.closeSync(fd);
+        res.write(buf);
+      }
     } catch (e) {}
   }
 
@@ -112,13 +140,20 @@ export const initSignaling = (io) => {
       const session = getOrCreateSession(streamId, roomName);
       session.broadcasterSocketId = socket.id;
 
+      if (session.disconnectTimer) {
+        clearTimeout(session.disconnectTimer);
+        session.disconnectTimer = null;
+        console.log(`[Signaling] Cleared broadcaster disconnect timer for ${streamId}`);
+      }
+
       socket.emit("live:broadcaster-ready", {
         streamId,
         roomName,
         listenersCount: session.listeners.size,
       });
 
-      io.to(`live:${roomName}`).emit("live:status", {
+      // Emit status to room AND globally so all clients know it is live
+      io.emit("live:status", {
         isLive: true,
         streamId,
         roomName,
@@ -154,12 +189,20 @@ export const initSignaling = (io) => {
     socket.on("live:audio-chunk", ({ streamId, roomName, chunk, isHeader }) => {
       if (!chunk) return;
 
-      const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, typeof chunk === "string" ? "base64" : undefined);
       const session = activeStreamSessions.get(streamId);
 
       if (session) {
         if (isHeader || !session.headerChunk) {
           session.headerChunk = buffer;
+        }
+
+        // Cache recent audio chunks (~64KB) for instant playback startup of new clients
+        session.recentChunks.push(buffer);
+        session.recentBytes += buffer.length;
+        while (session.recentBytes > 64 * 1024 && session.recentChunks.length > 1) {
+          const removed = session.recentChunks.shift();
+          session.recentBytes -= removed.length;
         }
 
         // 1. Write chunk to server recording file
@@ -246,8 +289,15 @@ export const initSignaling = (io) => {
     // --- Broadcaster ends live ---
     socket.on("live:broadcaster-end", async ({ streamId, roomName }) => {
       console.log(`[Signaling] Broadcaster ended live: ${streamId}`);
-      await endStreamSession(streamId);
-      io.to(`live:${roomName}`).emit("live:ended", { streamId, roomName });
+      try {
+        const { stopLive } = await import("./liveService.js");
+        await stopLive(streamId);
+      } catch (err) {
+        console.warn(`[Signaling] stopLive in live:broadcaster-end error:`, err);
+        await endStreamSession(streamId);
+        io.emit("live:ended", { streamId, roomName });
+        io.emit("live:status", { isLive: false, streamId, roomName });
+      }
     });
 
     // --- Socket disconnect ---
@@ -266,7 +316,19 @@ export const initSignaling = (io) => {
         }
 
         if (session.broadcasterSocketId === socket.id) {
-          console.log(`[Signaling] Broadcaster disconnected: ${streamId}`);
+          console.log(`[Signaling] Broadcaster disconnected for stream ${streamId}. Starting 15s grace timer.`);
+          if (session.disconnectTimer) clearTimeout(session.disconnectTimer);
+          session.disconnectTimer = setTimeout(async () => {
+            console.log(`[Signaling] Broadcaster grace period expired for ${streamId}. Auto-ending stream.`);
+            try {
+              const { stopLive } = await import("./liveService.js");
+              await stopLive(streamId);
+            } catch (err) {
+              await endStreamSession(streamId);
+              io.emit("live:ended", { streamId, roomName: session.roomName });
+              io.emit("live:status", { isLive: false, streamId, roomName: session.roomName });
+            }
+          }, 15000);
         }
       }
     });
