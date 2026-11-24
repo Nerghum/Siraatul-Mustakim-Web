@@ -218,9 +218,28 @@
 
 .quoteText {
   font-size: 0.9375rem;
-  line-height: normal;
+  line-height: 1.6;
   color: #374151;
   text-align: justify;
+}
+
+.htmlContent {
+  width: 100%;
+}
+
+.quoteText :global(p),
+.htmlContent :global(p) {
+  margin: 0 0 0.5rem 0;
+}
+
+.quoteText :global(p:last-child),
+.htmlContent :global(p:last-child) {
+  margin-bottom: 0;
+}
+
+.quoteText :global(span),
+.htmlContent :global(span) {
+  word-break: break-word;
 }
 
 @media (max-width: 767px) {
