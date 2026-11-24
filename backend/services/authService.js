@@ -87,43 +87,50 @@ const verifyOtp = async (phone, otp) => {
   return { user: { id: user._id, name: user.name, phone: user.phone, email: user.email, role: user.role }, token };
 };
 
-// Email/Password or Username/Password Authentication
+// Email/Password or Username/Name/Password Authentication
 const emailSignIn = async (identifier, password) => {
   if (!identifier || !password) {
-    return { success: false, message: 'ইমেইল/ইউজারনেম এবং পাসওয়ার্ড প্রদান করুন' };
+    return { success: false, message: 'নাম/ইমেইল এবং পাসওয়ার্ড প্রদান করুন' };
   }
 
   const raw = String(identifier).trim();
   const escaped = raw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const ciRegex = new RegExp(`^${escaped}$`, 'i');
 
-  // Search by email, name (username), or phone
-  const user = await User.findOne({
-    $or: [
-      { email: ciRegex },
-      { name: ciRegex },
-      { phone: raw }
-    ]
-  }).select('+password');
+  const orConditions = [
+    { email: ciRegex },
+    { name: ciRegex },
+    { phone: raw },
+  ];
 
-  if (!user) {
-    return { success: false, message: 'ইমেইল/ইউজারনেম অথবা পাসওয়ার্ড সঠিক নয়' };
+  // Allow logging in with just the local-part of an email (before @)
+  if (!raw.includes('@')) {
+    orConditions.push({ email: new RegExp(`^${escaped}@`, 'i') });
   }
 
-  const isPasswordValid = await user.comparePassword(password);
-  if (!isPasswordValid) {
-    return { success: false, message: 'ইমেইল/ইউজারনেম অথবা পাসওয়ার্ড সঠিক নয়' };
+  const candidates = await User.find({ $or: orConditions }).select('+password');
+
+  let matchedUser = null;
+  for (const candidate of candidates) {
+    if (candidate.password && (await candidate.comparePassword(password))) {
+      matchedUser = candidate;
+      break;
+    }
+  }
+
+  if (!matchedUser) {
+    return { success: false, message: 'নাম/ইমেইল অথবা পাসওয়ার্ড সঠিক নয়' };
   }
 
   const token = jwt.sign(
-    { id: user._id, email: user.email, name: user.name, role: user.role, phone: user.phone },
+    { id: matchedUser._id, email: matchedUser.email, name: matchedUser.name, role: matchedUser.role, phone: matchedUser.phone },
     jwtConfig.secret,
     { expiresIn: jwtConfig.expiresIn },
   );
 
   return {
     success: true,
-    user: { id: user._id, name: user.name, phone: user.phone, email: user.email, role: user.role },
+    user: { id: matchedUser._id, name: matchedUser.name, phone: matchedUser.phone, email: matchedUser.email, role: matchedUser.role },
     token,
   };
 };
