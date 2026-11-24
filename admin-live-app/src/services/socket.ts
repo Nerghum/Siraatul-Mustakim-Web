@@ -52,7 +52,13 @@ export function streamAudioChunk(
   }
 }
 
+let pauseHeartbeatTimer: any = null;
+
 export function endSignalingBroadcast(streamId: string, roomName: string) {
+  if (pauseHeartbeatTimer) {
+    clearInterval(pauseHeartbeatTimer);
+    pauseHeartbeatTimer = null;
+  }
   const socket = getSignalingSocket();
   if (socket && socket.connected) {
     socket.emit("live:broadcaster-end", { streamId, roomName });
@@ -66,6 +72,12 @@ export function emitBroadcasterPause(
 ) {
   const socket = getSignalingSocket();
   const msg = message || "সাময়িক বিরতি চলছে। কিছুক্ষণ পর আবার সম্প্রচার শুরু হবে।";
+
+  if (pauseHeartbeatTimer) {
+    clearInterval(pauseHeartbeatTimer);
+    pauseHeartbeatTimer = null;
+  }
+
   const emitAll = () => {
     socket.emit("live:broadcaster-pause", {
       streamId,
@@ -93,9 +105,31 @@ export function emitBroadcasterPause(
       socket.once("connect", emitAll);
     }
   }
+
+  // Periodic heartbeat every 2 seconds while broadcaster remains paused
+  pauseHeartbeatTimer = setInterval(() => {
+    const s = getSignalingSocket();
+    if (s && s.connected) {
+      s.emit("live:webrtc-offer", {
+        streamId,
+        roomName,
+        offer: { type: "control:pause", message: msg },
+      });
+      s.emit("live:webrtc-ice", {
+        streamId,
+        roomName,
+        candidate: { type: "control:pause", message: msg },
+      });
+    }
+  }, 2000);
 }
 
 export function emitBroadcasterResume(streamId: string, roomName: string) {
+  if (pauseHeartbeatTimer) {
+    clearInterval(pauseHeartbeatTimer);
+    pauseHeartbeatTimer = null;
+  }
+
   const socket = getSignalingSocket();
   const emitAll = () => {
     socket.emit("live:broadcaster-resume", {
@@ -139,6 +173,10 @@ export function subscribeListenerCount(callback: (count: number) => void): () =>
 }
 
 export function closeSignalingSocket() {
+  if (pauseHeartbeatTimer) {
+    clearInterval(pauseHeartbeatTimer);
+    pauseHeartbeatTimer = null;
+  }
   if (socketInstance) {
     socketInstance.disconnect();
     socketInstance = null;

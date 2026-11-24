@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_BASE_URL } from "../constants/api";
+import { API_BASE_URL, FALLBACK_API_BASE_URL } from "../constants/api";
 import { getAuthHeaders } from "./auth";
 
 export interface CategoryItem {

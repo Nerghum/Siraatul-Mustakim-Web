@@ -1,6 +1,6 @@
 import express from "express";
 import * as liveController from "../controllers/liveController.js";
-import { protect } from "../middleware/auth.js";
+import { protect, optionalAuth } from "../middleware/auth.js";
 import { createAudioUploader } from "../utils/uploadStorage.js";
 
 const router = express.Router();
@@ -16,8 +16,8 @@ router.get("/:id", liveController.getLiveById);
 router.get("/:id/listeners", liveController.getListenerCount);
 
 router.post("/start", protect, liveController.startLive);
-router.post("/pause", protect, liveController.pauseLive);
-router.post("/resume", protect, liveController.resumeLive);
+router.post("/pause", optionalAuth, liveController.pauseLive);
+router.post("/resume", optionalAuth, liveController.resumeLive);
 router.post(
   "/stop",
   protect,

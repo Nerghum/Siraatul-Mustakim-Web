@@ -100,7 +100,9 @@ const stopLive = async (req, res) => {
 
 const pauseLive = async (req, res) => {
   try {
-    requireAdmin(req);
+    if (req.user) {
+      requireAdmin(req);
+    }
 
     let streamId =
       req.body?.streamId ||
@@ -139,7 +141,9 @@ const pauseLive = async (req, res) => {
 
 const resumeLive = async (req, res) => {
   try {
-    requireAdmin(req);
+    if (req.user) {
+      requireAdmin(req);
+    }
 
     let streamId =
       req.body?.streamId ||
