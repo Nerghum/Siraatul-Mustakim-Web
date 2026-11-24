@@ -5,6 +5,7 @@ import {
   absolutePathUnderDataFromPublicUrl,
   publicUrlFromRelativeDataPath,
   relativeDataPathFromPublicUrl,
+  slugFromTitle,
 } from "../utils/uploadStorage.js";
 
 const REL_IMG = "kitab/images";
@@ -56,6 +57,24 @@ function normalizedContent(body) {
   return String(body.content).trim();
 }
 
+function parseChapters(raw) {
+  if (!raw) return [];
+  let arr = raw;
+  if (typeof raw === "string") {
+    try {
+      arr = JSON.parse(raw);
+    } catch {
+      arr = [];
+    }
+  }
+  if (!Array.isArray(arr)) return [];
+  return arr.map((ch, idx) => ({
+    title: String(ch.title || `অধ্যায় ${idx + 1}`).trim(),
+    order: typeof ch.order === "number" ? ch.order : idx + 1,
+    content: typeof ch.content === "string" ? ch.content : "",
+  }));
+}
+
 const createKitab = async (body, files) => {
   const { title, author } = body;
   if (!title?.trim() || !author?.trim()) {
@@ -63,22 +82,39 @@ const createKitab = async (body, files) => {
   }
   const { coverImages, pdf } = urlsFromMulterFiles(files);
   const content = normalizedContent(body);
-  if (!coverImages.length) {
-    throw new Error("at least one cover image is required");
+  const chapters = parseChapters(body.chapters);
+
+  let bookType = "pdf";
+  if (body.bookType === "text" || body.bookType === "pdf") {
+    bookType = body.bookType;
+  } else if (!pdf && !body.pdf && (content || chapters.length)) {
+    bookType = "text";
   }
-  if (!pdf && !content) {
-    throw new Error("either a pdf file or content text is required");
+
+  if (bookType === "pdf" && !pdf && !body.pdf) {
+    throw new Error("A PDF file is required for PDF books");
   }
+  if (bookType === "text" && !content && chapters.length === 0) {
+    throw new Error("Content or at least one chapter is required for text books");
+  }
+
   let status = "published";
   if (body.status !== undefined && body.status !== null && String(body.status).trim() !== "") {
     status = normalizeStatus(body.status);
   }
+
+  const category = body.category ? String(body.category).trim() : "";
+  const finalPdf = pdf || (typeof body.pdf === "string" ? body.pdf.trim() : "");
+
   return Kitab.create({
     title: String(title).trim(),
     author: String(author).trim(),
-   slug: String(title).trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9\-]/g, ""),
+    slug: slugFromTitle(title),
+    category,
+    bookType,
+    chapters,
     coverImages,
-    pdf: pdf || "",
+    pdf: finalPdf,
     content,
     status,
   });
@@ -104,6 +140,8 @@ function parseKitabListQuery(rawQuery = {}) {
       { category: safeRegex },
       { content: safeRegex },
       { slug: safeRegex },
+      { "chapters.title": safeRegex },
+      { "chapters.content": safeRegex },
     ];
   }
 
@@ -150,9 +188,13 @@ const updateKitab = async (id, body, files) => {
   const updates = {};
   if (body.title !== undefined && body.title !== null && String(body.title).trim() !== "") {
     updates.title = String(body.title).trim();
+    updates.slug = slugFromTitle(updates.title);
   }
   if (body.author !== undefined && body.author !== null && String(body.author).trim() !== "") {
     updates.author = String(body.author).trim();
+  }
+  if (body.category !== undefined && body.category !== null) {
+    updates.category = String(body.category).trim();
   }
   if (
     body.status !== undefined &&
@@ -161,8 +203,17 @@ const updateKitab = async (id, body, files) => {
   ) {
     updates.status = normalizeStatus(body.status);
   }
+  if (body.bookType !== undefined && body.bookType !== null) {
+    const bt = String(body.bookType).trim().toLowerCase();
+    if (bt === "pdf" || bt === "text") {
+      updates.bookType = bt;
+    }
+  }
   if (body.content !== undefined && body.content !== null) {
     updates.content = String(body.content).trim();
+  }
+  if (body.chapters !== undefined && body.chapters !== null) {
+    updates.chapters = parseChapters(body.chapters);
   }
 
   const newFiles = urlsFromMulterFiles(files);
@@ -180,9 +231,19 @@ const updateKitab = async (id, body, files) => {
   }
 
   Object.assign(kitab, updates);
-  if (!String(kitab.pdf || "").trim() && !String(kitab.content || "").trim()) {
-    throw new Error("kitab must have either a pdf or content");
+
+  const currentBookType = kitab.bookType || (kitab.pdf ? "pdf" : "text");
+  if (currentBookType === "pdf" && !String(kitab.pdf || "").trim()) {
+    throw new Error("PDF file is required for PDF books");
   }
+  if (
+    currentBookType === "text" &&
+    !String(kitab.content || "").trim() &&
+    (!kitab.chapters || kitab.chapters.length === 0)
+  ) {
+    throw new Error("Content or at least one chapter is required for text books");
+  }
+
   await kitab.save();
   return kitab;
 };
@@ -194,3 +255,4 @@ export {
   deleteKitabById,
   updateKitab,
 };
+

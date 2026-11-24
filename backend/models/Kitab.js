@@ -1,5 +1,24 @@
 import mongoose from "mongoose";
 
+const chapterSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    order: {
+      type: Number,
+      default: 1,
+    },
+    content: {
+      type: String,
+      default: "",
+    },
+  },
+  { _id: true },
+);
+
 const kitabSchema = new mongoose.Schema(
   {
     title: {
@@ -7,8 +26,9 @@ const kitabSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    slug:{
+    slug: {
       type: String,
+      default: "",
     },
     author: {
       type: String,
@@ -18,6 +38,15 @@ const kitabSchema = new mongoose.Schema(
     category: {
       type: String,
       default: "",
+    },
+    bookType: {
+      type: String,
+      enum: ["pdf", "text"],
+      default: "pdf",
+    },
+    chapters: {
+      type: [chapterSchema],
+      default: [],
     },
     coverImages: {
       type: [String],
@@ -46,3 +75,4 @@ const kitabSchema = new mongoose.Schema(
 );
 
 export default mongoose.model("Kitab", kitabSchema);
+

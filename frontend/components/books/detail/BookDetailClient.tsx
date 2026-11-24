@@ -129,6 +129,23 @@ export default function BookDetailClient({ id }: { id: string }) {
 
   const isPdfBook = Boolean(detail?.pdf?.trim() || detail?.bookType === "pdf");
   const hasChapters = Boolean(detail?.chapters && detail.chapters.length > 0);
+  const chapters = detail?.chapters || [];
+  const currentChapterIndex = Math.max(
+    0,
+    chapters.findIndex((ch, idx) => (ch._id || `ch-${idx}`) === activePageParam)
+  );
+  const activeChapter = chapters[currentChapterIndex] || chapters[0];
+
+  const chapterTocItems = chapters.map((ch, idx) => ({
+    id: String(ch._id || `ch-${idx}`),
+    title: ch.title || `অধ্যায় ${idx + 1}`,
+    count: idx + 1,
+  }));
+
+  const activeToc = hasChapters ? chapterTocItems : (readerData?.toc || []);
+  const currentPageIndex = hasChapters ? currentChapterIndex : (readerData?.pageIndex ?? 0);
+  const totalPagesCount = hasChapters ? chapters.length : (readerData?.totalPages ?? 1);
+
   const hasReaderToc = Boolean(
     !detail?.content?.trim() && readerData?.toc && readerData.toc.length > 0,
   );
@@ -149,13 +166,13 @@ export default function BookDetailClient({ id }: { id: string }) {
   };
 
   const handlePrev = () => {
-    if (!readerData || readerData.pageIndex <= 0) return;
-    setPageParams(readerData.toc[readerData.pageIndex - 1].id);
+    if (currentPageIndex <= 0 || !activeToc.length) return;
+    setPageParams(activeToc[currentPageIndex - 1].id);
   };
 
   const handleNext = () => {
-    if (!readerData || readerData.pageIndex >= readerData.totalPages - 1) return;
-    setPageParams(readerData.toc[readerData.pageIndex + 1].id);
+    if (currentPageIndex >= activeToc.length - 1 || !activeToc.length) return;
+    setPageParams(activeToc[currentPageIndex + 1].id);
   };
 
   const tocLabel = (key: string) => t(`listing.categories.${key}`);
@@ -386,14 +403,22 @@ export default function BookDetailClient({ id }: { id: string }) {
                       <SkeletonBar style={{ width: "75%", height: "1.125rem" }} />
                     </div>
                   </div>
-                ) : detail.content?.trim() ? (
-                  /* Real content from API — render as paragraphs */
+                ) : hasChapters && activeChapter ? (
+                  /* Real chapter content from API — supports rich HTML */
                   <div className={styles.pageContent}>
-                    <div className={styles.pageBody}>
-                      {detail.content.split(/\n+/).map((para, i) => (
-                        <p key={i}>{para}</p>
-                      ))}
-                    </div>
+                    <h2 className={styles.pageTitle}>{activeChapter.title}</h2>
+                    <div
+                      className={styles.pageBody}
+                      dangerouslySetInnerHTML={{ __html: activeChapter.content || "" }}
+                    />
+                  </div>
+                ) : detail.content?.trim() ? (
+                  /* Real content from API — render as HTML or paragraphs */
+                  <div className={styles.pageContent}>
+                    <div
+                      className={styles.pageBody}
+                      dangerouslySetInnerHTML={{ __html: detail.content }}
+                    />
                   </div>
                 ) : detail.pdf ? (
                   /* PDF-only book — show native reader */
@@ -419,7 +444,7 @@ export default function BookDetailClient({ id }: { id: string }) {
                   </div>
                 )}
 
-                {!metaLoading && !isPdfBook && !detail?.content?.trim() && !readerLoading && readerData && (
+                {!metaLoading && !isPdfBook && (hasChapters || (!detail?.content?.trim() && !readerLoading && readerData)) && totalPagesCount > 1 && (
                   <div className={styles.readerPagination}>
                     <button
                       type="button"
@@ -428,15 +453,15 @@ export default function BookDetailClient({ id }: { id: string }) {
                         createRipple(e);
                         handlePrev();
                       }}
-                      disabled={readerData.pageIndex === 0}
+                      disabled={currentPageIndex === 0}
                     >
                       <ChevronLeft size={18} />
                       {t("books.detail.prev")}
                     </button>
                     <span className={styles.pageIndicator}>
                       {t("books.detail.pageIndicator")
-                        .replace("{page}", toLocalizedNumber(readerData.pageIndex + 1, locale))
-                        .replace("{total}", toLocalizedNumber(readerData.totalPages, locale))}
+                        .replace("{page}", toLocalizedNumber(currentPageIndex + 1, locale))
+                        .replace("{total}", toLocalizedNumber(totalPagesCount, locale))}
                     </span>
                     <button
                       type="button"
@@ -445,7 +470,7 @@ export default function BookDetailClient({ id }: { id: string }) {
                         createRipple(e);
                         handleNext();
                       }}
-                      disabled={readerData.pageIndex === readerData.totalPages - 1}
+                      disabled={currentPageIndex >= totalPagesCount - 1}
                     >
                       {t("books.detail.next")}
                       <ChevronRight size={18} />
@@ -458,12 +483,12 @@ export default function BookDetailClient({ id }: { id: string }) {
         </ScrollRevealWrapper>
       </Wrapper>
 
-      {hasToc && readerData && (
+      {hasToc && (
         <BookTocSheet
           open={sheetOpen}
           onClose={() => setSheetOpen(false)}
-          toc={readerData.toc}
-          activeId={readerData.currentPage.id}
+          toc={activeToc}
+          activeId={hasChapters ? (activeChapter?._id || `ch-${currentChapterIndex}`) : (readerData?.currentPage.id ?? null)}
           onSelect={selectTocItem}
           bookTitle={detail?.title ?? ""}
         />

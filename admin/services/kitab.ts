@@ -14,7 +14,7 @@ export const createKitab = (data: CreateKitabPayload) => {
   formData.append("author", data.author);
   formData.append("status", data.status);
   if (data.pdf) formData.append("pdf", data.pdf);
-  if (data.content) formData.append("content", data.content);
+  if (data.content !== undefined && data.content !== null) formData.append("content", data.content);
   if (data.bookType) formData.append("bookType", data.bookType);
   if (data.chapters) formData.append("chapters", JSON.stringify(data.chapters));
   if (data.coverImages) {
@@ -30,7 +30,7 @@ export const updateKitab = (id: string, data: UpdateKitabPayload) => {
   if (data.title) formData.append("title", data.title);
   if (data.author) formData.append("author", data.author);
   if (data.status) formData.append("status", data.status);
-  if (data.content !== undefined) formData.append("content", data.content);
+  if (data.content !== undefined && data.content !== null) formData.append("content", data.content);
   if (data.pdf) formData.append("pdf", data.pdf);
   if (data.bookType) formData.append("bookType", data.bookType);
   if (data.chapters) formData.append("chapters", JSON.stringify(data.chapters));

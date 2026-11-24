@@ -87,7 +87,7 @@ const BookTocSheet: React.FC<Props> = ({ open, onClose, toc, activeId, onSelect,
               >
                 <Folder className={listStyles.sheetRowIcon} />
                 <span className={listStyles.sheetRowLabel}>
-                  {t(`listing.categories.${item.titleKey}`)}
+                  {item.title || (item.titleKey ? t(`listing.categories.${item.titleKey}`) : "")}
                 </span>
                 <span className={listStyles.sheetRowCount}>
                   {toLocalizedNumber(item.count, locale)}

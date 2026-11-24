@@ -161,9 +161,13 @@ export default function EditKitabPage() {
           router.push(`/admin/kitab/${id}`);
         },
         onError: (
-          err: Error & { response?: { data?: { message?: string } } },
+          err: Error & { response?: { data?: { message?: string; error?: string } } },
         ) => {
-          toast.error(err.response?.data?.message || "Failed to update kitab");
+          toast.error(
+            err.response?.data?.message ||
+              err.response?.data?.error ||
+              "Failed to update kitab",
+          );
         },
       },
     );

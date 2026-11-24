@@ -123,7 +123,11 @@ export default function CreateKitabPage() {
         router.push("/admin/kitab");
       },
       onError: (err: any) => {
-        toast.error(err.response?.data?.message || "Failed to create kitab");
+        toast.error(
+          err.response?.data?.message ||
+            err.response?.data?.error ||
+            "Failed to create kitab",
+        );
       },
     });
   }

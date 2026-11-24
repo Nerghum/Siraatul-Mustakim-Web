@@ -3,7 +3,8 @@ import { mockFetch } from "@/lib/mock-api";
 export type TocItem = {
   id: string;
   /** Translation key under `listing.categories.*` (labels shared with the sidebar). */
-  titleKey: string;
+  titleKey?: string;
+  title?: string;
   count: number;
 };
 

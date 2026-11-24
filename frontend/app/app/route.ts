@@ -5,8 +5,7 @@ function getDownloadUrl(request: Request): string {
     request.headers.get("x-forwarded-host") ||
     request.headers.get("host") ||
     "siraatulmustaqim.com";
-  const proto = request.headers.get("x-forwarded-proto") || "https";
-  return `${proto}://${host}/downloads/siratul-mustakim.apk`;
+  return `https://${host}/downloads/siratul-mustakim.apk`;
 }
 
 export function GET(request: Request) {
