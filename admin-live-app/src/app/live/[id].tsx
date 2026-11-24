@@ -13,8 +13,10 @@ import {
   View,
 } from "react-native";
 import { Colors } from "../../constants/theme";
-import { stopLiveBoyan } from "../../services/boyan";
+import { pauseLiveBoyan, resumeLiveBoyan, stopLiveBoyan } from "../../services/boyan";
 import {
+  emitBroadcasterPause,
+  emitBroadcasterResume,
   endSignalingBroadcast,
   subscribeListenerCount,
 } from "../../services/socket";
@@ -50,6 +52,8 @@ export default function LiveStudioScreen() {
   const [isHeadphoneMonitoring, setIsHeadphoneMonitoring] = useState(true);
   const [monitorVolume, setMonitorVolume] = useState(0.8);
   const [audioLevel, setAudioLevel] = useState(0.4);
+  const [isPaused, setIsPaused] = useState(false);
+  const [pausing, setPausing] = useState(false);
   const [stopping, setStopping] = useState(false);
 
   // Pulse animation for LIVE badge
@@ -81,6 +85,7 @@ export default function LiveStudioScreen() {
     liveStreamer.start({
       streamId: id as string,
       roomName: roomName as string,
+      title: title as string,
       onDurationUpdate: (sec) => setDuration(sec),
       onAudioLevel: (lvl) => setAudioLevel(lvl),
     });
@@ -88,7 +93,31 @@ export default function LiveStudioScreen() {
     return () => {
       unsubscribe();
     };
-  }, [id, roomName, pulseAnim]);
+  }, [id, roomName, title, pulseAnim]);
+
+  const handleTogglePause = async () => {
+    if (pausing || stopping) return;
+    setPausing(true);
+    const streamIdStr = String(id || "");
+    const roomNameStr = String(roomName || `stream_${id}`);
+    try {
+      if (!isPaused) {
+        await liveStreamer.pause();
+        emitBroadcasterPause(streamIdStr, roomNameStr);
+        pauseLiveBoyan(streamIdStr).catch(() => {});
+        setIsPaused(true);
+      } else {
+        await liveStreamer.resume();
+        emitBroadcasterResume(streamIdStr, roomNameStr);
+        resumeLiveBoyan(streamIdStr).catch(() => {});
+        setIsPaused(false);
+      }
+    } catch (err) {
+      console.warn("handleTogglePause error:", err);
+    } finally {
+      setPausing(false);
+    }
+  };
 
   const handleLiveVolumeChange = (delta: number) => {
     const next = Math.max(0, Math.min(1, Math.round((liveVolume + delta) * 10) / 10));
@@ -176,10 +205,17 @@ export default function LiveStudioScreen() {
       <ScrollView contentContainerStyle={styles.scroll}>
         {/* Top Live Bar */}
         <View style={styles.topBar}>
-          <View style={styles.liveIndicator}>
-            <Animated.View style={[styles.redDot, { opacity: pulseAnim }]} />
-            <Text style={styles.liveText}>LIVE</Text>
-          </View>
+          {isPaused ? (
+            <View style={styles.pausedIndicator}>
+              <Feather name="pause" size={13} color="#FFFFFF" />
+              <Text style={styles.pausedText}>বিরতি (PAUSED)</Text>
+            </View>
+          ) : (
+            <View style={styles.liveIndicator}>
+              <Animated.View style={[styles.redDot, { opacity: pulseAnim }]} />
+              <Text style={styles.liveText}>LIVE</Text>
+            </View>
+          )}
           <View style={styles.timerBox}>
             <Feather name="clock" size={15} color="#E5E7EB" />
             <Text style={styles.timerText}>{formatDuration(duration)}</Text>
@@ -323,8 +359,62 @@ export default function LiveStudioScreen() {
         <View style={styles.statusNotice}>
           <MaterialCommunityIcons name="broadcast" size={20} color="#34D399" />
           <Text style={styles.statusNoticeText}>
-            আপনার কথাগুলো ভিপিএস সিগন্যালিং সার্ভারের মাধ্যমে সিরাতুল মুস্তাকিম মোবাইল অ্যাপে লাইভ বাজছে।
+            {isPaused
+              ? "সম্প্রচার সাময়িক বিরতিতে রয়েছে। মাইক্রোফোন থেকে অডিও পাঠানো বন্ধ রয়েছে।"
+              : "লাইভ চলছে। অ্যাপ মিনিমাইজ করলেও ব্যাকগ্রাউন্ড সার্ভিসের মাধ্যমে সম্প্রচার সচল থাকবে।"}
           </Text>
+        </View>
+
+        {/* Pause / Break Controls */}
+        <View style={[styles.breakCard, isPaused && styles.breakCardActive]}>
+          <View style={styles.breakCardHeader}>
+            <View
+              style={[
+                styles.breakIconWrap,
+                isPaused ? styles.breakIconPaused : styles.breakIconActive,
+              ]}
+            >
+              <MaterialCommunityIcons
+                name={isPaused ? "coffee" : "pause"}
+                size={22}
+                color="#FFFFFF"
+              />
+            </View>
+            <View style={{ flex: 1, marginLeft: 12 }}>
+              <Text style={styles.breakTitle}>
+                {isPaused ? "সাময়িক বিরতিতে রয়েছে" : "সাময়িক বিরতি কন্ট্রোল"}
+              </Text>
+              <Text style={styles.breakDesc}>
+                {isPaused
+                  ? "শ্রোতাদের অ্যাপে বিরতি বার্তা দেখানো হচ্ছে। প্রস্তুত হলে 'লাইভ চালু করুন' বাটনে চাপ দিন।"
+                  : "আজান, নামাজ বা প্রয়োজনীয় বিরতির জন্য পজ করতে পারেন। শ্রোতারা বিরতি বার্তা দেখবেন।"}
+              </Text>
+            </View>
+          </View>
+
+          <Pressable
+            style={[
+              styles.pauseToggleBtn,
+              isPaused ? styles.resumeBtn : styles.pauseBtn,
+              (pausing || stopping) && styles.btnDisabled,
+            ]}
+            onPress={handleTogglePause}
+            disabled={pausing || stopping}
+          >
+            {pausing ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : isPaused ? (
+              <>
+                <Feather name="play-circle" size={22} color="#FFFFFF" />
+                <Text style={styles.pauseToggleBtnText}>বিরতি শেষ — লাইভ চালু করুন (Resume)</Text>
+              </>
+            ) : (
+              <>
+                <Feather name="pause-circle" size={22} color="#FFFFFF" />
+                <Text style={styles.pauseToggleBtnText}>সাময়িক বিরতি নিন (Pause Stream)</Text>
+              </>
+            )}
+          </Pressable>
         </View>
 
         {/* End Live Button */}
@@ -373,6 +463,21 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 20,
     gap: 6,
+  },
+  pausedIndicator: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#D97706",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+    gap: 6,
+  },
+  pausedText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "bold",
+    letterSpacing: 0.5,
   },
   redDot: {
     width: 8,
@@ -570,6 +675,71 @@ const styles = StyleSheet.create({
     color: "#A7F3D0",
     fontSize: 12,
     lineHeight: 18,
+  },
+  breakCard: {
+    backgroundColor: "#1F2937",
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1.5,
+    borderColor: "#374151",
+  },
+  breakCardActive: {
+    borderColor: "#F59E0B",
+    backgroundColor: "#291F08",
+  },
+  breakCardHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 14,
+  },
+  breakIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  breakIconActive: {
+    backgroundColor: "#374151",
+  },
+  breakIconPaused: {
+    backgroundColor: "#D97706",
+  },
+  breakTitle: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 4,
+  },
+  breakDesc: {
+    color: "#9CA3AF",
+    fontSize: 12,
+    lineHeight: 18,
+  },
+  pauseToggleBtn: {
+    flexDirection: "row",
+    height: 50,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 10,
+  },
+  pauseBtn: {
+    backgroundColor: "#D97706",
+  },
+  resumeBtn: {
+    backgroundColor: "#059669",
+    shadowColor: "#059669",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  pauseToggleBtnText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "bold",
   },
   endLiveBtn: {
     flexDirection: "row",

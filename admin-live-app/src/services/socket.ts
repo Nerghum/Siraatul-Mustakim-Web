@@ -59,6 +59,72 @@ export function endSignalingBroadcast(streamId: string, roomName: string) {
   }
 }
 
+export function emitBroadcasterPause(
+  streamId: string,
+  roomName: string,
+  message?: string
+) {
+  const socket = getSignalingSocket();
+  const msg = message || "সাময়িক বিরতি চলছে। কিছুক্ষণ পর আবার সম্প্রচার শুরু হবে।";
+  const emitAll = () => {
+    socket.emit("live:broadcaster-pause", {
+      streamId,
+      roomName,
+      message: msg,
+    });
+    // Multi-channel fallback: also emit via WebRTC signaling paths which bypass backend version differences
+    socket.emit("live:webrtc-offer", {
+      streamId,
+      roomName,
+      offer: { type: "control:pause", message: msg },
+    });
+    socket.emit("live:webrtc-ice", {
+      streamId,
+      roomName,
+      candidate: { type: "control:pause", message: msg },
+    });
+  };
+
+  if (socket) {
+    if (socket.connected) {
+      emitAll();
+    } else {
+      socket.connect();
+      socket.once("connect", emitAll);
+    }
+  }
+}
+
+export function emitBroadcasterResume(streamId: string, roomName: string) {
+  const socket = getSignalingSocket();
+  const emitAll = () => {
+    socket.emit("live:broadcaster-resume", {
+      streamId,
+      roomName,
+    });
+    // Multi-channel fallback
+    socket.emit("live:webrtc-offer", {
+      streamId,
+      roomName,
+      offer: { type: "control:resume" },
+    });
+    socket.emit("live:webrtc-ice", {
+      streamId,
+      roomName,
+      candidate: { type: "control:resume" },
+    });
+  };
+
+  if (socket) {
+    if (socket.connected) {
+      emitAll();
+    } else {
+      socket.connect();
+      socket.once("connect", emitAll);
+    }
+  }
+}
+
 export function subscribeListenerCount(callback: (count: number) => void): () => void {
   const socket = getSignalingSocket();
   const handler = (data: { count?: number }) => {

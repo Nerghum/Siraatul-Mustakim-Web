@@ -1,9 +1,17 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useEffect } from "react";
 import { Colors } from "../constants/theme";
+import { requestAllAppPermissions } from "../services/permissions";
 
 export default function RootLayout() {
+  useEffect(() => {
+    // Prompt all required permissions (Microphone, Notifications) on install / initial startup
+    requestAllAppPermissions().catch((err) => {
+      console.warn("Initial permissions request failed:", err);
+    });
+  }, []);
+
   return (
     <>
       <StatusBar style="light" backgroundColor={Colors.primary} />
@@ -26,7 +34,7 @@ export default function RootLayout() {
         <Stack.Screen
           name="dashboard"
           options={{
-            title: "লাইভ বয়ান কন্ট্রোল",
+            title: "বয়ানের অ্যাডমিন প্যানেল",
             headerBackVisible: false,
           }}
         />

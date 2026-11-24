@@ -98,6 +98,83 @@ const stopLive = async (req, res) => {
   }
 };
 
+const pauseLive = async (req, res) => {
+  try {
+    requireAdmin(req);
+
+    let streamId =
+      req.body?.streamId ||
+      req.params?.id ||
+      req.query?.streamId ||
+      req.headers["x-stream-id"];
+
+    if (!streamId || !mongoose.Types.ObjectId.isValid(streamId)) {
+      const active = await LiveStream.findOne({ isLive: true }).sort({ startedAt: -1 });
+      if (active) {
+        streamId = active._id;
+      }
+    }
+
+    if (!streamId || !mongoose.Types.ObjectId.isValid(streamId)) {
+      return res.status(status.BAD_REQUEST).json({ error: "Valid streamId is required" });
+    }
+
+    const message = req.body?.message;
+    const result = await liveService.pauseLive(streamId, message);
+    res.status(status.OK).json({ success: true, data: result });
+  } catch (error) {
+    const msg = error.message;
+    if (msg.includes("Unauthorized")) {
+      return res.status(status.UNAUTHORIZED).json({ error: msg });
+    }
+    if (msg.includes("Forbidden")) {
+      return res.status(status.FORBIDDEN).json({ error: msg });
+    }
+    if (msg === "Stream not found") {
+      return res.status(status.NOT_FOUND).json({ error: msg });
+    }
+    res.status(status.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+const resumeLive = async (req, res) => {
+  try {
+    requireAdmin(req);
+
+    let streamId =
+      req.body?.streamId ||
+      req.params?.id ||
+      req.query?.streamId ||
+      req.headers["x-stream-id"];
+
+    if (!streamId || !mongoose.Types.ObjectId.isValid(streamId)) {
+      const active = await LiveStream.findOne({ isLive: true }).sort({ startedAt: -1 });
+      if (active) {
+        streamId = active._id;
+      }
+    }
+
+    if (!streamId || !mongoose.Types.ObjectId.isValid(streamId)) {
+      return res.status(status.BAD_REQUEST).json({ error: "Valid streamId is required" });
+    }
+
+    const result = await liveService.resumeLive(streamId);
+    res.status(status.OK).json({ success: true, data: result });
+  } catch (error) {
+    const msg = error.message;
+    if (msg.includes("Unauthorized")) {
+      return res.status(status.UNAUTHORIZED).json({ error: msg });
+    }
+    if (msg.includes("Forbidden")) {
+      return res.status(status.FORBIDDEN).json({ error: msg });
+    }
+    if (msg === "Stream not found") {
+      return res.status(status.NOT_FOUND).json({ error: msg });
+    }
+    res.status(status.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
 const getCurrentLive = async (_req, res) => {
   try {
     const result = await liveService.getCurrentLive();
@@ -166,12 +243,39 @@ const streamLiveAudio = async (req, res) => {
   }
 };
 
+const deleteLive = async (req, res) => {
+  try {
+    requireAdmin(req);
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(status.BAD_REQUEST).json({ error: "Invalid id" });
+    }
+    const stream = await LiveStream.findByIdAndDelete(id);
+    if (!stream) {
+      return res.status(status.NOT_FOUND).json({ error: "Stream not found" });
+    }
+    res.status(status.OK).json({ success: true, message: "Live stream deleted" });
+  } catch (error) {
+    const msg = error.message;
+    if (msg.includes("Unauthorized")) {
+      return res.status(status.UNAUTHORIZED).json({ error: msg });
+    }
+    if (msg.includes("Forbidden")) {
+      return res.status(status.FORBIDDEN).json({ error: msg });
+    }
+    res.status(status.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
 export {
   startLive,
   stopLive,
+  pauseLive,
+  resumeLive,
   getCurrentLive,
   getLiveHistory,
   getLiveById,
   getListenerCount,
   streamLiveAudio,
+  deleteLive,
 };

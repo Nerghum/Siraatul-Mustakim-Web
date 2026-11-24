@@ -55,6 +55,12 @@ const createBoyan = async (req, res) => {
       const relativePath = req.file.path.split("data/").pop().replace(/\\/g, "/");
       data.audioUrl = relativePath;
       data.audioFormat = req.file.mimetype.split("/")[1] || "mp3";
+    } else if (mediaType === "audio" && req.body.audioUrl) {
+      data.audioUrl = req.body.audioUrl;
+      data.audioFormat = req.body.audioFormat || "mp3";
+    }
+    if (req.body.audioDuration) {
+      data.audioDuration = Number(req.body.audioDuration);
     }
     const item = await boyanService.create(data);
     res.status(status.CREATED).json(item);
@@ -80,6 +86,12 @@ const updateBoyan = async (req, res) => {
     if (req.body.mediaType !== undefined) updates.mediaType = req.body.mediaType;
     if (req.body.youtubeUrl !== undefined) {
       updates.youtubeUrl = (req.body.youtubeUrl || "").trim();
+    }
+    if (req.body.audioUrl !== undefined) {
+      updates.audioUrl = req.body.audioUrl;
+    }
+    if (req.body.audioDuration !== undefined) {
+      updates.audioDuration = Number(req.body.audioDuration);
     }
     if (req.file) {
       const relativePath = req.file.path.split("data/").pop().replace(/\\/g, "/");

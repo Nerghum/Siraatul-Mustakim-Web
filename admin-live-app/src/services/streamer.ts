@@ -8,6 +8,15 @@ import {
   type AudioRecorder,
 } from "expo-audio";
 import * as FileSystem from "expo-file-system/legacy";
+import { DeviceEventEmitter } from "react-native";
+import {
+  checkAndRequestBatteryOptimization,
+  pauseNativeLiveForegroundService,
+  resumeNativeLiveForegroundService,
+  setKeepScreenOnNative,
+  startNativeLiveForegroundService,
+  stopNativeLiveForegroundService,
+} from "./nativeService";
 import { streamAudioChunk } from "./socket";
 
 const RECORDING_DIR = `${FileSystem.documentDirectory}boyan-recordings/`;
@@ -15,6 +24,7 @@ const RECORDING_DIR = `${FileSystem.documentDirectory}boyan-recordings/`;
 export interface StreamerConfig {
   streamId: string;
   roomName: string;
+  title?: string;
   onAudioLevel?: (level: number) => void;
   onDurationUpdate?: (seconds: number) => void;
 }
@@ -24,9 +34,14 @@ export class LiveStreamer {
   private monitorPlayer: AudioPlayer | null = null;
   private config: StreamerConfig | null = null;
   private isStreaming = false;
+  private isPaused = false;
   private startTime = 0;
+  private pausedDuration = 0;
+  private pauseStartTime = 0;
   private timerInterval: any = null;
   private chunkInterval: any = null;
+  private tickSubscription: any = null;
+  private isReadingChunk = false;
   private lastReadOffset = 0;
   private liveVolume = 1.0; // 0..1 mic gain / stream volume multiplier
   private monitorVolume = 0.8; // 0..1 headphone monitor volume
@@ -35,6 +50,7 @@ export class LiveStreamer {
   async init() {
     await setAudioModeAsync({
       allowsRecording: true,
+      allowsBackgroundRecording: true,
       playsInSilentMode: true,
       shouldPlayInBackground: true,
     });
@@ -79,32 +95,115 @@ export class LiveStreamer {
     this.recorder.record();
 
     this.isStreaming = true;
+    this.isPaused = false;
     this.startTime = Date.now();
+    this.pausedDuration = 0;
+    this.pauseStartTime = 0;
     this.lastReadOffset = 0;
+
+    // Start native Android Foreground Service with microphone type & wake lock
+    // This keeps the live stream active when the app is minimized or screen is locked
+    const streamTitle = config.title || "সিরাতুল মুস্তাকিম লাইভ";
+    startNativeLiveForegroundService(
+      streamTitle,
+      "লাইভ সম্প্রচার চালু রয়েছে (অ্যাপ মিনিমাইজ করলেও সম্প্রচার অব্যাহত থাকবে)"
+    ).catch((err) => {
+      console.warn("[LiveStreamer] Foreground service start error:", err);
+    });
+
+    // Keep screen awake while live broadcasting to prevent screen timeout lock
+    setKeepScreenOnNative(true).catch(() => {});
+    checkAndRequestBatteryOptimization().catch(() => {});
+
+    // Listen to native foreground service tick (ensures chunk streaming even when app is minimized / screen is locked)
+    if (this.tickSubscription) {
+      this.tickSubscription.remove();
+    }
+    this.tickSubscription = DeviceEventEmitter.addListener(
+      "onLiveStreamChunkTick",
+      async () => {
+        if (this.isStreaming && !this.isPaused) {
+          await this.readAndStreamChunk();
+        }
+      }
+    );
 
     // Timer and VU meter polling
     this.timerInterval = setInterval(() => {
       if (!this.isStreaming) return;
-      const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-      this.config?.onDurationUpdate?.(elapsed);
 
-      // Simulate live VU metering based on audio activity
-      const simulatedLevel = Math.min(
-        1,
-        Math.max(0.1, (Math.sin(Date.now() / 250) + 1) * 0.45 * this.liveVolume)
-      );
-      this.config?.onAudioLevel?.(simulatedLevel);
+      if (!this.isPaused) {
+        const totalElapsed = Math.floor((Date.now() - this.startTime - this.pausedDuration) / 1000);
+        this.config?.onDurationUpdate?.(Math.max(0, totalElapsed));
+
+        // Live VU metering based on audio activity
+        const simulatedLevel = Math.min(
+          1,
+          Math.max(0.1, (Math.sin(Date.now() / 250) + 1) * 0.45 * this.liveVolume)
+        );
+        this.config?.onAudioLevel?.(simulatedLevel);
+      } else {
+        // Paused VU meter is low/zero
+        this.config?.onAudioLevel?.(0.05);
+      }
     }, 200);
 
-    // Stream audio chunks every 750ms to VPS
+    // Fallback timer: stream audio chunks every 750ms to VPS
     this.chunkInterval = setInterval(async () => {
       await this.readAndStreamChunk();
     }, 750);
   }
 
-  private async readAndStreamChunk() {
-    if (!this.recorder || !this.config || !this.isStreaming) return;
+  async pause(message?: string): Promise<void> {
+    if (!this.isStreaming || this.isPaused) return;
 
+    this.isPaused = true;
+    this.pauseStartTime = Date.now();
+
+    // Update foreground notification to show break status
+    pauseNativeLiveForegroundService(
+      message || "সাময়িক বিরতি চলছে... পুনরায় শুরু করতে অ্যাপে প্রবেশ করুন।"
+    ).catch(() => {});
+  }
+
+  async resume(): Promise<void> {
+    if (!this.isStreaming || !this.isPaused) return;
+
+    if (this.pauseStartTime > 0) {
+      this.pausedDuration += Date.now() - this.pauseStartTime;
+      this.pauseStartTime = 0;
+    }
+
+    // Advance lastReadOffset to current file size so audio recorded during pause is discarded
+    if (this.recorder?.uri) {
+      try {
+        const fileInfo = await FileSystem.getInfoAsync(this.recorder.uri);
+        if (fileInfo.exists) {
+          this.lastReadOffset = fileInfo.size;
+        }
+      } catch (err) {
+        console.warn("[LiveStreamer] resume offset update error:", err);
+      }
+    }
+
+    this.isPaused = false;
+
+    // Restore foreground notification
+    const streamTitle = this.config?.title || "সিরাতুল মুস্তাকিম লাইভ";
+    resumeNativeLiveForegroundService(
+      streamTitle,
+      "লাইভ সম্প্রচার চালু রয়েছে (অ্যাপ মিনিমাইজ করলেও সম্প্রচার অব্যাহত থাকবে)"
+    ).catch(() => {});
+  }
+
+  getIsPaused(): boolean {
+    return this.isPaused;
+  }
+
+  private async readAndStreamChunk() {
+    if (!this.recorder || !this.config || !this.isStreaming || this.isPaused || this.isReadingChunk) return;
+
+    this.isReadingChunk = true;
     try {
       const uri = this.recorder.uri;
       if (!uri) return;
@@ -135,6 +234,8 @@ export class LiveStreamer {
       }
     } catch (err) {
       console.warn("[LiveStreamer] Error reading audio chunk:", err);
+    } finally {
+      this.isReadingChunk = false;
     }
   }
 
@@ -179,6 +280,18 @@ export class LiveStreamer {
 
   async stop(): Promise<{ localUri: string; duration: number }> {
     this.isStreaming = false;
+    this.isPaused = false;
+
+    // Release keep screen on
+    setKeepScreenOnNative(false).catch(() => {});
+
+    // Stop native Android foreground service & release wake lock
+    stopNativeLiveForegroundService().catch(() => {});
+
+    if (this.tickSubscription) {
+      this.tickSubscription.remove();
+      this.tickSubscription = null;
+    }
 
     if (this.timerInterval) clearInterval(this.timerInterval);
     if (this.chunkInterval) clearInterval(this.chunkInterval);
@@ -201,7 +314,10 @@ export class LiveStreamer {
       } catch (e) {}
     }
 
-    const duration = Math.max(1, Math.floor((Date.now() - this.startTime) / 1000));
+    const duration = Math.max(
+      1,
+      Math.floor((Date.now() - this.startTime - this.pausedDuration) / 1000)
+    );
     const streamId = this.config?.streamId || Date.now().toString();
     const permanentPath = `${RECORDING_DIR}live-boyan-${streamId}.aac`;
 

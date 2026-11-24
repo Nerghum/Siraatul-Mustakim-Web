@@ -19,6 +19,7 @@ import articleRoutes from "./articleRoutes.js";
 import settingsRoutes from "./settingsRoutes.js";
 import adRoutes from "./adRoutes.js";
 import viewRoutes from "./viewRoutes.js";
+import notificationRoutes from "./notificationRoutes.js";
 
 const router = express.Router();
 router.get("/", (req, res) => {
@@ -44,5 +45,6 @@ router.use("/articles", articleRoutes);
 router.use("/settings", settingsRoutes);
 router.use("/ads", adRoutes);
 router.use("/views", viewRoutes);
+router.use("/notifications", notificationRoutes);
 
 export default router;

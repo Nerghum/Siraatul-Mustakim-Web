@@ -12,6 +12,9 @@ function getExpoHostIp() {
   return hostUri.split(":")[0] || "";
 }
 
+export const LIVE_PRODUCTION_URL = "https://api.siraatulmustaqim.com";
+export const BACKUP_PRODUCTION_URL = "https://siraatul-backend.hcsb.org.bd";
+
 export function resolveBackendBaseUrl(): string {
   const envUrl = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
   if (envUrl) {
@@ -28,17 +31,17 @@ export function resolveBackendBaseUrl(): string {
     return envUrl.replace(/\/api\/?$/, "");
   }
 
-  // Default to the VPS production server or host IP
+  // Default to the Live VPS server (https://api.siraatulmustaqim.com)
   const hostIp = getExpoHostIp();
   if (hostIp) {
     return `http://${hostIp}:5001`;
   }
-  if (Platform.OS === "android") {
-    return "https://api.siraatulmustaqim.com";
-  }
-  return "https://api.siraatulmustaqim.com";
+  return LIVE_PRODUCTION_URL;
 }
 
 export const BACKEND_URL = resolveBackendBaseUrl();
 export const API_BASE_URL = `${BACKEND_URL}/api`;
 export const SOCKET_URL = BACKEND_URL;
+
+export const FALLBACK_BACKEND_URL = BACKUP_PRODUCTION_URL;
+export const FALLBACK_API_BASE_URL = `${FALLBACK_BACKEND_URL}/api`;

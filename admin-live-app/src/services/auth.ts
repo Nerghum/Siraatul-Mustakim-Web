@@ -1,6 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { API_BASE_URL } from "../constants/api";
+import {
+  API_BASE_URL,
+  FALLBACK_API_BASE_URL,
+} from "../constants/api";
 
 const TOKEN_KEY = "@admin_live_token";
 const USER_KEY = "@admin_live_user";
@@ -19,21 +22,63 @@ export async function loginWithEmail(
   password: string
 ): Promise<{ user: AdminUser; token: string }> {
   const cleanId = identifier.trim();
-  const res = await axios.post(`${API_BASE_URL}/auth/login`, {
+  const cleanPass = password;
+
+  const payload = {
     email: cleanId,
     username: cleanId,
     identifier: cleanId,
-    password,
-  });
+    password: cleanPass,
+  };
 
-  const { token, user } = res.data;
-  if (!token) {
-    throw new Error("No token returned by server");
+  // Try primary live server first (https://api.siraatulmustaqim.com/api/auth/login)
+  try {
+    const res = await axios.post(`${API_BASE_URL}/auth/login`, payload, {
+      timeout: 12000,
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const { token, user } = res.data;
+    if (!token) {
+      throw new Error("সার্ভার থেকে টোকেন পাওয়া যায়নি");
+    }
+
+    await AsyncStorage.setItem(TOKEN_KEY, token);
+    await AsyncStorage.setItem(USER_KEY, JSON.stringify(user));
+    return { user, token };
+  } catch (err: any) {
+    console.warn(`[auth] Login on ${API_BASE_URL} failed:`, err.message);
+
+    // If network error occurred, try fallback server
+    const isNetworkErr =
+      !err.response ||
+      err.code === "ECONNABORTED" ||
+      err.message?.includes("Network Error");
+
+    if (isNetworkErr && FALLBACK_API_BASE_URL && FALLBACK_API_BASE_URL !== API_BASE_URL) {
+      console.log(`[auth] Primary failed with network error, trying fallback server ${FALLBACK_API_BASE_URL}...`);
+      try {
+        const fallbackRes = await axios.post(
+          `${FALLBACK_API_BASE_URL}/auth/login`,
+          payload,
+          {
+            timeout: 12000,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        const { token, user } = fallbackRes.data;
+        if (token) {
+          await AsyncStorage.setItem(TOKEN_KEY, token);
+          await AsyncStorage.setItem(USER_KEY, JSON.stringify(user));
+          return { user, token };
+        }
+      } catch (fallbackErr: any) {
+        throw fallbackErr;
+      }
+    }
+
+    throw err;
   }
-
-  await AsyncStorage.setItem(TOKEN_KEY, token);
-  await AsyncStorage.setItem(USER_KEY, JSON.stringify(user));
-  return { user, token };
 }
 
 export async function getStoredToken(): Promise<string | null> {

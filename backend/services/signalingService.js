@@ -104,22 +104,10 @@ export const handleHttpAudioStream = async (rawStreamId, req, res) => {
     "icy-sr": "44100",
   });
 
-  // Prime client with recent buffered audio aligned to the first ADTS syncword
+  // Prime client with recent buffered audio aligned to the first ADTS syncword (only if live and not paused)
   let bufferToSend = null;
-  if (session.recentChunks && session.recentChunks.length > 0) {
+  if (!session.isPaused && session.recentChunks && session.recentChunks.length > 0) {
     bufferToSend = Buffer.concat(session.recentChunks);
-  } else if (session.recordingPath && fs.existsSync(session.recordingPath)) {
-    try {
-      const stat = fs.statSync(session.recordingPath);
-      if (stat.size > 0) {
-        const tailSize = Math.min(stat.size, 64 * 1024);
-        const buf = Buffer.alloc(tailSize);
-        const fd = fs.openSync(session.recordingPath, "r");
-        fs.readSync(fd, buf, 0, tailSize, stat.size - tailSize);
-        fs.closeSync(fd);
-        bufferToSend = buf;
-      }
-    } catch (e) {}
   }
 
   if (bufferToSend && bufferToSend.length > 0) {
@@ -316,6 +304,80 @@ export const initSignaling = (io) => {
       }
     });
 
+    // --- Broadcaster pauses live ---
+    socket.on("live:broadcaster-pause", async ({ streamId, roomName, message }) => {
+      console.log(`[Signaling] Broadcaster paused live: ${streamId}`);
+      const pauseMsg = message || "সাময়িক বিরতি চলছে। কিছুক্ষণ পর আবার সম্প্রচার শুরু হবে।";
+      try {
+        await LiveStream.findByIdAndUpdate(streamId, {
+          status: "paused",
+          isPaused: true,
+          pauseMessage: pauseMsg,
+        });
+      } catch (e) {}
+
+      const session = activeStreamSessions.get(streamId);
+      if (session) {
+        session.isPaused = true;
+        // Clear chunk buffers so pre-pause audio is not replayed
+        session.recentChunks = [];
+        session.recentBytes = 0;
+        // End existing HTTP connections cleanly
+        for (const clientRes of session.httpClients) {
+          try {
+            clientRes.end();
+          } catch (e) {}
+        }
+        session.httpClients.clear();
+      }
+
+      const payload = {
+        streamId,
+        roomName,
+        message: pauseMsg,
+      };
+      io.to(`live:${roomName}`).emit("live:paused", payload);
+      io.emit("live:paused", payload);
+      io.emit("live:status", {
+        isLive: true,
+        isPaused: true,
+        streamId,
+        roomName,
+      });
+    });
+
+    // --- Broadcaster resumes live ---
+    socket.on("live:broadcaster-resume", async ({ streamId, roomName }) => {
+      console.log(`[Signaling] Broadcaster resumed live: ${streamId}`);
+      try {
+        await LiveStream.findByIdAndUpdate(streamId, {
+          status: "live",
+          isPaused: false,
+        });
+      } catch (e) {}
+
+      const session = activeStreamSessions.get(streamId);
+      if (session) {
+        session.isPaused = false;
+        // Fresh start for resume: clear chunk buffer so only live new audio plays
+        session.recentChunks = [];
+        session.recentBytes = 0;
+      }
+
+      const payload = {
+        streamId,
+        roomName,
+      };
+      io.to(`live:${roomName}`).emit("live:resumed", payload);
+      io.emit("live:resumed", payload);
+      io.emit("live:status", {
+        isLive: true,
+        isPaused: false,
+        streamId,
+        roomName,
+      });
+    });
+
     // --- Socket disconnect ---
     socket.on("disconnect", () => {
       for (const [streamId, session] of activeStreamSessions.entries()) {
@@ -332,7 +394,8 @@ export const initSignaling = (io) => {
         }
 
         if (session.broadcasterSocketId === socket.id) {
-          console.log(`[Signaling] Broadcaster disconnected for stream ${streamId}. Starting 15s grace timer.`);
+          const graceMs = session.isPaused ? 60000 : 15000;
+          console.log(`[Signaling] Broadcaster disconnected for stream ${streamId}. Starting ${graceMs / 1000}s grace timer.`);
           if (session.disconnectTimer) clearTimeout(session.disconnectTimer);
           session.disconnectTimer = setTimeout(async () => {
             console.log(`[Signaling] Broadcaster grace period expired for ${streamId}. Auto-ending stream.`);
@@ -344,7 +407,7 @@ export const initSignaling = (io) => {
               io.emit("live:ended", { streamId, roomName: session.roomName });
               io.emit("live:status", { isLive: false, streamId, roomName: session.roomName });
             }
-          }, 15000);
+          }, graceMs);
         }
       }
     });

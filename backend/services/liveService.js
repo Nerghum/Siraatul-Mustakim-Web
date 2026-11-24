@@ -5,7 +5,7 @@ import { AccessToken, RoomServiceClient } from "livekit-server-sdk";
 import LiveStream from "../models/LiveStream.js";
 import Boyan from "../models/Boyan.js";
 import * as notificationService from "./notificationService.js";
-import { getOrCreateSession, endStreamSession } from "./signalingService.js";
+import { activeStreamSessions, endStreamSession, getOrCreateSession } from "./signalingService.js";
 
 const LIVEKIT_API_KEY = process.env.LIVEKIT_API_KEY || "devkey";
 const LIVEKIT_API_SECRET = process.env.LIVEKIT_API_SECRET || "secret";
@@ -235,9 +235,88 @@ const getListenerCount = async (id) => {
   return { count: liveCount };
 };
 
+const pauseLive = async (streamId, message = null) => {
+  const stream = await LiveStream.findById(streamId);
+  if (!stream) {
+    throw new Error("Stream not found");
+  }
+
+  const pauseMsg = message || "সাময়িক বিরতি চলছে। কিছুক্ষণ পর আবার সম্প্রচার শুরু হবে।";
+  stream.status = "paused";
+  stream.isPaused = true;
+  stream.pauseMessage = pauseMsg;
+  await stream.save();
+
+  const session = activeStreamSessions.get(String(stream._id));
+  if (session) {
+    session.isPaused = true;
+    session.recentChunks = [];
+    session.recentBytes = 0;
+    for (const clientRes of session.httpClients) {
+      try { clientRes.end(); } catch (e) {}
+    }
+    session.httpClients.clear();
+  }
+
+  if (global.io) {
+    const payload = {
+      streamId: String(stream._id),
+      roomName: stream.roomName,
+      message: pauseMsg,
+    };
+    global.io.to(`live:${stream.roomName}`).emit("live:paused", payload);
+    global.io.emit("live:paused", payload);
+    global.io.emit("live:status", {
+      isLive: true,
+      isPaused: true,
+      streamId: String(stream._id),
+      roomName: stream.roomName,
+    });
+  }
+
+  return stream;
+};
+
+const resumeLive = async (streamId) => {
+  const stream = await LiveStream.findById(streamId);
+  if (!stream) {
+    throw new Error("Stream not found");
+  }
+
+  stream.status = "live";
+  stream.isPaused = false;
+  await stream.save();
+
+  const session = activeStreamSessions.get(String(stream._id));
+  if (session) {
+    session.isPaused = false;
+    session.recentChunks = [];
+    session.recentBytes = 0;
+  }
+
+  if (global.io) {
+    const payload = {
+      streamId: String(stream._id),
+      roomName: stream.roomName,
+    };
+    global.io.to(`live:${stream.roomName}`).emit("live:resumed", payload);
+    global.io.emit("live:resumed", payload);
+    global.io.emit("live:status", {
+      isLive: true,
+      isPaused: false,
+      streamId: String(stream._id),
+      roomName: stream.roomName,
+    });
+  }
+
+  return stream;
+};
+
 export {
   startLive,
   stopLive,
+  pauseLive,
+  resumeLive,
   getCurrentLive,
   getLiveHistory,
   getLiveById,

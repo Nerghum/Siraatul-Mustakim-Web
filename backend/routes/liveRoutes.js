@@ -16,6 +16,8 @@ router.get("/:id", liveController.getLiveById);
 router.get("/:id/listeners", liveController.getListenerCount);
 
 router.post("/start", protect, liveController.startLive);
+router.post("/pause", protect, liveController.pauseLive);
+router.post("/resume", protect, liveController.resumeLive);
 router.post(
   "/stop",
   protect,
@@ -33,5 +35,6 @@ router.post(
   },
   liveController.stopLive
 );
+router.delete("/:id", protect, liveController.deleteLive);
 
 export default router;
