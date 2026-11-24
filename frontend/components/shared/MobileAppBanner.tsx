@@ -51,9 +51,7 @@ const MobileAppBanner: React.FC = () => {
 
             <div className={styles.actions}>
               <a
-                href="https://play.google.com/store/apps/details?id=com.hanafifiqh.app"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/app"
                 className={styles.playBtn}
               >
                 <svg
@@ -118,6 +116,11 @@ const MobileAppBanner: React.FC = () => {
                 <li>
                   <Link href="/contributors" className={styles.linkItem}>
                     {t("footer.aboutUs")}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/app" className={styles.linkItem}>
+                    {t("footer.appDownload") || "অ্যাপ ডাউনলোড"}
                   </Link>
                 </li>
                 <li>

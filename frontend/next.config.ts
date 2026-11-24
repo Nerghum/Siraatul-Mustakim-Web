@@ -22,6 +22,27 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: "/downloads/:path*",
+        headers: [
+          {
+            key: "Content-Disposition",
+            value: 'attachment; filename="siratul-mustakim.apk"',
+          },
+          {
+            key: "Content-Type",
+            value: "application/vnd.android.package-archive",
+          },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400",
+          },
+        ],
+      },
+    ];
+  },
   allowedDevOrigins: ["*.monkeycode-ai.live"],
 };
 

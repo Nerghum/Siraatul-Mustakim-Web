@@ -244,9 +244,7 @@ const Header = ({
               </svg>
               <span className="header-top-bar-text">{t("header.topBar.text")}</span>
               <a
-                href="https://play.google.com/store/apps/details?id=com.siraatul.mustaqim"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/app"
                 className="header-top-bar-btn"
               >
                 <svg className="header-top-bar-play-icon" viewBox="0 0 24 24" fill="currentColor">
