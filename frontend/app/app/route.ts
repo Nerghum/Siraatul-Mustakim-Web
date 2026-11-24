@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
 
+function getDownloadUrl(request: Request): string {
+  const host =
+    request.headers.get("x-forwarded-host") ||
+    request.headers.get("host") ||
+    "siraatulmustaqim.com";
+  const proto = request.headers.get("x-forwarded-proto") || "https";
+  return `${proto}://${host}/downloads/siratul-mustakim.apk`;
+}
+
 export function GET(request: Request) {
-  const downloadUrl = new URL("/downloads/siratul-mustakim.apk", request.url);
-  return NextResponse.redirect(downloadUrl, 307);
+  return NextResponse.redirect(getDownloadUrl(request), 307);
 }
 
 export function HEAD(request: Request) {
-  const downloadUrl = new URL("/downloads/siratul-mustakim.apk", request.url);
-  return NextResponse.redirect(downloadUrl, 307);
+  return NextResponse.redirect(getDownloadUrl(request), 307);
 }
